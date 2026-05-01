@@ -1,0 +1,36 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Check Go formatting
+        run: |
+          gofmt -w main.go internal tests
+          git diff --exit-code -- main.go internal tests
+
+      - name: Generate fixtures
+        run: go run . generate tests/apps/basic/api --openapi tests/apps/basic/openapi.json
+
+      - name: Check generated files are committed
+        run: git diff --exit-code -- tests/apps/basic
+
+      - name: Test
+        run: go test ./...

@@ -1,0 +1,715 @@
+{
+  "components": {
+    "schemas": {
+      "ApiAuthGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiBlogSlugGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiFilesPathGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiMwGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiMwGetStatus403Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiNestChildGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiProductsGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiPublicGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiSecureAdminGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiSecureAdminPostBody": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "x-go-validate": "required"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      },
+      "ApiSecureAdminPostStatus201Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiSecureAdminPostStatus403Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiSecureAdminUsersGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiSecureGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiUsersGetStatus200Body": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "ApiUsersPostBody": {
+        "properties": {
+          "age": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "x-go-validate": "required"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "ApiUsersPostStatus201Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiUsersPostStatus400Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiUsersUseridGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiUsersUseridGetStatus404Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "FrourioError": {
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "issues": {
+            "items": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "path": {
+                  "items": {},
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "status": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "frourio-go API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "": {},
+    "/api": {
+      "get": {
+        "operationId": "getApi",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/auth": {
+      "get": {
+        "operationId": "getApiAuth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiAuthGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/blog/{slug}": {
+      "get": {
+        "operationId": "getApiBlogBySlug",
+        "parameters": [
+          {
+            "explode": false,
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string",
+                "x-go-validate": "required"
+              },
+              "type": "array"
+            },
+            "style": "simple",
+            "x-frourio-catch-all": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiBlogSlugGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/files": {
+      "get": {
+        "operationId": "getApiFiles",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFilesPathGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/files/{path}": {
+      "get": {
+        "operationId": "getApiFilesByPath",
+        "parameters": [
+          {
+            "explode": false,
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "style": "simple",
+            "x-frourio-catch-all": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFilesPathGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/mw": {
+      "get": {
+        "operationId": "getApiMw",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiMwGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiMwGetStatus403Body"
+                }
+              }
+            },
+            "description": "Status 403"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/nest/child": {
+      "get": {
+        "operationId": "getApiNestChild",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiNestChildGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/products/セール品": {
+      "get": {
+        "operationId": "getApiProducts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiProductsGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/public": {
+      "get": {
+        "operationId": "getApiPublic",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiPublicGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/secure": {
+      "get": {
+        "operationId": "getApiSecure",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiSecureGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/secure/admin": {
+      "get": {
+        "operationId": "getApiSecureAdmin",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiSecureAdminGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "post": {
+        "operationId": "postApiSecureAdmin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiSecureAdminPostBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiSecureAdminPostStatus201Body"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiSecureAdminPostStatus403Body"
+                }
+              }
+            },
+            "description": "Status 403"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/secure/admin/users": {
+      "get": {
+        "operationId": "getApiSecureAdminUsers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "role",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiSecureAdminUsersGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "operationId": "getApiUsers",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUsersGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "post": {
+        "operationId": "postApiUsers",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiUsersPostBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUsersPostStatus201Body"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUsersPostStatus400Body"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/users/{userid}": {
+      "get": {
+        "operationId": "getApiUsersByUserid",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userid",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "x-go-validate": "required"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUsersUseridGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUsersUseridGetStatus404Body"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    }
+  }
+}
