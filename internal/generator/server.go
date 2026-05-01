@@ -189,7 +189,8 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 	if method.Body != nil {
 		fmt.Fprintf(b, "func %s(r *http.Request) (%s%sBody, error) {\n", decodeName(route, method, "Body"), q, method.Name)
 		fmt.Fprintf(b, "\tvar body %s%sBody\n", q, method.Name)
-		if method.Format == "urlencoded" {
+		switch method.Format {
+		case "urlencoded":
 			b.WriteString("\tif err := r.ParseForm(); err != nil {\n")
 			b.WriteString("\t\treturn body, err\n")
 			b.WriteString("\t}\n")
@@ -197,7 +198,7 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 			for _, field := range method.Body.Fields {
 				writeValuesDecode(b, "body", field)
 			}
-		} else if method.Format == "formData" {
+		case "formData":
 			b.WriteString("\tif err := r.ParseMultipartForm(32 << 20); err != nil {\n")
 			b.WriteString("\t\treturn body, err\n")
 			b.WriteString("\t}\n")
@@ -205,7 +206,7 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 			for _, field := range method.Body.Fields {
 				writeValuesDecode(b, "body", field)
 			}
-		} else {
+		default:
 			b.WriteString("\tif err := json.NewDecoder(r.Body).Decode(&body); err != nil {\n")
 			b.WriteString("\t\treturn body, err\n")
 			b.WriteString("\t}\n")

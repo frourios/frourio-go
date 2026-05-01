@@ -7,30 +7,48 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
           cache: true
 
-      - name: Check Go formatting
-        run: |
-          gofmt -w main.go internal tests
-          git diff --exit-code -- main.go internal tests
+      - name: Install goimports
+        run: go install golang.org/x/tools/cmd/goimports@v0.44.0
 
       - name: Generate fixtures
         run: go run . generate tests/apps/basic/api --openapi tests/apps/basic/openapi.json
 
       - name: Check generated files are committed
         run: git diff --exit-code -- tests/apps/basic
+
+      - name: Check Go imports and formatting
+        run: |
+          goimports -w main.go internal tests
+          git diff --exit-code -- main.go internal tests
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.11
+          args: ./...
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: govulncheck
+        run: govulncheck ./...
 
       - name: Test
         run: go test ./...

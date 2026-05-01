@@ -92,9 +92,10 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 		schemaName := schemaName(route, method, "Body")
 		schemas[schemaName] = schemaForStruct(method.Body)
 		contentType := "application/json"
-		if method.Format == "urlencoded" {
+		switch method.Format {
+		case "urlencoded":
 			contentType = "application/x-www-form-urlencoded"
-		} else if method.Format == "formData" {
+		case "formData":
 			contentType = "multipart/form-data"
 		}
 		op["requestBody"] = map[string]any{

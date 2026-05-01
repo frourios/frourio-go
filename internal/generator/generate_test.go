@@ -496,8 +496,13 @@ func TestSchemaAndDecodeHelpers(t *testing.T) {
 			t.Fatalf("empty status description for %d", status)
 		}
 	}
-	for _, method := range []string{"get", "post", "put", "patch", "delete", "head", "options", "trace"} {
-		httpMethodName(method)
+	for _, method := range []string{"get", "post", "put", "patch", "delete", "head", "options"} {
+		if _, ok := httpMethodName(method); !ok {
+			t.Fatalf("httpMethodName(%s) not found", method)
+		}
+	}
+	if _, ok := httpMethodName("trace"); ok {
+		t.Fatal("httpMethodName(trace) should not be supported")
 	}
 	if _, ok := parseStatusName("Status999"); ok {
 		t.Fatal("unexpected valid status")

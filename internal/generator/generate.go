@@ -55,7 +55,8 @@ func Generate(opts Options) error {
 	if openAPIPath == "" {
 		openAPIPath = filepath.Join(apiDir, "openapi.json")
 	}
-	if err := os.MkdirAll(filepath.Dir(openAPIPath), 0o755); err != nil {
+	// Generated API documentation is source output, so it should be readable and traversable by the project owner.
+	if err := os.MkdirAll(filepath.Dir(openAPIPath), 0o755); err != nil { //nolint:gosec // Generated source directories should be traversable in the repository.
 		return err
 	}
 
@@ -65,7 +66,7 @@ func Generate(opts Options) error {
 		return err
 	}
 
-	return os.WriteFile(openAPIPath, append(data, '\n'), 0o644)
+	return os.WriteFile(openAPIPath, append(data, '\n'), 0o644) //nolint:gosec // Generated source artifact, not a secret.
 }
 
 func fillAncestors(routes []RouteSpec) {
@@ -96,7 +97,7 @@ func writeGoFile(path string, text string) error {
 	if err != nil {
 		return fmt.Errorf("format %s: %w", path, err)
 	}
-	return os.WriteFile(path, formatted, 0o644)
+	return os.WriteFile(path, formatted, 0o644) //nolint:gosec // Generated Go source should be readable in the repository.
 }
 
 func exportName(name string) string {
@@ -167,7 +168,7 @@ func fillRoutePaths(routes []RouteSpec) {
 func findModule(start string) (string, string, error) {
 	dir := start
 	for {
-		data, err := os.ReadFile(filepath.Join(dir, "go.mod"))
+		data, err := os.ReadFile(filepath.Join(dir, "go.mod")) //nolint:gosec // The path is constrained to ancestor go.mod discovery.
 		if err == nil {
 			for _, line := range strings.Split(string(data), "\n") {
 				if strings.HasPrefix(line, "module ") {

@@ -28,18 +28,18 @@ func run(args []string) error {
 		}
 
 		opts := generator.Options{APIDir: args[1]}
-		for i := 2; i < len(args); i++ {
-			switch args[i] {
+		for rest := args[2:]; len(rest) > 0; {
+			switch rest[0] {
 			case "--openapi":
-				if i+1 >= len(args) {
+				if len(rest) < 2 {
 					return fmt.Errorf("--openapi requires a path")
 				}
-				opts.OpenAPIPath = args[i+1]
-				i++
+				opts.OpenAPIPath = rest[1]
+				rest = rest[2:]
 			case "--watch":
 				return fmt.Errorf("--watch is not implemented yet")
 			default:
-				return fmt.Errorf("unknown option: %s", args[i])
+				return fmt.Errorf("unknown option: %s", rest[0])
 			}
 		}
 
@@ -50,16 +50,16 @@ func run(args []string) error {
 		}
 
 		opts := generator.Options{APIDir: args[1], OnlyOpenAPI: true}
-		for i := 2; i < len(args); i++ {
-			switch args[i] {
+		for rest := args[2:]; len(rest) > 0; {
+			switch rest[0] {
 			case "--output":
-				if i+1 >= len(args) {
+				if len(rest) < 2 {
 					return fmt.Errorf("--output requires a path")
 				}
-				opts.OpenAPIPath = args[i+1]
-				i++
+				opts.OpenAPIPath = rest[1]
+				rest = rest[2:]
 			default:
-				return fmt.Errorf("unknown option: %s", args[i])
+				return fmt.Errorf("unknown option: %s", rest[0])
 			}
 		}
 

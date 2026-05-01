@@ -130,7 +130,7 @@ func parseFrourioFile(apiDir, filePath string) (RouteSpec, error) {
 func parseMiddleware(expr ast.Expr) (MiddlewareSpec, error) {
 	st, ok := expr.(*ast.StructType)
 	if !ok {
-		return MiddlewareSpec{}, fmt.Errorf("Middleware must be a struct")
+		return MiddlewareSpec{}, fmt.Errorf("middleware must be a struct")
 	}
 	mw := MiddlewareSpec{Methods: map[string]*MiddlewareItem{}}
 	for _, field := range st.Fields.List {
@@ -157,7 +157,7 @@ func parseMiddlewareItem(name string, expr ast.Expr) (*MiddlewareItem, error) {
 	}
 	st, ok := expr.(*ast.StructType)
 	if !ok {
-		return nil, fmt.Errorf("Middleware.%s must be bool or a struct", name)
+		return nil, fmt.Errorf("middleware.%s must be bool or a struct", name)
 	}
 	item := &MiddlewareItem{Name: name}
 	for _, field := range st.Fields.List {
@@ -255,7 +255,7 @@ func parseMethod(name, httpName string, st *ast.StructType) (MethodSpec, error) 
 			case "Res":
 				resStruct, ok := field.Type.(*ast.StructType)
 				if !ok {
-					return MethodSpec{}, fmt.Errorf("Res must be a struct")
+					return MethodSpec{}, fmt.Errorf("res must be a struct")
 				}
 				responses, err := parseResponses(resStruct)
 				if err != nil {
@@ -312,7 +312,7 @@ func parseResponses(st *ast.StructType) ([]ResponseSpec, error) {
 			}
 			resStruct, ok := field.Type.(*ast.StructType)
 			if !ok {
-				return nil, fmt.Errorf("Res.%s must be a struct", name.Name)
+				return nil, fmt.Errorf("res.%s must be a struct", name.Name)
 			}
 			res := ResponseSpec{Status: status}
 			for _, resField := range resStruct.Fields.List {
@@ -450,7 +450,7 @@ func routePath(rel string, overrides map[string]string, param *FieldSpec) string
 		}
 		currentRel := strings.Join(relParts[:i+1], "/")
 		if param != nil && i == len(relParts)-1 {
-			if param != nil && param.Slice {
+			if param.Slice {
 				parts = append(parts, "{"+part+"...}")
 			} else {
 				parts = append(parts, "{"+part+"}")
