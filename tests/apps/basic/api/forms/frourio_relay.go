@@ -13,12 +13,33 @@ type routeMetadata struct{}
 
 var routeSpec = routeMetadata{}
 
+type GetRequest struct {
+}
+
+type GetResponse interface {
+	isGetResponse()
+	StatusCode() int
+}
+
+type GetStatus200Header struct {
+	ContentType string
+}
+
+type GetStatus200 struct {
+	Header GetStatus200Header
+	Body   string `validate:"required"`
+}
+
+func (GetStatus200) isGetResponse()  {}
+func (GetStatus200) StatusCode() int { return 200 }
+
 type PostRequest struct {
 	Body PostBody
 }
 
 type PostBody struct {
-	Name   string    `json:"name" validate:"required"`
+	Name   string `json:"name" validate:"required"`
+	Alias  string
 	Age    int       `json:"age" validate:"gte=1"`
 	Active bool      `json:"active"`
 	Scores []float64 `json:"score" validate:"required"`
@@ -57,9 +78,47 @@ type PutStatus200 struct {
 func (PutStatus200) isPutResponse()  {}
 func (PutStatus200) StatusCode() int { return 200 }
 
+type PatchRequest struct {
+}
+
+type PatchResponse interface {
+	isPatchResponse()
+	StatusCode() int
+}
+
+type PatchStatus200 struct {
+	Body []byte
+}
+
+func (PatchStatus200) isPatchResponse() {}
+func (PatchStatus200) StatusCode() int  { return 200 }
+
+type DeleteRequest struct {
+}
+
+type DeleteResponse interface {
+	isDeleteResponse()
+	StatusCode() int
+}
+
+type DeleteStatus200Body struct {
+	Name  string `json:"name"`
+	Count int
+}
+
+type DeleteStatus200 struct {
+	Body DeleteStatus200Body
+}
+
+func (DeleteStatus200) isDeleteResponse() {}
+func (DeleteStatus200) StatusCode() int   { return 200 }
+
 type RouteHandlers struct {
-	Post func(context.Context, PostRequest) (PostResponse, error)
-	Put  func(context.Context, PutRequest) (PutResponse, error)
+	Get    func(context.Context, GetRequest) (GetResponse, error)
+	Post   func(context.Context, PostRequest) (PostResponse, error)
+	Put    func(context.Context, PutRequest) (PutResponse, error)
+	Patch  func(context.Context, PatchRequest) (PatchResponse, error)
+	Delete func(context.Context, DeleteRequest) (DeleteResponse, error)
 }
 
 func DefineRoute(handlers RouteHandlers) RouteDefinition {

@@ -13,8 +13,30 @@
         "type": "string",
         "x-go-validate": "required"
       },
+      "ApiFormsDeleteStatus200Body": {
+        "properties": {
+          "Count": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiFormsGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiFormsPatchStatus200Body": {
+        "format": "binary",
+        "type": "string"
+      },
       "ApiFormsPostBody": {
         "properties": {
+          "Alias": {
+            "type": "string"
+          },
           "active": {
             "type": "boolean"
           },
@@ -214,6 +236,14 @@
           },
           {
             "in": "query",
+            "name": "RawName",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "active",
             "required": false,
             "schema": {
@@ -235,7 +265,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiGetStatus200Body"
                 }
@@ -262,7 +292,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiAuthGetStatus200Body"
                 }
@@ -306,7 +336,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiBlogSlugGetStatus200Body"
                 }
@@ -333,7 +363,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiFilesPathGetStatus200Body"
                 }
@@ -376,7 +406,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiFilesPathGetStatus200Body"
                 }
@@ -398,6 +428,81 @@
       }
     },
     "/api/forms": {
+      "delete": {
+        "operationId": "deleteApiForms",
+        "responses": {
+          "200": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFormsDeleteStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "get": {
+        "operationId": "getApiForms",
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFormsGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patchApiForms",
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFormsPatchStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
       "post": {
         "operationId": "postApiForms",
         "requestBody": {
@@ -413,7 +518,7 @@
         "responses": {
           "201": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiFormsPostStatus201Body"
                 }
@@ -448,7 +553,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiFormsPutStatus200Body"
                 }
@@ -475,7 +580,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiMwGetStatus200Body"
                 }
@@ -485,7 +590,7 @@
           },
           "403": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiMwGetStatus403Body"
                 }
@@ -512,7 +617,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiNestChildGetStatus200Body"
                 }
@@ -539,7 +644,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiProductsGetStatus200Body"
                 }
@@ -566,7 +671,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiPublicGetStatus200Body"
                 }
@@ -587,13 +692,30 @@
         }
       }
     },
+    "/api/raw": {
+      "get": {
+        "operationId": "getApiRaw",
+        "responses": {
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/api/secure": {
       "get": {
         "operationId": "getApiSecure",
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiSecureGetStatus200Body"
                 }
@@ -620,7 +742,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiSecureAdminGetStatus200Body"
                 }
@@ -655,7 +777,7 @@
         "responses": {
           "201": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiSecureAdminPostStatus201Body"
                 }
@@ -665,7 +787,7 @@
           },
           "403": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiSecureAdminPostStatus403Body"
                 }
@@ -702,7 +824,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiSecureAdminUsersGetStatus200Body"
                 }
@@ -774,7 +896,7 @@
         "responses": {
           "201": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiUsersPostStatus201Body"
                 }
@@ -784,7 +906,7 @@
           },
           "400": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiUsersPostStatus400Body"
                 }
@@ -822,7 +944,7 @@
         "responses": {
           "200": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiUsersUseridGetStatus200Body"
                 }
@@ -832,7 +954,7 @@
           },
           "404": {
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiUsersUseridGetStatus404Body"
                 }

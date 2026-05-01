@@ -14,7 +14,7 @@ type routeMetadata struct{}
 var routeSpec = routeMetadata{}
 
 type GetRequest struct {
-	Param *[]string `json:"param"`
+	Param *[]string
 }
 
 type GetResponse interface {

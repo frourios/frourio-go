@@ -24,6 +24,7 @@ type FrourioSpec struct {
 		Query struct {
 			Search *string `+"`json:\"search\"`"+`
 			Limit  *int    `+"`json:\"limit\"`"+`
+			RawName *string
 			Tags   []string `+"`json:\"tag\"`"+`
 			Ids    []int    `+"`json:\"id\"`"+`
 		}
@@ -40,6 +41,7 @@ type FrourioSpec struct {
 		URLEncoded bool
 		Body struct {
 			Name string `+"`json:\"name\" validate:\"required\"`"+`
+			Alias string
 		}
 		Res struct {
 			Status201 struct {
@@ -177,6 +179,45 @@ type FrourioSpec struct {
 	}
 }
 `)
+	writeFile(t, api, "forms/frourio.go", `package forms
+
+type FrourioSpec struct {
+	Get struct {
+		Res struct {
+			Status200 struct {
+				Header struct {
+					ContentType string
+				}
+				Body string `+"`validate:\"required\"`"+`
+			}
+		}
+	}
+	Patch struct {
+		Res struct {
+			Status200 struct {
+				Body []byte
+			}
+		}
+	}
+	Delete struct {
+		Res struct {
+			Status200 struct {
+				FormData bool
+				Body struct {
+					Name string `+"`json:\"name\"`"+`
+					Count int
+				}
+			}
+		}
+	}
+}
+`)
+	writeFile(t, api, "raw/frourio.go", `package raw
+
+type FrourioSpec struct {
+	Get struct{}
+}
+`)
 
 	openAPI := filepath.Join(dir, "openapi.json")
 	if err := Generate(Options{APIDir: api, OpenAPIPath: openAPI}); err != nil {
@@ -188,6 +229,12 @@ type FrourioSpec struct {
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/products/セール品\"")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values := r.PostForm")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values := r.MultipartForm.Value")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values[\"RawName\"]")
+	assertFileContains(t, filepath.Join(api, "frourio_relay.go"), "RawName *string")
+	assertFileContains(t, filepath.Join(api, "frourio_relay.go"), "Alias string")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "writeBytes(w")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "writeMultipart(w")
+	assertFileContains(t, filepath.Join(api, "raw/frourio_relay.go"), "type RawResponse interface")
 	assertFileContains(t, filepath.Join(api, "mw/child/frourio_relay.go"), "TraceID string")
 	assertFileContains(t, filepath.Join(api, "mw/frourio_relay.go"), "type GetMiddlewareContext struct")
 
@@ -200,7 +247,7 @@ type FrourioSpec struct {
 		t.Fatal(err)
 	}
 	paths := doc["paths"].(map[string]any)
-	for _, path := range []string{"/api", "/api/users/{userid}", "/api/blog/{slug}", "/api/files", "/api/files/{path}", "/api/products/セール品"} {
+	for _, path := range []string{"/api", "/api/users/{userid}", "/api/blog/{slug}", "/api/files", "/api/files/{path}", "/api/products/セール品", "/api/forms", "/api/raw"} {
 		if _, ok := paths[path]; !ok {
 			t.Fatalf("OpenAPI path %s not found in %#v", path, paths)
 		}
@@ -210,6 +257,16 @@ type FrourioSpec struct {
 	content := requestBody["content"].(map[string]any)
 	if _, ok := content["application/x-www-form-urlencoded"]; !ok {
 		t.Fatalf("urlencoded content type not found in %#v", content)
+	}
+	parameters := paths["/api"].(map[string]any)["get"].(map[string]any)["parameters"].([]any)
+	foundRawName := false
+	for _, param := range parameters {
+		if param.(map[string]any)["name"] == "RawName" {
+			foundRawName = true
+		}
+	}
+	if !foundRawName {
+		t.Fatalf("RawName query parameter not found in %#v", parameters)
 	}
 	apiPut := paths["/api"].(map[string]any)["put"].(map[string]any)
 	putRequestBody := apiPut["requestBody"].(map[string]any)
@@ -396,6 +453,7 @@ type FrourioSpec struct { Get string }
 			`type FrourioSpec struct { Post struct { URLEncoded string; Res struct { Status204 struct{} } } }`,
 			`type FrourioSpec struct { Post struct { FormData string; Res struct { Status204 struct{} } } }`,
 			`type FrourioSpec struct { Post struct { URLEncoded bool; FormData bool; Res struct { Status204 struct{} } } }`,
+			`type FrourioSpec struct { Get struct { Res struct { Status200 struct { FormData string; Body struct { Name string } } } } }`,
 		}
 		for _, spec := range cases {
 			dir := t.TempDir()
@@ -540,8 +598,90 @@ func TestSchemaAndDecodeHelpers(t *testing.T) {
 	if tag := goTag(&FieldSpec{}, ""); tag != "" {
 		t.Fatalf("empty goTag = %s", tag)
 	}
-	if tag := goTag(&FieldSpec{ValidateTag: "required"}, "value"); tag != "`json:\"value\" validate:\"required\"`" {
+	if tag := goTag(&FieldSpec{ValidateTag: "required"}, "value"); tag != "`validate:\"required\"`" {
 		t.Fatalf("goTag fallback = %s", tag)
+	}
+	if tag := goTag(&FieldSpec{JSONName: "value", JSONTagged: true, ValidateTag: "required"}, ""); tag != "`json:\"value\" validate:\"required\"`" {
+		t.Fatalf("goTag explicit json = %s", tag)
+	}
+}
+
+func TestResponseHelpers(t *testing.T) {
+	stringBody := &FieldSpec{Name: "Body", SourceName: "Body", Type: "string"}
+	bytesBody := &FieldSpec{Name: "Body", SourceName: "Body", Type: "[]byte"}
+	structBody := &StructSpec{Fields: []FieldSpec{{Name: "Name", SourceName: "Name", Type: "string", JSONName: "name", JSONTagged: true}}}
+
+	cases := []struct {
+		res  ResponseSpec
+		want string
+	}{
+		{ResponseSpec{Body: stringBody}, "text/plain"},
+		{ResponseSpec{Body: bytesBody}, "application/octet-stream"},
+		{ResponseSpec{Body: stringBody, FormData: true}, "multipart/form-data"},
+		{ResponseSpec{Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "any"}, BodyStruct: structBody}, "application/json"},
+		{ResponseSpec{Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "int"}}, "application/json"},
+	}
+	for _, tc := range cases {
+		if got := responseContentType(tc.res); got != tc.want {
+			t.Fatalf("responseContentType = %s, want %s", got, tc.want)
+		}
+	}
+	if got := schemaForField(*bytesBody); got["format"] != "binary" {
+		t.Fatalf("[]byte schema = %#v", got)
+	}
+
+	var b strings.Builder
+	for _, res := range []ResponseSpec{
+		{Status: 200, Body: stringBody},
+		{Status: 200, Body: bytesBody},
+		{Status: 200, Body: stringBody, FormData: true},
+		{Status: 200, Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "any"}, BodyStruct: structBody},
+		{Status: 200, Body: stringBody, Header: &StructSpec{Fields: []FieldSpec{{Name: "ContentType", SourceName: "ContentType", Type: "string", JSONName: "ContentType"}}}},
+	} {
+		writeResponse(&b, res)
+	}
+	text := b.String()
+	for _, want := range []string{"writeText", "writeBytes", "writeMultipart", "writeJSON", "false"} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("writeResponse missing %q in %s", want, text)
+		}
+	}
+
+	b.Reset()
+	writeResponseHeaders(&b, ResponseSpec{Header: &StructSpec{Fields: []FieldSpec{
+		{Name: "ContentType", SourceName: "ContentType", Type: "string", JSONName: "ContentType"},
+		{Name: "TraceID", SourceName: "TraceID", Type: "string", JSONName: "x-trace-id", JSONTagged: true},
+		{Name: "Empty", SourceName: "Empty", Type: "string"},
+	}}})
+	if !strings.Contains(b.String(), `"content-type"`) || !strings.Contains(b.String(), `"x-trace-id"`) || !strings.Contains(b.String(), `"Empty"`) {
+		t.Fatalf("writeResponseHeaders = %s", b.String())
+	}
+	if !hasContentTypeHeader(ResponseSpec{Header: &StructSpec{Fields: []FieldSpec{{Name: "ContentType", SourceName: "ContentType", Type: "string", JSONName: "ContentType"}}}}) {
+		t.Fatal("expected ContentType header")
+	}
+	if hasContentTypeHeader(ResponseSpec{}) {
+		t.Fatal("unexpected ContentType header")
+	}
+
+	b.Reset()
+	writeMethodTypes(&b, MethodSpec{Name: "Get", Raw: true})
+	if !strings.Contains(b.String(), "type RawResponse interface") {
+		t.Fatalf("raw response type missing: %s", b.String())
+	}
+	if routeHasRaw(RouteSpec{Methods: []MethodSpec{{Name: "Get", Raw: false}}}) {
+		t.Fatal("unexpected raw route")
+	}
+	if !strings.Contains(relayText(RouteSpec{PackageName: "raw", Methods: []MethodSpec{{Name: "Get", Raw: true}}}), `"net/http"`) {
+		t.Fatal("raw relay import missing net/http")
+	}
+
+	responses := responsesObject(RouteSpec{URLPath: "/api/forms"}, MethodSpec{Name: "Patch", HTTPName: "PATCH", URLPath: "/api/forms", Responses: []ResponseSpec{
+		{Status: 200, Body: bytesBody},
+		{Status: 201, Body: stringBody, FormData: true},
+		{Status: 202, Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "any"}, BodyStruct: structBody},
+	}}, map[string]any{})
+	if _, ok := responses["200"].(map[string]any)["content"].(map[string]any)["application/octet-stream"]; !ok {
+		t.Fatalf("binary response content missing: %#v", responses)
 	}
 }
 

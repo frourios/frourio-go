@@ -6,7 +6,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"mime/multipart"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -19,6 +21,7 @@ import (
 	nestChild "github.com/frourios/frourio-go/tests/apps/basic/api/nest/child"
 	productsSale "github.com/frourios/frourio-go/tests/apps/basic/api/products/sale"
 	public "github.com/frourios/frourio-go/tests/apps/basic/api/public"
+	raw "github.com/frourios/frourio-go/tests/apps/basic/api/raw"
 	secure "github.com/frourios/frourio-go/tests/apps/basic/api/secure"
 	secureAdmin "github.com/frourios/frourio-go/tests/apps/basic/api/secure/admin"
 	secureAdminUsers "github.com/frourios/frourio-go/tests/apps/basic/api/secure/admin/users"
@@ -39,12 +42,16 @@ func Mount(mux *http.ServeMux, options ...Option) {
 	mux.Handle("GET /api/blog/{slug...}", wrapBlogSlugGet(blogSlug.Route))
 	mux.Handle("GET /api/files", wrapFilesPathGet(filesPath.Route))
 	mux.Handle("GET /api/files/{path...}", wrapFilesPathGet(filesPath.Route))
+	mux.Handle("GET /api/forms", wrapFormsGet(forms.Route))
 	mux.Handle("POST /api/forms", wrapFormsPost(forms.Route))
 	mux.Handle("PUT /api/forms", wrapFormsPut(forms.Route))
+	mux.Handle("PATCH /api/forms", wrapFormsPatch(forms.Route))
+	mux.Handle("DELETE /api/forms", wrapFormsDelete(forms.Route))
 	mux.Handle("GET /api/mw", wrapMwGet(mw.Route))
 	mux.Handle("GET /api/nest/child", wrapNestChildGet(nestChild.Route))
 	mux.Handle("GET /api/products/セール品", wrapProductsSaleGet(productsSale.Route))
 	mux.Handle("GET /api/public", wrapPublicGet(public.Route))
+	mux.Handle("GET /api/raw", wrapRawGet(raw.Route))
 	mux.Handle("GET /api/secure", wrapSecureGet(secure.Route))
 	mux.Handle("GET /api/secure/admin", wrapSecureAdminGet(secureAdmin.Route))
 	mux.Handle("POST /api/secure/admin", wrapSecureAdminPost(secureAdmin.Route))
@@ -96,7 +103,7 @@ func wrapGet(route RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -120,6 +127,12 @@ func decodeGetQuery(r *http.Request) (GetQuery, error) {
 				return query, err
 			}
 			query.Limit = &v
+		}
+	}
+	if vals, ok := values["RawName"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			query.RawName = &val
 		}
 	}
 	if vals, ok := values["active"]; ok && len(vals) > 0 {
@@ -198,7 +211,7 @@ func wrapAuthGet(route auth.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -241,7 +254,7 @@ func wrapBlogSlugGet(route blogSlug.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -291,7 +304,7 @@ func wrapFilesPathGet(route filesPath.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -307,6 +320,39 @@ func decodeFilesPathGetParam(r *http.Request) (*[]string, error) {
 	vals := strings.Split(val, "/")
 	param = &vals
 	return param, nil
+}
+
+func wrapFormsGet(route forms.RouteDefinition) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handlers := route.Handlers()
+		if handlers.Get == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		req := forms.GetRequest{}
+		res, err := handlers.Get(r.Context(), req)
+		if err != nil {
+			writeInternalError(w)
+			return
+		}
+		if res == nil {
+			writeInternalError(w)
+			return
+		}
+
+		switch v := res.(type) {
+		case forms.GetStatus200:
+			w.Header().Set("content-type", fmt.Sprint(v.Header.ContentType))
+			if err := frourioValidate.Struct(v); err != nil {
+				writeInternalError(w)
+				return
+			}
+			writeText(w, v.StatusCode(), v.Body, false)
+		default:
+			writeInternalError(w)
+		}
+	})
 }
 
 func wrapFormsPost(route forms.RouteDefinition) http.Handler {
@@ -345,7 +391,7 @@ func wrapFormsPost(route forms.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -362,6 +408,12 @@ func decodeFormsPostBody(r *http.Request) (forms.PostBody, error) {
 		val := vals[0]
 		if val != "" {
 			body.Name = val
+		}
+	}
+	if vals, ok := values["Alias"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			body.Alias = val
 		}
 	}
 	if vals, ok := values["age"]; ok && len(vals) > 0 {
@@ -434,7 +486,7 @@ func wrapFormsPut(route forms.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -464,6 +516,70 @@ func decodeFormsPutBody(r *http.Request) (forms.PutBody, error) {
 		}
 	}
 	return body, nil
+}
+
+func wrapFormsPatch(route forms.RouteDefinition) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handlers := route.Handlers()
+		if handlers.Patch == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		req := forms.PatchRequest{}
+		res, err := handlers.Patch(r.Context(), req)
+		if err != nil {
+			writeInternalError(w)
+			return
+		}
+		if res == nil {
+			writeInternalError(w)
+			return
+		}
+
+		switch v := res.(type) {
+		case forms.PatchStatus200:
+			if err := frourioValidate.Struct(v); err != nil {
+				writeInternalError(w)
+				return
+			}
+			writeBytes(w, v.StatusCode(), v.Body, true)
+		default:
+			writeInternalError(w)
+		}
+	})
+}
+
+func wrapFormsDelete(route forms.RouteDefinition) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handlers := route.Handlers()
+		if handlers.Delete == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		req := forms.DeleteRequest{}
+		res, err := handlers.Delete(r.Context(), req)
+		if err != nil {
+			writeInternalError(w)
+			return
+		}
+		if res == nil {
+			writeInternalError(w)
+			return
+		}
+
+		switch v := res.(type) {
+		case forms.DeleteStatus200:
+			if err := frourioValidate.Struct(v); err != nil {
+				writeInternalError(w)
+				return
+			}
+			writeMultipart(w, v.StatusCode(), v.Body, true)
+		default:
+			writeInternalError(w)
+		}
+	})
 }
 
 func wrapMwGet(route mw.RouteDefinition) http.Handler {
@@ -522,13 +638,13 @@ func wrapMwGet(route mw.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		case mw.GetStatus403:
 			if err := frourioValidate.Struct(v); err != nil {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -587,7 +703,7 @@ func wrapNestChildGet(route nestChild.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -619,7 +735,7 @@ func wrapProductsSaleGet(route productsSale.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -651,8 +767,33 @@ func wrapPublicGet(route public.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
+			writeInternalError(w)
+		}
+	})
+}
+
+func wrapRawGet(route raw.RouteDefinition) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handlers := route.Handlers()
+		if handlers.Get == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		req := raw.GetRequest{}
+		res, err := handlers.Get(r.Context(), req)
+		if err != nil {
+			writeInternalError(w)
+			return
+		}
+		if res == nil {
+			writeInternalError(w)
+			return
+		}
+
+		if err := res.WriteHTTP(w, r); err != nil {
 			writeInternalError(w)
 		}
 	})
@@ -710,7 +851,7 @@ func wrapSecureGet(route secure.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -791,7 +932,7 @@ func wrapSecureAdminGet(route secureAdmin.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -888,13 +1029,13 @@ func wrapSecureAdminPost(route secureAdmin.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		case secureAdmin.PostStatus403:
 			if err := frourioValidate.Struct(v); err != nil {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -995,7 +1136,7 @@ func wrapSecureAdminUsersGet(route secureAdminUsers.RouteDefinition) http.Handle
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -1050,7 +1191,7 @@ func wrapUsersGet(route users.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeJSON(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -1109,13 +1250,13 @@ func wrapUsersPost(route users.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		case users.PostStatus400:
 			if err := frourioValidate.Struct(v); err != nil {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -1166,13 +1307,13 @@ func wrapUsersUseridGet(route usersUserid.RouteDefinition) http.Handler {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		case usersUserid.GetStatus404:
 			if err := frourioValidate.Struct(v); err != nil {
 				writeInternalError(w)
 				return
 			}
-			writeJSON(w, v.StatusCode(), v.Body)
+			writeText(w, v.StatusCode(), v.Body, true)
 		default:
 			writeInternalError(w)
 		}
@@ -1224,20 +1365,87 @@ func writeRequestError(w http.ResponseWriter, issues []frourioIssue) {
 		Status: http.StatusUnprocessableEntity,
 		Error:  "Unprocessable Entity",
 		Issues: issues,
-	})
+	}, true)
 }
 
 func writeInternalError(w http.ResponseWriter) {
 	writeJSON(w, http.StatusInternalServerError, frourioError{
 		Status: http.StatusInternalServerError,
 		Error:  "Internal Server Error",
-	})
+	}, true)
 }
 
-func writeJSON(w http.ResponseWriter, status int, body any) {
-	w.Header().Set("content-type", "application/json")
+func writeJSON(w http.ResponseWriter, status int, body any, autoContentType bool) {
+	if autoContentType {
+		w.Header().Set("content-type", "application/json")
+	}
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(body)
+}
+
+func writeText(w http.ResponseWriter, status int, body string, autoContentType bool) {
+	if autoContentType {
+		w.Header().Set("content-type", "text/plain; charset=utf-8")
+	}
+	w.WriteHeader(status)
+	_, _ = w.Write([]byte(body))
+}
+
+func writeBytes(w http.ResponseWriter, status int, body []byte, autoContentType bool) {
+	if autoContentType {
+		w.Header().Set("content-type", "application/octet-stream")
+	}
+	w.WriteHeader(status)
+	_, _ = w.Write(body)
+}
+
+func writeMultipart(w http.ResponseWriter, status int, body any, autoContentType bool) {
+	writer := multipart.NewWriter(w)
+	if autoContentType {
+		w.Header().Set("content-type", writer.FormDataContentType())
+	}
+	w.WriteHeader(status)
+	defer func() { _ = writer.Close() }()
+	writeMultipartFields(writer, body)
+}
+
+func writeMultipartFields(writer *multipart.Writer, body any) {
+	val := reflect.ValueOf(body)
+	if val.Kind() == reflect.Pointer {
+		if val.IsNil() {
+			return
+		}
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		_ = writer.WriteField("body", fmt.Sprint(body))
+		return
+	}
+	typ := val.Type()
+	for i := range val.NumField() {
+		field := typ.Field(i)
+		if field.PkgPath != "" {
+			continue
+		}
+		key := field.Name
+		if tag := field.Tag.Get("json"); tag != "" {
+			key = strings.Split(tag, ",")[0]
+			if key == "-" {
+				continue
+			}
+			if key == "" {
+				key = field.Name
+			}
+		}
+		value := val.Field(i)
+		if value.Kind() == reflect.Slice && value.Type().Elem().Kind() != reflect.Uint8 {
+			for j := range value.Len() {
+				_ = writer.WriteField(key, fmt.Sprint(value.Index(j).Interface()))
+			}
+			continue
+		}
+		_ = writer.WriteField(key, fmt.Sprint(value.Interface()))
+	}
 }
 
 func decodeInt(val string) (int, error) {
@@ -1303,5 +1511,7 @@ func decodeBool(val string) (bool, error) {
 
 var _ = context.Background
 var _ = fmt.Sprint
+var _ = multipart.NewWriter
+var _ = reflect.ValueOf
 var _ = strconv.Itoa
 var _ = strings.Split

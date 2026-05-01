@@ -265,6 +265,7 @@ func parseMethod(name, httpName string, st *ast.StructType) (MethodSpec, error) 
 			}
 		}
 	}
+	method.Raw = len(method.Responses) == 0
 	return method, nil
 }
 
@@ -318,7 +319,19 @@ func parseResponses(st *ast.StructType) ([]ResponseSpec, error) {
 			for _, resField := range resStruct.Fields.List {
 				for _, resFieldName := range resField.Names {
 					switch strings.ToLower(resFieldName.Name) {
+					case "formdata":
+						if !isBoolField(resField.Type) {
+							return nil, fmt.Errorf("formData must be bool")
+						}
+						res.FormData = true
 					case "body":
+						if _, ok := resField.Type.(*ast.StructType); ok {
+							body, err := parseStruct("Body", resField.Type)
+							if err != nil {
+								return nil, err
+							}
+							res.BodyStruct = body
+						}
 						fs := parseField(resFieldName.Name, resField.Type, resField.Tag)
 						fs.Name = "Body"
 						if fs.JSONName == "" || fs.JSONName == "-" {
@@ -359,7 +372,7 @@ func parseField(name string, expr ast.Expr, tag *ast.BasicLit) FieldSpec {
 		Name:       exportName(name),
 		SourceName: name,
 		Type:       exprString(expr),
-		JSONName:   lowerName(name),
+		JSONName:   name,
 	}
 
 	if strings.HasPrefix(field.Type, "*") {
@@ -376,6 +389,7 @@ func parseField(name string, expr ast.Expr, tag *ast.BasicLit) FieldSpec {
 			st := reflect.StructTag(raw)
 			if jsonName := tagName(st.Get("json")); jsonName != "" {
 				field.JSONName = jsonName
+				field.JSONTagged = true
 			}
 			field.ValidateTag = st.Get("validate")
 		}

@@ -18,10 +18,11 @@ type GetRequest struct {
 }
 
 type GetQuery struct {
-	Search *string   `json:"search"`
-	Limit  *int      `json:"limit"`
-	Active *bool     `json:"active"`
-	Scores []float64 `json:"score"`
+	Search  *string `json:"search"`
+	Limit   *int    `json:"limit"`
+	RawName *string
+	Active  *bool     `json:"active"`
+	Scores  []float64 `json:"score"`
 }
 
 type GetResponse interface {
@@ -30,7 +31,7 @@ type GetResponse interface {
 }
 
 type GetStatus200 struct {
-	Body string `json:"body" validate:"required"`
+	Body string `validate:"required"`
 }
 
 func (GetStatus200) isGetResponse()  {}

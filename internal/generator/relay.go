@@ -8,7 +8,14 @@ import (
 func relayText(route RouteSpec) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "package %s\n\n", route.PackageName)
-	b.WriteString("import \"context\"\n\n")
+	if routeHasRaw(route) {
+		b.WriteString("import (\n")
+		b.WriteString("\t\"context\"\n")
+		b.WriteString("\t\"net/http\"\n")
+		b.WriteString(")\n\n")
+	} else {
+		b.WriteString("import \"context\"\n\n")
+	}
 	b.WriteString("type RouteDefinition struct {\n")
 	b.WriteString("\thandlers RouteHandlers\n")
 	b.WriteString("\tspec routeMetadata\n")
@@ -42,6 +49,15 @@ func relayText(route RouteSpec) string {
 	b.WriteString("\treturn route.handlers\n")
 	b.WriteString("}\n")
 	return b.String()
+}
+
+func routeHasRaw(route RouteSpec) bool {
+	for _, method := range route.Methods {
+		if method.Raw {
+			return true
+		}
+	}
+	return false
 }
 
 func hasMiddleware(route RouteSpec) bool {
@@ -146,6 +162,16 @@ func writeMethodTypes(b *strings.Builder, method MethodSpec) {
 		writeStruct(b, method.Name+"Body", method.Body.Fields)
 	}
 
+	if method.Raw {
+		b.WriteString("type RawResponse interface {\n")
+		b.WriteString("\tWriteHTTP(http.ResponseWriter, *http.Request) error\n")
+		b.WriteString("}\n\n")
+		b.WriteString("type RawResponseFunc func(http.ResponseWriter, *http.Request) error\n\n")
+		b.WriteString("func (f RawResponseFunc) WriteHTTP(w http.ResponseWriter, r *http.Request) error { return f(w, r) }\n\n")
+		fmt.Fprintf(b, "type %sResponse = RawResponse\n\n", method.Name)
+		return
+	}
+
 	fmt.Fprintf(b, "type %sResponse interface {\n", method.Name)
 	fmt.Fprintf(b, "\tis%sResponse()\n", method.Name)
 	b.WriteString("\tStatusCode() int\n")
@@ -153,9 +179,22 @@ func writeMethodTypes(b *strings.Builder, method MethodSpec) {
 
 	for _, res := range method.Responses {
 		typeName := fmt.Sprintf("%sStatus%d", method.Name, res.Status)
+		if res.Header != nil {
+			writeStruct(b, typeName+"Header", res.Header.Fields)
+		}
+		if res.BodyStruct != nil {
+			writeStruct(b, typeName+"Body", res.BodyStruct.Fields)
+		}
 		fmt.Fprintf(b, "type %s struct {\n", typeName)
+		if res.Header != nil {
+			fmt.Fprintf(b, "\tHeader %sHeader\n", typeName)
+		}
 		if res.Body != nil {
-			fmt.Fprintf(b, "\tBody %s %s\n", res.Body.Type, goTag(res.Body, "body"))
+			bodyType := res.Body.Type
+			if res.BodyStruct != nil {
+				bodyType = typeName + "Body"
+			}
+			fmt.Fprintf(b, "\tBody %s %s\n", bodyType, goTag(res.Body, "body"))
 		}
 		b.WriteString("}\n\n")
 		fmt.Fprintf(b, "func (%s) is%sResponse() {}\n", typeName, method.Name)
@@ -172,14 +211,15 @@ func writeStruct(b *strings.Builder, name string, fields []FieldSpec) {
 }
 
 func goTag(field *FieldSpec, fallbackJSON string) string {
-	jsonName := field.JSONName
-	if jsonName == "" {
-		jsonName = fallbackJSON
-	}
-
 	parts := []string{}
-	if jsonName != "" {
-		parts = append(parts, fmt.Sprintf(`json:"%s"`, jsonName))
+	if field.JSONTagged {
+		jsonName := field.JSONName
+		if jsonName == "" {
+			jsonName = fallbackJSON
+		}
+		if jsonName != "" {
+			parts = append(parts, fmt.Sprintf(`json:"%s"`, jsonName))
+		}
 	}
 	if field.ValidateTag != "" {
 		parts = append(parts, fmt.Sprintf(`validate:"%s"`, field.ValidateTag))

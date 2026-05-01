@@ -13,7 +13,9 @@ func serverText(apiDir string, routes []RouteSpec) string {
 	b.WriteString("\t\"context\"\n")
 	b.WriteString("\t\"encoding/json\"\n")
 	b.WriteString("\t\"fmt\"\n")
+	b.WriteString("\t\"mime/multipart\"\n")
 	b.WriteString("\t\"net/http\"\n")
+	b.WriteString("\t\"reflect\"\n")
 	b.WriteString("\t\"strconv\"\n")
 	b.WriteString("\t\"strings\"\n")
 	b.WriteString("\n")
@@ -150,15 +152,26 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 	b.WriteString("\t\t\twriteInternalError(w)\n")
 	b.WriteString("\t\t\treturn\n")
 	b.WriteString("\t\t}\n\n")
+	if method.Raw {
+		b.WriteString("\t\tif err := res.WriteHTTP(w, r); err != nil {\n")
+		b.WriteString("\t\t\twriteInternalError(w)\n")
+		b.WriteString("\t\t}\n")
+		b.WriteString("\t})\n")
+		b.WriteString("}\n\n")
+		return
+	}
 	b.WriteString("\t\tswitch v := res.(type) {\n")
 	for _, response := range method.Responses {
 		fmt.Fprintf(b, "\t\tcase %s%sStatus%d:\n", q, method.Name, response.Status)
+		if response.Header != nil {
+			writeResponseHeaders(b, response)
+		}
 		if response.Body != nil {
 			b.WriteString("\t\t\tif err := frourioValidate.Struct(v); err != nil {\n")
 			b.WriteString("\t\t\t\twriteInternalError(w)\n")
 			b.WriteString("\t\t\t\treturn\n")
 			b.WriteString("\t\t\t}\n")
-			b.WriteString("\t\t\twriteJSON(w, v.StatusCode(), v.Body)\n")
+			writeResponse(b, response)
 		} else {
 			b.WriteString("\t\t\tw.WriteHeader(v.StatusCode())\n")
 		}
@@ -214,6 +227,54 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 		b.WriteString("\treturn body, nil\n")
 		b.WriteString("}\n\n")
 	}
+}
+
+func writeResponse(b *strings.Builder, response ResponseSpec) {
+	autoContentType := "true"
+	if hasContentTypeHeader(response) {
+		autoContentType = "false"
+	}
+	if response.FormData {
+		fmt.Fprintf(b, "\t\t\twriteMultipart(w, v.StatusCode(), v.Body, %s)\n", autoContentType)
+		return
+	}
+	if response.BodyStruct != nil {
+		fmt.Fprintf(b, "\t\t\twriteJSON(w, v.StatusCode(), v.Body, %s)\n", autoContentType)
+		return
+	}
+	switch strings.TrimPrefix(response.Body.Type, "*") {
+	case "string":
+		fmt.Fprintf(b, "\t\t\twriteText(w, v.StatusCode(), v.Body, %s)\n", autoContentType)
+	case "[]byte":
+		fmt.Fprintf(b, "\t\t\twriteBytes(w, v.StatusCode(), v.Body, %s)\n", autoContentType)
+	default:
+		fmt.Fprintf(b, "\t\t\twriteJSON(w, v.StatusCode(), v.Body, %s)\n", autoContentType)
+	}
+}
+
+func writeResponseHeaders(b *strings.Builder, response ResponseSpec) {
+	for _, field := range response.Header.Fields {
+		key := field.JSONName
+		if key == "" {
+			key = field.SourceName
+		}
+		if !field.JSONTagged && field.SourceName == "ContentType" {
+			key = "content-type"
+		}
+		fmt.Fprintf(b, "\t\t\tw.Header().Set(%q, fmt.Sprint(v.Header.%s))\n", key, field.Name)
+	}
+}
+
+func hasContentTypeHeader(response ResponseSpec) bool {
+	if response.Header == nil {
+		return false
+	}
+	for _, field := range response.Header.Fields {
+		if strings.EqualFold(field.JSONName, "content-type") || strings.EqualFold(field.SourceName, "ContentType") {
+			return true
+		}
+	}
+	return false
 }
 
 func writeMiddlewareCall(b *strings.Builder, route RouteSpec, method MethodSpec) {
@@ -468,20 +529,87 @@ func writeRequestError(w http.ResponseWriter, issues []frourioIssue) {
 		Status: http.StatusUnprocessableEntity,
 		Error:  "Unprocessable Entity",
 		Issues: issues,
-	})
+	}, true)
 }
 
 func writeInternalError(w http.ResponseWriter) {
 	writeJSON(w, http.StatusInternalServerError, frourioError{
 		Status: http.StatusInternalServerError,
 		Error:  "Internal Server Error",
-	})
+	}, true)
 }
 
-func writeJSON(w http.ResponseWriter, status int, body any) {
-	w.Header().Set("content-type", "application/json")
+func writeJSON(w http.ResponseWriter, status int, body any, autoContentType bool) {
+	if autoContentType {
+		w.Header().Set("content-type", "application/json")
+	}
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(body)
+}
+
+func writeText(w http.ResponseWriter, status int, body string, autoContentType bool) {
+	if autoContentType {
+		w.Header().Set("content-type", "text/plain; charset=utf-8")
+	}
+	w.WriteHeader(status)
+	_, _ = w.Write([]byte(body))
+}
+
+func writeBytes(w http.ResponseWriter, status int, body []byte, autoContentType bool) {
+	if autoContentType {
+		w.Header().Set("content-type", "application/octet-stream")
+	}
+	w.WriteHeader(status)
+	_, _ = w.Write(body)
+}
+
+func writeMultipart(w http.ResponseWriter, status int, body any, autoContentType bool) {
+	writer := multipart.NewWriter(w)
+	if autoContentType {
+		w.Header().Set("content-type", writer.FormDataContentType())
+	}
+	w.WriteHeader(status)
+	defer func() { _ = writer.Close() }()
+	writeMultipartFields(writer, body)
+}
+
+func writeMultipartFields(writer *multipart.Writer, body any) {
+	val := reflect.ValueOf(body)
+	if val.Kind() == reflect.Pointer {
+		if val.IsNil() {
+			return
+		}
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		_ = writer.WriteField("body", fmt.Sprint(body))
+		return
+	}
+	typ := val.Type()
+	for i := range val.NumField() {
+		field := typ.Field(i)
+		if field.PkgPath != "" {
+			continue
+		}
+		key := field.Name
+		if tag := field.Tag.Get("json"); tag != "" {
+			key = strings.Split(tag, ",")[0]
+			if key == "-" {
+				continue
+			}
+			if key == "" {
+				key = field.Name
+			}
+		}
+		value := val.Field(i)
+		if value.Kind() == reflect.Slice && value.Type().Elem().Kind() != reflect.Uint8 {
+			for j := range value.Len() {
+				_ = writer.WriteField(key, fmt.Sprint(value.Index(j).Interface()))
+			}
+			continue
+		}
+		_ = writer.WriteField(key, fmt.Sprint(value.Interface()))
+	}
 }
 
 func decodeInt(val string) (int, error) {
@@ -547,6 +675,8 @@ func decodeBool(val string) (bool, error) {
 
 var _ = context.Background
 var _ = fmt.Sprint
+var _ = multipart.NewWriter
+var _ = reflect.ValueOf
 var _ = strconv.Itoa
 var _ = strings.Split
 `

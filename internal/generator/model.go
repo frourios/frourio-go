@@ -38,13 +38,17 @@ type MethodSpec struct {
 	Query     *StructSpec
 	Body      *StructSpec
 	Header    *StructSpec
+	Raw       bool
 	Responses []ResponseSpec
 }
 
 type ResponseSpec struct {
-	Status int
-	Body   *FieldSpec
-	Header *StructSpec
+	Status     int
+	Body       *FieldSpec
+	BodyType   string
+	BodyStruct *StructSpec
+	Header     *StructSpec
+	FormData   bool
 }
 
 type StructSpec struct {
@@ -57,6 +61,7 @@ type FieldSpec struct {
 	SourceName  string
 	Type        string
 	JSONName    string
+	JSONTagged  bool
 	ValidateTag string
 	Tag         string
 	Pointer     bool

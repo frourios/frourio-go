@@ -11,7 +11,7 @@ import (
 )
 
 func TestHandlerGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?search=hello&limit=10&active=true&score=1.5&score=2.5", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?search=hello&limit=10&RawName=raw&active=true&score=1.5&score=2.5", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -19,8 +19,8 @@ func TestHandlerGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"ok"` {
-		t.Fatalf("expected JSON string body, got %s", res.Body.String())
+	if strings.TrimSpace(res.Body.String()) != `ok` {
+		t.Fatalf("expected text body, got %s", res.Body.String())
 	}
 }
 
@@ -72,7 +72,7 @@ func TestHandlerUsersPost(t *testing.T) {
 	if res.Code != http.StatusCreated {
 		t.Fatalf("expected status 201, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"alice:20"` {
+	if strings.TrimSpace(res.Body.String()) != `alice:20` {
 		t.Fatalf("expected created user body, got %s", res.Body.String())
 	}
 }
@@ -89,7 +89,7 @@ func TestHandlerUsersPostInvalidBody(t *testing.T) {
 }
 
 func TestHandlerFormsPostURLEncoded(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/forms", strings.NewReader("name=alice&age=20&active=true&score=1.5&score=2.5"))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/forms", strings.NewReader("name=alice&Alias=ally&age=20&active=true&score=1.5&score=2.5"))
 	req.Header.Set("content-type", "application/x-www-form-urlencoded")
 	res := httptest.NewRecorder()
 
@@ -98,8 +98,62 @@ func TestHandlerFormsPostURLEncoded(t *testing.T) {
 	if res.Code != http.StatusCreated {
 		t.Fatalf("expected status 201, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"alice:20:true:2"` {
+	if strings.TrimSpace(res.Body.String()) != `alice:ally:20:true:2` {
 		t.Fatalf("expected urlencoded body decode result, got %s", res.Body.String())
+	}
+}
+
+func TestHandlerFormsGetText(t *testing.T) {
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/forms", nil)
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
+	}
+	if res.Header().Get("content-type") != "text/custom" {
+		t.Fatalf("expected custom content-type, got %s", res.Header().Get("content-type"))
+	}
+	if res.Body.String() != "plain" {
+		t.Fatalf("expected text body, got %s", res.Body.String())
+	}
+}
+
+func TestHandlerFormsPatchBytes(t *testing.T) {
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPatch, "/api/forms", nil)
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
+	}
+	if res.Header().Get("content-type") != "application/octet-stream" {
+		t.Fatalf("expected octet-stream content-type, got %s", res.Header().Get("content-type"))
+	}
+	if !bytes.Equal(res.Body.Bytes(), []byte{1, 2, 3}) {
+		t.Fatalf("expected binary body, got %v", res.Body.Bytes())
+	}
+}
+
+func TestHandlerFormsDeleteMultipartResponse(t *testing.T) {
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodDelete, "/api/forms", nil)
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
+	}
+	if !strings.HasPrefix(res.Header().Get("content-type"), "multipart/form-data; boundary=") {
+		t.Fatalf("expected multipart content-type, got %s", res.Header().Get("content-type"))
+	}
+	if !strings.Contains(res.Body.String(), `name="name"`) || !strings.Contains(res.Body.String(), "alice") {
+		t.Fatalf("expected multipart name field, got %s", res.Body.String())
+	}
+	if !strings.Contains(res.Body.String(), `name="Count"`) || !strings.Contains(res.Body.String(), "2") {
+		t.Fatalf("expected multipart Count field, got %s", res.Body.String())
 	}
 }
 
@@ -112,6 +166,23 @@ func TestHandlerFormsPostInvalidURLEncoded(t *testing.T) {
 
 	if res.Code != http.StatusUnprocessableEntity {
 		t.Fatalf("expected status 422, got %d: %s", res.Code, res.Body.String())
+	}
+}
+
+func TestHandlerRawStreamGet(t *testing.T) {
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/raw", nil)
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
+	}
+	if res.Header().Get("content-type") != "text/plain" {
+		t.Fatalf("expected raw content-type, got %s", res.Header().Get("content-type"))
+	}
+	if res.Body.String() != "chunk-1\nchunk-2\n" {
+		t.Fatalf("expected raw streamed body, got %s", res.Body.String())
 	}
 }
 
@@ -136,7 +207,7 @@ func TestHandlerFormsPutMultipart(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"report:3"` {
+	if strings.TrimSpace(res.Body.String()) != `report:3` {
 		t.Fatalf("expected multipart body decode result, got %s", res.Body.String())
 	}
 }
@@ -150,7 +221,7 @@ func TestHandlerUserGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"user:123"` {
+	if strings.TrimSpace(res.Body.String()) != `user:123` {
 		t.Fatalf("expected user body, got %s", res.Body.String())
 	}
 }
@@ -164,7 +235,7 @@ func TestHandlerProductsSaleGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"sale"` {
+	if strings.TrimSpace(res.Body.String()) != `sale` {
 		t.Fatalf("expected sale body, got %s", res.Body.String())
 	}
 }
@@ -178,7 +249,7 @@ func TestHandlerBlogCatchAllGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"a/b/c"` {
+	if strings.TrimSpace(res.Body.String()) != `a/b/c` {
 		t.Fatalf("expected catch-all body, got %s", res.Body.String())
 	}
 }
@@ -192,7 +263,7 @@ func TestHandlerFilesOptionalCatchAllRootGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"root"` {
+	if strings.TrimSpace(res.Body.String()) != `root` {
 		t.Fatalf("expected optional catch-all root body, got %s", res.Body.String())
 	}
 }
@@ -206,7 +277,7 @@ func TestHandlerFilesOptionalCatchAllPathGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"a/b"` {
+	if strings.TrimSpace(res.Body.String()) != `a/b` {
 		t.Fatalf("expected optional catch-all path body, got %s", res.Body.String())
 	}
 }
@@ -220,7 +291,7 @@ func TestHandlerMiddlewareGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"admin"` {
+	if strings.TrimSpace(res.Body.String()) != `admin` {
 		t.Fatalf("expected middleware context body, got %s", res.Body.String())
 	}
 }
@@ -234,7 +305,7 @@ func TestHandlerMiddlewareAllContextGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"trace-123"` {
+	if strings.TrimSpace(res.Body.String()) != `trace-123` {
 		t.Fatalf("expected middleware all context body, got %s", res.Body.String())
 	}
 }
@@ -248,7 +319,7 @@ func TestHandlerInheritedMiddlewareContextGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"nested-trace"` {
+	if strings.TrimSpace(res.Body.String()) != `nested-trace` {
 		t.Fatalf("expected inherited middleware context body, got %s", res.Body.String())
 	}
 }
@@ -262,7 +333,7 @@ func TestHandlerSecureRootMiddlewareContextGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"user-admin:trace-root"` {
+	if strings.TrimSpace(res.Body.String()) != `user-admin:trace-root` {
 		t.Fatalf("expected root middleware context body, got %s", res.Body.String())
 	}
 }
@@ -276,7 +347,7 @@ func TestHandlerSecureAdminNestedMiddlewareGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	expected := `"user-admin:trace-root:true:read,write,delete"`
+	expected := `user-admin:trace-root:true:read,write,delete`
 	if strings.TrimSpace(res.Body.String()) != expected {
 		t.Fatalf("expected nested middleware context body %s, got %s", expected, res.Body.String())
 	}
@@ -291,7 +362,7 @@ func TestHandlerSecureAdminPostMiddleware(t *testing.T) {
 	if res.Code != http.StatusCreated {
 		t.Fatalf("expected status 201, got %d: %s", res.Code, res.Body.String())
 	}
-	expected := `"admin data:user-admin:true:read,write,delete"`
+	expected := `admin data:user-admin:true:read,write,delete`
 	if strings.TrimSpace(res.Body.String()) != expected {
 		t.Fatalf("expected admin post body %s, got %s", expected, res.Body.String())
 	}
@@ -306,7 +377,7 @@ func TestHandlerSecureAdminUsersMiddlewareInheritanceGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	expected := `"user-admin:trace-root:true:read,write,delete:admin"`
+	expected := `user-admin:trace-root:true:read,write,delete:admin`
 	if strings.TrimSpace(res.Body.String()) != expected {
 		t.Fatalf("expected inherited middleware context body %s, got %s", expected, res.Body.String())
 	}
@@ -321,7 +392,7 @@ func TestHandlerSecurePublicNoMiddlewareGet(t *testing.T) {
 	if res.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
 	}
-	if strings.TrimSpace(res.Body.String()) != `"public"` {
+	if strings.TrimSpace(res.Body.String()) != `public` {
 		t.Fatalf("expected public body, got %s", res.Body.String())
 	}
 }

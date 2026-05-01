@@ -125,9 +125,13 @@ func responsesObject(route RouteSpec, method MethodSpec, schemas map[string]any)
 		response := map[string]any{"description": httpStatusDescription(res.Status)}
 		if res.Body != nil {
 			schemaName := schemaName(route, method, fmt.Sprintf("Status%dBody", res.Status))
-			schemas[schemaName] = schemaForField(*res.Body)
+			if res.BodyStruct != nil {
+				schemas[schemaName] = schemaForStruct(res.BodyStruct)
+			} else {
+				schemas[schemaName] = schemaForField(*res.Body)
+			}
 			response["content"] = map[string]any{
-				"application/json": map[string]any{
+				responseContentType(res): map[string]any{
 					"schema": map[string]any{"$ref": "#/components/schemas/" + schemaName},
 				},
 			}
@@ -137,8 +141,28 @@ func responsesObject(route RouteSpec, method MethodSpec, schemas map[string]any)
 	return responses
 }
 
+func responseContentType(res ResponseSpec) string {
+	if res.FormData {
+		return "multipart/form-data"
+	}
+	if res.BodyStruct != nil {
+		return "application/json"
+	}
+	switch strings.TrimPrefix(res.Body.Type, "*") {
+	case "string":
+		return "text/plain"
+	case "[]byte":
+		return "application/octet-stream"
+	default:
+		return "application/json"
+	}
+}
+
 func schemaForField(field FieldSpec) map[string]any {
 	typ := strings.TrimPrefix(field.Type, "*")
+	if typ == "[]byte" {
+		return map[string]any{"type": "string", "format": "binary"}
+	}
 	if strings.HasPrefix(typ, "[]") {
 		item := field
 		item.Type = strings.TrimPrefix(typ, "[]")
