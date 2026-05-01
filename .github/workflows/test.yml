@@ -34,3 +34,11 @@ jobs:
 
       - name: Test
         run: go test ./...
+
+      - name: Check coverage
+        run: |
+          packages="$(go list ./... | grep -v '/tests/apps/' | tr '\n' ' ')"
+          go test $packages -coverprofile=coverage.out -covermode=atomic
+          go tool cover -func=coverage.out
+          total="$(go tool cover -func=coverage.out | awk '/^total:/ { sub(/%/, "", $3); print $3 }')"
+          awk -v total="$total" 'BEGIN { if (total < 95) exit 1 }'

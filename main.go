@@ -7,10 +7,12 @@ import (
 	"github.com/frourios/frourio-go/internal/generator"
 )
 
+var osExit = os.Exit
+
 func main() {
 	if err := run(os.Args[1:]); err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		osExit(1)
 	}
 }
 
