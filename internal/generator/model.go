@@ -33,6 +33,7 @@ type MethodSpec struct {
 	Name      string
 	HTTPName  string
 	URLPath   string
+	Format    string
 	Param     *FieldSpec
 	Query     *StructSpec
 	Body      *StructSpec

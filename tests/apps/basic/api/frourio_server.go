@@ -13,6 +13,7 @@ import (
 	auth "github.com/frourios/frourio-go/tests/apps/basic/api/auth"
 	blogSlug "github.com/frourios/frourio-go/tests/apps/basic/api/blog/slug"
 	filesPath "github.com/frourios/frourio-go/tests/apps/basic/api/files/path"
+	forms "github.com/frourios/frourio-go/tests/apps/basic/api/forms"
 	mw "github.com/frourios/frourio-go/tests/apps/basic/api/mw"
 	nest "github.com/frourios/frourio-go/tests/apps/basic/api/nest"
 	nestChild "github.com/frourios/frourio-go/tests/apps/basic/api/nest/child"
@@ -38,6 +39,8 @@ func Mount(mux *http.ServeMux, options ...Option) {
 	mux.Handle("GET /api/blog/{slug...}", wrapBlogSlugGet(blogSlug.Route))
 	mux.Handle("GET /api/files", wrapFilesPathGet(filesPath.Route))
 	mux.Handle("GET /api/files/{path...}", wrapFilesPathGet(filesPath.Route))
+	mux.Handle("POST /api/forms", wrapFormsPost(forms.Route))
+	mux.Handle("PUT /api/forms", wrapFormsPut(forms.Route))
 	mux.Handle("GET /api/mw", wrapMwGet(mw.Route))
 	mux.Handle("GET /api/nest/child", wrapNestChildGet(nestChild.Route))
 	mux.Handle("GET /api/products/セール品", wrapProductsSaleGet(productsSale.Route))
@@ -103,15 +106,42 @@ func wrapGet(route RouteDefinition) http.Handler {
 func decodeGetQuery(r *http.Request) (GetQuery, error) {
 	var query GetQuery
 	values := r.URL.Query()
-	if val := values.Get("search"); val != "" {
-		query.Search = &val
-	}
-	if val := values.Get("limit"); val != "" {
-		v, err := strconv.Atoi(val)
-		if err != nil {
-			return query, fmt.Errorf("invalid int")
+	if vals, ok := values["search"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			query.Search = &val
 		}
-		query.Limit = &v
+	}
+	if vals, ok := values["limit"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			v, err := decodeInt(val)
+			if err != nil {
+				return query, err
+			}
+			query.Limit = &v
+		}
+	}
+	if vals, ok := values["active"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			v, err := decodeBool(val)
+			if err != nil {
+				return query, err
+			}
+			query.Active = &v
+		}
+	}
+	if vals, ok := values["score"]; ok {
+		parsed := make([]float64, 0, len(vals))
+		for _, val := range vals {
+			v, err := decodeFloat64(val)
+			if err != nil {
+				return query, err
+			}
+			parsed = append(parsed, v)
+		}
+		query.Scores = parsed
 	}
 	return query, nil
 }
@@ -277,6 +307,163 @@ func decodeFilesPathGetParam(r *http.Request) (*[]string, error) {
 	vals := strings.Split(val, "/")
 	param = &vals
 	return param, nil
+}
+
+func wrapFormsPost(route forms.RouteDefinition) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handlers := route.Handlers()
+		if handlers.Post == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		req := forms.PostRequest{}
+		body, err := decodeFormsPostBody(r)
+		if err != nil {
+			writeRequestError(w, []frourioIssue{{Path: []any{"body"}, Message: err.Error()}})
+			return
+		}
+		req.Body = body
+		if err := frourioValidate.Struct(req.Body); err != nil {
+			writeValidationError(w, err, "body")
+			return
+		}
+
+		res, err := handlers.Post(r.Context(), req)
+		if err != nil {
+			writeInternalError(w)
+			return
+		}
+		if res == nil {
+			writeInternalError(w)
+			return
+		}
+
+		switch v := res.(type) {
+		case forms.PostStatus201:
+			if err := frourioValidate.Struct(v); err != nil {
+				writeInternalError(w)
+				return
+			}
+			writeJSON(w, v.StatusCode(), v.Body)
+		default:
+			writeInternalError(w)
+		}
+	})
+}
+
+func decodeFormsPostBody(r *http.Request) (forms.PostBody, error) {
+	var body forms.PostBody
+	if err := r.ParseForm(); err != nil {
+		return body, err
+	}
+	values := r.PostForm
+	if vals, ok := values["name"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			body.Name = val
+		}
+	}
+	if vals, ok := values["age"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			v, err := decodeInt(val)
+			if err != nil {
+				return body, err
+			}
+			body.Age = v
+		}
+	}
+	if vals, ok := values["active"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			v, err := decodeBool(val)
+			if err != nil {
+				return body, err
+			}
+			body.Active = v
+		}
+	}
+	if vals, ok := values["score"]; ok {
+		parsed := make([]float64, 0, len(vals))
+		for _, val := range vals {
+			v, err := decodeFloat64(val)
+			if err != nil {
+				return body, err
+			}
+			parsed = append(parsed, v)
+		}
+		body.Scores = parsed
+	}
+	return body, nil
+}
+
+func wrapFormsPut(route forms.RouteDefinition) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handlers := route.Handlers()
+		if handlers.Put == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		req := forms.PutRequest{}
+		body, err := decodeFormsPutBody(r)
+		if err != nil {
+			writeRequestError(w, []frourioIssue{{Path: []any{"body"}, Message: err.Error()}})
+			return
+		}
+		req.Body = body
+		if err := frourioValidate.Struct(req.Body); err != nil {
+			writeValidationError(w, err, "body")
+			return
+		}
+
+		res, err := handlers.Put(r.Context(), req)
+		if err != nil {
+			writeInternalError(w)
+			return
+		}
+		if res == nil {
+			writeInternalError(w)
+			return
+		}
+
+		switch v := res.(type) {
+		case forms.PutStatus200:
+			if err := frourioValidate.Struct(v); err != nil {
+				writeInternalError(w)
+				return
+			}
+			writeJSON(w, v.StatusCode(), v.Body)
+		default:
+			writeInternalError(w)
+		}
+	})
+}
+
+func decodeFormsPutBody(r *http.Request) (forms.PutBody, error) {
+	var body forms.PutBody
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		return body, err
+	}
+	values := r.MultipartForm.Value
+	if vals, ok := values["title"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			body.Title = val
+		}
+	}
+	if vals, ok := values["count"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			v, err := decodeUint8(val)
+			if err != nil {
+				return body, err
+			}
+			body.Count = v
+		}
+	}
+	return body, nil
 }
 
 func wrapMwGet(route mw.RouteDefinition) http.Handler {
@@ -818,8 +1005,11 @@ func wrapSecureAdminUsersGet(route secureAdminUsers.RouteDefinition) http.Handle
 func decodeSecureAdminUsersGetQuery(r *http.Request) (secureAdminUsers.GetQuery, error) {
 	var query secureAdminUsers.GetQuery
 	values := r.URL.Query()
-	if val := values.Get("role"); val != "" {
-		query.Role = &val
+	if vals, ok := values["role"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			query.Role = &val
+		}
 	}
 	return query, nil
 }
@@ -870,12 +1060,15 @@ func wrapUsersGet(route users.RouteDefinition) http.Handler {
 func decodeUsersGetQuery(r *http.Request) (users.GetQuery, error) {
 	var query users.GetQuery
 	values := r.URL.Query()
-	if val := values.Get("limit"); val != "" {
-		v, err := strconv.Atoi(val)
-		if err != nil {
-			return query, fmt.Errorf("invalid int")
+	if vals, ok := values["limit"]; ok && len(vals) > 0 {
+		val := vals[0]
+		if val != "" {
+			v, err := decodeInt(val)
+			if err != nil {
+				return query, err
+			}
+			query.Limit = &v
 		}
-		query.Limit = &v
 	}
 	return query, nil
 }
@@ -1045,6 +1238,67 @@ func writeJSON(w http.ResponseWriter, status int, body any) {
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(body)
+}
+
+func decodeInt(val string) (int, error) {
+	v, err := strconv.ParseInt(val, 10, 0)
+	return int(v), err
+}
+
+func decodeInt8(val string) (int8, error) {
+	v, err := strconv.ParseInt(val, 10, 8)
+	return int8(v), err
+}
+
+func decodeInt16(val string) (int16, error) {
+	v, err := strconv.ParseInt(val, 10, 16)
+	return int16(v), err
+}
+
+func decodeInt32(val string) (int32, error) {
+	v, err := strconv.ParseInt(val, 10, 32)
+	return int32(v), err
+}
+
+func decodeInt64(val string) (int64, error) {
+	return strconv.ParseInt(val, 10, 64)
+}
+
+func decodeUint(val string) (uint, error) {
+	v, err := strconv.ParseUint(val, 10, 0)
+	return uint(v), err
+}
+
+func decodeUint8(val string) (uint8, error) {
+	v, err := strconv.ParseUint(val, 10, 8)
+	return uint8(v), err
+}
+
+func decodeUint16(val string) (uint16, error) {
+	v, err := strconv.ParseUint(val, 10, 16)
+	return uint16(v), err
+}
+
+func decodeUint32(val string) (uint32, error) {
+	v, err := strconv.ParseUint(val, 10, 32)
+	return uint32(v), err
+}
+
+func decodeUint64(val string) (uint64, error) {
+	return strconv.ParseUint(val, 10, 64)
+}
+
+func decodeFloat32(val string) (float32, error) {
+	v, err := strconv.ParseFloat(val, 32)
+	return float32(v), err
+}
+
+func decodeFloat64(val string) (float64, error) {
+	return strconv.ParseFloat(val, 64)
+}
+
+func decodeBool(val string) (bool, error) {
+	return strconv.ParseBool(val)
 }
 
 var _ = context.Background

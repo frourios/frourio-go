@@ -13,6 +13,57 @@
         "type": "string",
         "x-go-validate": "required"
       },
+      "ApiFormsPostBody": {
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "age": {
+            "type": "integer",
+            "x-go-validate": "gte=1"
+          },
+          "name": {
+            "type": "string",
+            "x-go-validate": "required"
+          },
+          "score": {
+            "items": {
+              "type": "number",
+              "x-go-validate": "required"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "score"
+        ],
+        "type": "object"
+      },
+      "ApiFormsPostStatus201Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ApiFormsPutBody": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "x-go-validate": "gte=1"
+          },
+          "title": {
+            "type": "string",
+            "x-go-validate": "required"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "type": "object"
+      },
+      "ApiFormsPutStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
       "ApiGetStatus200Body": {
         "type": "string",
         "x-go-validate": "required"
@@ -159,6 +210,25 @@
             "required": false,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "active",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "score",
+            "required": true,
+            "schema": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
             }
           }
         ],
@@ -309,6 +379,78 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiFilesPathGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/forms": {
+      "post": {
+        "operationId": "postApiForms",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiFormsPostBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFormsPostStatus201Body"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "put": {
+        "operationId": "putApiForms",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiFormsPutBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiFormsPutStatus200Body"
                 }
               }
             },

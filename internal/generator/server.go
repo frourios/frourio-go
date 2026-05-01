@@ -189,9 +189,27 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 	if method.Body != nil {
 		fmt.Fprintf(b, "func %s(r *http.Request) (%s%sBody, error) {\n", decodeName(route, method, "Body"), q, method.Name)
 		fmt.Fprintf(b, "\tvar body %s%sBody\n", q, method.Name)
-		b.WriteString("\tif err := json.NewDecoder(r.Body).Decode(&body); err != nil {\n")
-		b.WriteString("\t\treturn body, err\n")
-		b.WriteString("\t}\n")
+		if method.Format == "urlencoded" {
+			b.WriteString("\tif err := r.ParseForm(); err != nil {\n")
+			b.WriteString("\t\treturn body, err\n")
+			b.WriteString("\t}\n")
+			b.WriteString("\tvalues := r.PostForm\n")
+			for _, field := range method.Body.Fields {
+				writeValuesDecode(b, "body", field)
+			}
+		} else if method.Format == "formData" {
+			b.WriteString("\tif err := r.ParseMultipartForm(32 << 20); err != nil {\n")
+			b.WriteString("\t\treturn body, err\n")
+			b.WriteString("\t}\n")
+			b.WriteString("\tvalues := r.MultipartForm.Value\n")
+			for _, field := range method.Body.Fields {
+				writeValuesDecode(b, "body", field)
+			}
+		} else {
+			b.WriteString("\tif err := json.NewDecoder(r.Body).Decode(&body); err != nil {\n")
+			b.WriteString("\t\treturn body, err\n")
+			b.WriteString("\t}\n")
+		}
 		b.WriteString("\treturn body, nil\n")
 		b.WriteString("}\n\n")
 	}
@@ -361,52 +379,59 @@ func optionalCatchAllPath(method MethodSpec) (string, bool) {
 }
 
 func writeQueryDecode(b *strings.Builder, field FieldSpec) {
+	writeValuesDecode(b, "query", field)
+}
+
+func writeValuesDecode(b *strings.Builder, receiver string, field FieldSpec) {
 	key := field.JSONName
 	if key == "" {
 		key = lowerName(field.SourceName)
 	}
 	baseType := strings.TrimPrefix(strings.TrimPrefix(field.Type, "*"), "[]")
-	target := "query." + field.Name
+	target := receiver + "." + field.Name
 
 	if field.Slice {
 		fmt.Fprintf(b, "\tif vals, ok := values[%q]; ok {\n", key)
 		switch baseType {
 		case "string":
 			fmt.Fprintf(b, "\t\t%s = vals\n", target)
-		case "int":
-			b.WriteString("\t\tparsed := make([]int, 0, len(vals))\n")
+		case "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "float32", "float64", "bool":
+			fmt.Fprintf(b, "\t\tparsed := make([]%s, 0, len(vals))\n", baseType)
 			b.WriteString("\t\tfor _, val := range vals {\n")
-			b.WriteString("\t\t\tv, err := strconv.Atoi(val)\n")
-			b.WriteString("\t\t\tif err != nil { return query, fmt.Errorf(\"invalid int\") }\n")
+			fmt.Fprintf(b, "\t\t\tv, err := decode%s(val)\n", exportName(baseType))
+			fmt.Fprintf(b, "\t\t\tif err != nil { return %s, err }\n", receiver)
 			b.WriteString("\t\t\tparsed = append(parsed, v)\n")
 			b.WriteString("\t\t}\n")
 			fmt.Fprintf(b, "\t\t%s = parsed\n", target)
 		default:
-			fmt.Fprintf(b, "\t\treturn query, fmt.Errorf(\"unsupported query type %s\")\n", field.Type)
+			fmt.Fprintf(b, "\t\treturn %s, fmt.Errorf(\"unsupported values type %s\")\n", receiver, field.Type)
 		}
 		b.WriteString("\t}\n")
 		return
 	}
 
-	fmt.Fprintf(b, "\tif val := values.Get(%q); val != \"\" {\n", key)
+	fmt.Fprintf(b, "\tif vals, ok := values[%q]; ok && len(vals) > 0 {\n", key)
+	b.WriteString("\t\tval := vals[0]\n")
+	b.WriteString("\t\tif val != \"\" {\n")
 	switch baseType {
 	case "string":
 		if field.Pointer {
-			fmt.Fprintf(b, "\t\t%s = &val\n", target)
+			fmt.Fprintf(b, "\t\t\t%s = &val\n", target)
 		} else {
-			fmt.Fprintf(b, "\t\t%s = val\n", target)
+			fmt.Fprintf(b, "\t\t\t%s = val\n", target)
 		}
-	case "int":
-		b.WriteString("\t\tv, err := strconv.Atoi(val)\n")
-		b.WriteString("\t\tif err != nil { return query, fmt.Errorf(\"invalid int\") }\n")
+	case "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "float32", "float64", "bool":
+		fmt.Fprintf(b, "\t\t\tv, err := decode%s(val)\n", exportName(baseType))
+		fmt.Fprintf(b, "\t\t\tif err != nil { return %s, err }\n", receiver)
 		if field.Pointer {
-			fmt.Fprintf(b, "\t\t%s = &v\n", target)
+			fmt.Fprintf(b, "\t\t\t%s = &v\n", target)
 		} else {
-			fmt.Fprintf(b, "\t\t%s = v\n", target)
+			fmt.Fprintf(b, "\t\t\t%s = v\n", target)
 		}
 	default:
-		fmt.Fprintf(b, "\t\treturn query, fmt.Errorf(\"unsupported query type %s\")\n", field.Type)
+		fmt.Fprintf(b, "\t\t\treturn %s, fmt.Errorf(\"unsupported values type %s\")\n", receiver, field.Type)
 	}
+	b.WriteString("\t\t}\n")
 	b.WriteString("\t}\n")
 }
 
@@ -456,6 +481,67 @@ func writeJSON(w http.ResponseWriter, status int, body any) {
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(body)
+}
+
+func decodeInt(val string) (int, error) {
+	v, err := strconv.ParseInt(val, 10, 0)
+	return int(v), err
+}
+
+func decodeInt8(val string) (int8, error) {
+	v, err := strconv.ParseInt(val, 10, 8)
+	return int8(v), err
+}
+
+func decodeInt16(val string) (int16, error) {
+	v, err := strconv.ParseInt(val, 10, 16)
+	return int16(v), err
+}
+
+func decodeInt32(val string) (int32, error) {
+	v, err := strconv.ParseInt(val, 10, 32)
+	return int32(v), err
+}
+
+func decodeInt64(val string) (int64, error) {
+	return strconv.ParseInt(val, 10, 64)
+}
+
+func decodeUint(val string) (uint, error) {
+	v, err := strconv.ParseUint(val, 10, 0)
+	return uint(v), err
+}
+
+func decodeUint8(val string) (uint8, error) {
+	v, err := strconv.ParseUint(val, 10, 8)
+	return uint8(v), err
+}
+
+func decodeUint16(val string) (uint16, error) {
+	v, err := strconv.ParseUint(val, 10, 16)
+	return uint16(v), err
+}
+
+func decodeUint32(val string) (uint32, error) {
+	v, err := strconv.ParseUint(val, 10, 32)
+	return uint32(v), err
+}
+
+func decodeUint64(val string) (uint64, error) {
+	return strconv.ParseUint(val, 10, 64)
+}
+
+func decodeFloat32(val string) (float32, error) {
+	v, err := strconv.ParseFloat(val, 32)
+	return float32(v), err
+}
+
+func decodeFloat64(val string) (float64, error) {
+	return strconv.ParseFloat(val, 64)
+}
+
+func decodeBool(val string) (bool, error) {
+	return strconv.ParseBool(val)
 }
 
 var _ = context.Background

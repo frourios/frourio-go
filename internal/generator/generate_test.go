@@ -37,6 +37,7 @@ type FrourioSpec struct {
 		}
 	}
 	Post struct {
+		URLEncoded bool
 		Body struct {
 			Name string `+"`json:\"name\" validate:\"required\"`"+`
 		}
@@ -45,6 +46,18 @@ type FrourioSpec struct {
 				Body string `+"`json:\"body\" validate:\"required\"`"+`
 			}
 			Status400 struct{}
+		}
+	}
+	Put struct {
+		FormData bool
+		Body struct {
+			Title string `+"`json:\"title\" validate:\"required\"`"+`
+			Count uint8 `+"`json:\"count\"`"+`
+		}
+		Res struct {
+			Status200 struct {
+				Body string `+"`json:\"body\" validate:\"required\"`"+`
+			}
 		}
 	}
 }
@@ -59,6 +72,9 @@ var Route = DefineRoute(RouteHandlers{
 	},
 	Post: func(ctx context.Context, req PostRequest) (PostResponse, error) {
 		return PostStatus201{Body: req.Body.Name}, nil
+	},
+	Put: func(ctx context.Context, req PutRequest) (PutResponse, error) {
+		return PutStatus200{Body: req.Body.Title}, nil
 	},
 })
 `)
@@ -170,6 +186,8 @@ type FrourioSpec struct {
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/users/{userid}\"")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/files\"")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/products/セール品\"")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values := r.PostForm")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values := r.MultipartForm.Value")
 	assertFileContains(t, filepath.Join(api, "mw/child/frourio_relay.go"), "TraceID string")
 	assertFileContains(t, filepath.Join(api, "mw/frourio_relay.go"), "type GetMiddlewareContext struct")
 
@@ -186,6 +204,18 @@ type FrourioSpec struct {
 		if _, ok := paths[path]; !ok {
 			t.Fatalf("OpenAPI path %s not found in %#v", path, paths)
 		}
+	}
+	apiPost := paths["/api"].(map[string]any)["post"].(map[string]any)
+	requestBody := apiPost["requestBody"].(map[string]any)
+	content := requestBody["content"].(map[string]any)
+	if _, ok := content["application/x-www-form-urlencoded"]; !ok {
+		t.Fatalf("urlencoded content type not found in %#v", content)
+	}
+	apiPut := paths["/api"].(map[string]any)["put"].(map[string]any)
+	putRequestBody := apiPut["requestBody"].(map[string]any)
+	putContent := putRequestBody["content"].(map[string]any)
+	if _, ok := putContent["multipart/form-data"]; !ok {
+		t.Fatalf("formData content type not found in %#v", putContent)
 	}
 }
 
@@ -212,6 +242,24 @@ type FrourioSpec struct {
 		t.Fatalf("frourio_relay.go should not be generated in OpenAPI-only mode, err=%v", err)
 	}
 	assertFileContains(t, out, `"204"`)
+
+	dir = t.TempDir()
+	writeFile(t, dir, "go.mod", "module example.com/default\n\ngo 1.26\n")
+	api = filepath.Join(dir, "api")
+	writeFile(t, api, "frourio.go", `package api
+
+type FrourioSpec struct {
+	Get struct {
+		Res struct {
+			Status204 struct{}
+		}
+	}
+}
+`)
+	if err := Generate(Options{APIDir: api}); err != nil {
+		t.Fatal(err)
+	}
+	assertFileContains(t, filepath.Join(api, "openapi.json"), `"204"`)
 }
 
 func TestGenerateErrors(t *testing.T) {
@@ -343,6 +391,22 @@ type FrourioSpec struct { Get string }
 		}
 	})
 
+	t.Run("invalid body format markers", func(t *testing.T) {
+		cases := []string{
+			`type FrourioSpec struct { Post struct { URLEncoded string; Res struct { Status204 struct{} } } }`,
+			`type FrourioSpec struct { Post struct { FormData string; Res struct { Status204 struct{} } } }`,
+			`type FrourioSpec struct { Post struct { URLEncoded bool; FormData bool; Res struct { Status204 struct{} } } }`,
+		}
+		for _, spec := range cases {
+			dir := t.TempDir()
+			writeFile(t, dir, "go.mod", "module example.com/app\n\ngo 1.26\n")
+			writeFile(t, filepath.Join(dir, "api"), "frourio.go", "package api\n"+spec+"\n")
+			if err := Generate(Options{APIDir: filepath.Join(dir, "api")}); err == nil {
+				t.Fatalf("expected format error for %s", spec)
+			}
+		}
+	})
+
 	t.Run("missing module", func(t *testing.T) {
 		dir := t.TempDir()
 		writeFile(t, filepath.Join(dir, "api"), "frourio.go", `package api
@@ -412,7 +476,7 @@ func TestSchemaAndDecodeHelpers(t *testing.T) {
 	writeQueryDecode(&b, FieldSpec{Name: "Enabled", SourceName: "Enabled", Type: "*bool", JSONName: "enabled", Pointer: true})
 	writeQueryDecode(&b, FieldSpec{Name: "Bad", SourceName: "Bad", Type: "custom.Type", JSONName: "bad"})
 	text := b.String()
-	for _, want := range []string{"values[\"name\"]", "strconv.Atoi", "unsupported query type"} {
+	for _, want := range []string{"values[\"name\"]", "decodeInt", "unsupported values type"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("writeQueryDecode missing %q in %s", want, text)
 		}

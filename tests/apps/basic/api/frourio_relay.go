@@ -18,8 +18,10 @@ type GetRequest struct {
 }
 
 type GetQuery struct {
-	Search *string `json:"search"`
-	Limit  *int    `json:"limit"`
+	Search *string   `json:"search"`
+	Limit  *int      `json:"limit"`
+	Active *bool     `json:"active"`
+	Scores []float64 `json:"score"`
 }
 
 type GetResponse interface {

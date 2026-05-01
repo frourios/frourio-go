@@ -91,10 +91,16 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 	if method.Body != nil {
 		schemaName := schemaName(route, method, "Body")
 		schemas[schemaName] = schemaForStruct(method.Body)
+		contentType := "application/json"
+		if method.Format == "urlencoded" {
+			contentType = "application/x-www-form-urlencoded"
+		} else if method.Format == "formData" {
+			contentType = "multipart/form-data"
+		}
 		op["requestBody"] = map[string]any{
 			"required": true,
 			"content": map[string]any{
-				"application/json": map[string]any{
+				contentType: map[string]any{
 					"schema": map[string]any{"$ref": "#/components/schemas/" + schemaName},
 				},
 			},

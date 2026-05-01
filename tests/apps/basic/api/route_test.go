@@ -1,6 +1,8 @@
 package api
 
 import (
+	"bytes"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -8,7 +10,7 @@ import (
 )
 
 func TestHandlerGet(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/api?search=hello&limit=10", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api?search=hello&limit=10&active=true&score=1.5&score=2.5", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -18,6 +20,17 @@ func TestHandlerGet(t *testing.T) {
 	}
 	if strings.TrimSpace(res.Body.String()) != `"ok"` {
 		t.Fatalf("expected JSON string body, got %s", res.Body.String())
+	}
+}
+
+func TestHandlerGetInvalidQueryBool(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/api?active=maybe", nil)
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected status 422, got %d: %s", res.Code, res.Body.String())
 	}
 }
 
@@ -71,6 +84,59 @@ func TestHandlerUsersPostInvalidBody(t *testing.T) {
 
 	if res.Code != http.StatusUnprocessableEntity {
 		t.Fatalf("expected status 422, got %d: %s", res.Code, res.Body.String())
+	}
+}
+
+func TestHandlerFormsPostURLEncoded(t *testing.T) {
+	req := httptest.NewRequest(http.MethodPost, "/api/forms", strings.NewReader("name=alice&age=20&active=true&score=1.5&score=2.5"))
+	req.Header.Set("content-type", "application/x-www-form-urlencoded")
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusCreated {
+		t.Fatalf("expected status 201, got %d: %s", res.Code, res.Body.String())
+	}
+	if strings.TrimSpace(res.Body.String()) != `"alice:20:true:2"` {
+		t.Fatalf("expected urlencoded body decode result, got %s", res.Body.String())
+	}
+}
+
+func TestHandlerFormsPostInvalidURLEncoded(t *testing.T) {
+	req := httptest.NewRequest(http.MethodPost, "/api/forms", strings.NewReader("name=alice&age=bad&active=true&score=1.5"))
+	req.Header.Set("content-type", "application/x-www-form-urlencoded")
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected status 422, got %d: %s", res.Code, res.Body.String())
+	}
+}
+
+func TestHandlerFormsPutMultipart(t *testing.T) {
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	if err := writer.WriteField("title", "report"); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.WriteField("count", "3"); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+	req := httptest.NewRequest(http.MethodPut, "/api/forms", &body)
+	req.Header.Set("content-type", writer.FormDataContentType())
+	res := httptest.NewRecorder()
+
+	Handler().ServeHTTP(res, req)
+
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d: %s", res.Code, res.Body.String())
+	}
+	if strings.TrimSpace(res.Body.String()) != `"report:3"` {
+		t.Fatalf("expected multipart body decode result, got %s", res.Body.String())
 	}
 }
 

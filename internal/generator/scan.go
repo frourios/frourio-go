@@ -215,6 +215,22 @@ func parseMethod(name, httpName string, st *ast.StructType) (MethodSpec, error) 
 	for _, field := range st.Fields.List {
 		for _, fieldName := range field.Names {
 			switch fieldName.Name {
+			case "URLEncoded":
+				if !isBoolField(field.Type) {
+					return MethodSpec{}, fmt.Errorf("URLEncoded must be bool")
+				}
+				if method.Format != "" {
+					return MethodSpec{}, fmt.Errorf("URLEncoded and FormData cannot be used together")
+				}
+				method.Format = "urlencoded"
+			case "FormData":
+				if !isBoolField(field.Type) {
+					return MethodSpec{}, fmt.Errorf("FormData must be bool")
+				}
+				if method.Format != "" {
+					return MethodSpec{}, fmt.Errorf("URLEncoded and FormData cannot be used together")
+				}
+				method.Format = "formData"
 			case "Param":
 				param := parseField("Param", field.Type, field.Tag)
 				method.Param = &param
@@ -250,6 +266,11 @@ func parseMethod(name, httpName string, st *ast.StructType) (MethodSpec, error) 
 		}
 	}
 	return method, nil
+}
+
+func isBoolField(expr ast.Expr) bool {
+	ident, ok := expr.(*ast.Ident)
+	return ok && ident.Name == "bool"
 }
 
 func findFrourioPath(file *ast.File) string {
