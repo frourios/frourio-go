@@ -471,6 +471,15 @@ type frourioIssue struct {
 	Path    []any  `json:"path"`
 }
 
+type frourioParamDecodeError struct {
+	Field   string
+	Message string
+}
+
+func (e *frourioParamDecodeError) Error() string {
+	return e.Message
+}
+
 func writeValidationError(w http.ResponseWriter, err error, root string) {
 	issues := []frourioIssue{}
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {

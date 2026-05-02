@@ -7,9 +7,9 @@ import (
 
 var Route = DefineRoute(RouteHandlers{
 	Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
-		if req.Param == 404 {
+		if req.Params.Userid == 404 {
 			return GetStatus404{Body: "not found"}, nil
 		}
-		return GetStatus200{Body: fmt.Sprintf("user:%d", req.Param)}, nil
+		return GetStatus200{Body: fmt.Sprintf("user:%d", req.Params.Userid)}, nil
 	},
 })

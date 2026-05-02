@@ -138,6 +138,10 @@
         "type": "string",
         "x-go-validate": "required"
       },
+      "ApiUsersUseridPostsPostidGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
       "FormsFormPostBody": {
         "properties": {
           "Alias": {
@@ -967,6 +971,53 @@
               }
             },
             "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrourioError"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/users/{userid}/posts/{postid}": {
+      "get": {
+        "operationId": "getApiUsersByUseridPostsByPostid",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userid",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "x-go-validate": "required"
+            }
+          },
+          {
+            "in": "path",
+            "name": "postid",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "x-go-validate": "required"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiUsersUseridPostsPostidGetStatus200Body"
+                }
+              }
+            },
+            "description": "OK"
           },
           "422": {
             "content": {

@@ -103,6 +103,9 @@ type ApiUsersUseridGetStatus200Body = string
 // ApiUsersUseridGetStatus404Body defines model for ApiUsersUseridGetStatus404Body.
 type ApiUsersUseridGetStatus404Body = string
 
+// ApiUsersUseridPostsPostidGetStatus200Body defines model for ApiUsersUseridPostsPostidGetStatus200Body.
+type ApiUsersUseridPostsPostidGetStatus200Body = string
+
 // FormsFormPostBody defines model for FormsFormPostBody.
 type FormsFormPostBody struct {
 	Alias  *string   `json:"Alias,omitempty"`
@@ -307,6 +310,9 @@ type ClientInterface interface {
 
 	// GetApiUsersByUserid request
 	GetApiUsersByUserid(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiUsersByUseridPostsByPostid request
+	GetApiUsersByUseridPostsByPostid(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetApi(ctx context.Context, params *GetApiParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -599,6 +605,18 @@ func (c *Client) PostApiUsers(ctx context.Context, body PostApiUsersJSONRequestB
 
 func (c *Client) GetApiUsersByUserid(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetApiUsersByUseridRequest(c.Server, userid)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetApiUsersByUseridPostsByPostid(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiUsersByUseridPostsByPostidRequest(c.Server, userid, postid)
 	if err != nil {
 		return nil, err
 	}
@@ -1394,6 +1412,47 @@ func NewGetApiUsersByUseridRequest(server string, userid int) (*http.Request, er
 	return req, nil
 }
 
+// NewGetApiUsersByUseridPostsByPostidRequest generates requests for GetApiUsersByUseridPostsByPostid
+func NewGetApiUsersByUseridPostsByPostidRequest(server string, userid int, postid string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "userid", userid, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "postid", postid, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/users/%s/posts/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -1508,6 +1567,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetApiUsersByUseridWithResponse request
 	GetApiUsersByUseridWithResponse(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*GetApiUsersByUseridResponse, error)
+
+	// GetApiUsersByUseridPostsByPostidWithResponse request
+	GetApiUsersByUseridPostsByPostidWithResponse(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*GetApiUsersByUseridPostsByPostidResponse, error)
 }
 
 type GetApiResponse struct {
@@ -2171,6 +2233,36 @@ func (r GetApiUsersByUseridResponse) ContentType() string {
 	return ""
 }
 
+type GetApiUsersByUseridPostsByPostidResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON422      *FrourioError
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiUsersByUseridPostsByPostidResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiUsersByUseridPostsByPostidResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiUsersByUseridPostsByPostidResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // GetApiWithResponse request returning *GetApiResponse
 func (c *ClientWithResponses) GetApiWithResponse(ctx context.Context, params *GetApiParams, reqEditors ...RequestEditorFn) (*GetApiResponse, error) {
 	rsp, err := c.GetApi(ctx, params, reqEditors...)
@@ -2391,6 +2483,15 @@ func (c *ClientWithResponses) GetApiUsersByUseridWithResponse(ctx context.Contex
 		return nil, err
 	}
 	return ParseGetApiUsersByUseridResponse(rsp)
+}
+
+// GetApiUsersByUseridPostsByPostidWithResponse request returning *GetApiUsersByUseridPostsByPostidResponse
+func (c *ClientWithResponses) GetApiUsersByUseridPostsByPostidWithResponse(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*GetApiUsersByUseridPostsByPostidResponse, error) {
+	rsp, err := c.GetApiUsersByUseridPostsByPostid(ctx, userid, postid, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiUsersByUseridPostsByPostidResponse(rsp)
 }
 
 // ParseGetApiResponse parses an HTTP response from a GetApiWithResponse call
@@ -2955,6 +3056,32 @@ func ParseGetApiUsersByUseridResponse(rsp *http.Response) (*GetApiUsersByUseridR
 	}
 
 	response := &GetApiUsersByUseridResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
+		var dest FrourioError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON422 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetApiUsersByUseridPostsByPostidResponse parses an HTTP response from a GetApiUsersByUseridPostsByPostidWithResponse call
+func ParseGetApiUsersByUseridPostsByPostidResponse(rsp *http.Response) (*GetApiUsersByUseridPostsByPostidResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiUsersByUseridPostsByPostidResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

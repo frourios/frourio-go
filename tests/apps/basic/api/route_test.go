@@ -582,3 +582,27 @@ func TestHandlerSecureAdminPostMiddleware_InvalidBody(t *testing.T) {
 		t.Fatalf("expected 422, got %d: %s", res.Code, res.Body.String())
 	}
 }
+
+func TestHandlerNestedParamCascade(t *testing.T) {
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/users/42/posts/hello", nil)
+	res := httptest.NewRecorder()
+	Handler().ServeHTTP(res, req)
+	if res.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", res.Code, res.Body.String())
+	}
+	if strings.TrimSpace(res.Body.String()) != "user:42/post:hello" {
+		t.Fatalf("expected user:42/post:hello, got %s", res.Body.String())
+	}
+}
+
+func TestHandlerNestedParamAncestorDecodeFailure(t *testing.T) {
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/users/abc/posts/hello", nil)
+	res := httptest.NewRecorder()
+	Handler().ServeHTTP(res, req)
+	if res.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("expected 422, got %d: %s", res.Code, res.Body.String())
+	}
+	if !strings.Contains(res.Body.String(), `"userid"`) {
+		t.Fatalf("expected error path to mention userid, got %s", res.Body.String())
+	}
+}

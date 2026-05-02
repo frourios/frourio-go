@@ -48,7 +48,7 @@ Each method block can have:
 
 | Field        | Purpose                                                       |
 |--------------|---------------------------------------------------------------|
-| `Param`      | Single path parameter (only in `{name}` directories)          |
+| `Param`      | This directory's path-parameter slug (handler reads it via `req.Params.<Slug>`, which also includes ancestor slugs) |
 | `Query`      | URL query parameters                                          |
 | `Header`     | Request headers                                               |
 | `Body`       | Request body (JSON by default, or with `URLEncoded`/`FormData`) |

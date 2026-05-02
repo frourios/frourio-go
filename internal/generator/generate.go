@@ -34,6 +34,7 @@ func Generate(opts Options) error {
 		return err
 	}
 	fillAncestors(routes)
+	fillParamAncestors(routes)
 
 	sort.Slice(routes, func(i, j int) bool {
 		return routes[i].URLPath < routes[j].URLPath
@@ -83,6 +84,65 @@ func fillAncestors(routes []RouteSpec) {
 			return len(routes[i].Ancestors[a].RelDir) < len(routes[i].Ancestors[b].RelDir)
 		})
 	}
+}
+
+func fillParamAncestors(routes []RouteSpec) {
+	byRel := map[string]*RouteSpec{}
+	for i := range routes {
+		byRel[routes[i].RelDir] = &routes[i]
+	}
+	for i := range routes {
+		rel := routes[i].RelDir
+		if rel == "" {
+			continue
+		}
+		parts := strings.Split(rel, "/")
+		var ancestors []ParamAncestor
+		for j := 1; j <= len(parts); j++ {
+			ancestorRel := strings.Join(parts[:j], "/")
+			ancestor, ok := byRel[ancestorRel]
+			if !ok {
+				continue
+			}
+			var paramField *FieldSpec
+			for _, m := range ancestor.Methods {
+				if m.Param != nil {
+					p := *m.Param
+					paramField = &p
+					break
+				}
+			}
+			if paramField == nil {
+				continue
+			}
+			slug := parts[j-1]
+			ancestors = append(ancestors, ParamAncestor{
+				RelDir:   ancestorRel,
+				SlugName: slug,
+				FieldKey: exportName(sanitizeSlug(slug)),
+				Param:    paramField,
+			})
+		}
+		routes[i].ParamAncestors = ancestors
+	}
+}
+
+func sanitizeSlug(slug string) string {
+	parts := strings.FieldsFunc(slug, func(r rune) bool {
+		return r == '-' || r == '_' || r == '.'
+	})
+	if len(parts) == 0 {
+		return slug
+	}
+	var b strings.Builder
+	for i, p := range parts {
+		if i == 0 {
+			b.WriteString(lowerName(p))
+		} else {
+			b.WriteString(exportName(p))
+		}
+	}
+	return b.String()
 }
 
 func isAncestorRel(parent, child string) bool {
@@ -149,20 +209,63 @@ func fillImportInfo(apiDir string, routes []RouteSpec) error {
 
 func fillRoutePaths(routes []RouteSpec) {
 	overrides := map[string]string{}
+	paramRels := map[string]*FieldSpec{}
 	for _, route := range routes {
 		if route.PathOverride != "" {
 			overrides[route.RelDir] = route.PathOverride
 		}
+		for _, m := range route.Methods {
+			if m.Param != nil {
+				p := *m.Param
+				paramRels[route.RelDir] = &p
+				break
+			}
+		}
 	}
 	for i := range routes {
 		for j := range routes[i].Methods {
-			path := routePath(routes[i].RelDir, overrides, routes[i].Methods[j].Param)
+			path := routePathWithAncestors(routes[i].RelDir, overrides, paramRels, routes[i].Methods[j].Param)
 			routes[i].Methods[j].URLPath = path
 			if routes[i].URLPath == "" {
 				routes[i].URLPath = path
 			}
 		}
 	}
+}
+
+func routePathWithAncestors(rel string, overrides map[string]string, paramRels map[string]*FieldSpec, ownParam *FieldSpec) string {
+	if rel == "" {
+		return "/api"
+	}
+	parts := []string{"api"}
+	relParts := strings.Split(rel, "/")
+	for i, part := range relParts {
+		if part == "" {
+			continue
+		}
+		currentRel := strings.Join(relParts[:i+1], "/")
+		isLast := i == len(relParts)-1
+		var p *FieldSpec
+		if isLast {
+			p = ownParam
+		} else {
+			p = paramRels[currentRel]
+		}
+		if p != nil {
+			if p.Slice {
+				parts = append(parts, "{"+part+"...}")
+			} else {
+				parts = append(parts, "{"+part+"}")
+			}
+			continue
+		}
+		if override := overrides[currentRel]; override != "" {
+			parts = append(parts, override)
+			continue
+		}
+		parts = append(parts, part)
+	}
+	return "/" + strings.Join(parts, "/")
 }
 
 func findModule(start string) (string, string, error) {

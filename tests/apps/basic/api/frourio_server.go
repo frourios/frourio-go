@@ -27,6 +27,7 @@ import (
 	secureAdminUsers "github.com/frourios/frourio-go/tests/apps/basic/api/secure/admin/users"
 	users "github.com/frourios/frourio-go/tests/apps/basic/api/users"
 	usersUserid "github.com/frourios/frourio-go/tests/apps/basic/api/users/userid"
+	usersUseridPostsPostid "github.com/frourios/frourio-go/tests/apps/basic/api/users/userid/posts/postid"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -59,6 +60,7 @@ func Mount(mux *http.ServeMux, options ...Option) {
 	mux.Handle("GET /api/users", wrapUsersGet(users.Route))
 	mux.Handle("POST /api/users", wrapUsersPost(users.Route))
 	mux.Handle("GET /api/users/{userid}", wrapUsersUseridGet(usersUserid.Route))
+	mux.Handle("GET /api/users/{userid}/posts/{postid}", wrapUsersUseridPostsPostidGet(usersUseridPostsPostid.Route))
 }
 
 func Handler(options ...Option) http.Handler {
@@ -227,14 +229,14 @@ func wrapBlogSlugGet(route blogSlug.RouteDefinition) http.Handler {
 		}
 
 		req := blogSlug.GetRequest{}
-		param, err := decodeBlogSlugGetParam(r)
-		if err != nil {
-			writeRequestError(w, []frourioIssue{{Path: []any{"param"}, Message: err.Error()}})
+		params, paramErr := decodeBlogSlugGetParams(r)
+		if paramErr != nil {
+			writeRequestError(w, []frourioIssue{{Path: []any{"params", paramErr.Field}, Message: paramErr.Message}})
 			return
 		}
-		req.Param = param
-		if err := frourioValidate.Var(req.Param, "required"); err != nil {
-			writeValidationError(w, err, "param")
+		req.Params = params
+		if err := frourioValidate.Struct(req.Params); err != nil {
+			writeValidationError(w, err, "params")
 			return
 		}
 
@@ -261,15 +263,17 @@ func wrapBlogSlugGet(route blogSlug.RouteDefinition) http.Handler {
 	})
 }
 
-func decodeBlogSlugGetParam(r *http.Request) ([]string, error) {
-	var param []string
-	val := r.PathValue("slug")
-	if val == "" {
-		return param, fmt.Errorf("missing path parameter")
+func decodeBlogSlugGetParams(r *http.Request) (blogSlug.Params, *frourioParamDecodeError) {
+	var params blogSlug.Params
+	{
+		val := r.PathValue("slug")
+		if val == "" {
+			return params, &frourioParamDecodeError{Field: "slug", Message: "missing path parameter"}
+		}
+		vals := strings.Split(val, "/")
+		params.Slug = vals
 	}
-	vals := strings.Split(val, "/")
-	param = vals
-	return param, nil
+	return params, nil
 }
 
 func wrapFilesPathGet(route filesPath.RouteDefinition) http.Handler {
@@ -281,12 +285,12 @@ func wrapFilesPathGet(route filesPath.RouteDefinition) http.Handler {
 		}
 
 		req := filesPath.GetRequest{}
-		param, err := decodeFilesPathGetParam(r)
-		if err != nil {
-			writeRequestError(w, []frourioIssue{{Path: []any{"param"}, Message: err.Error()}})
+		params, paramErr := decodeFilesPathGetParams(r)
+		if paramErr != nil {
+			writeRequestError(w, []frourioIssue{{Path: []any{"params", paramErr.Field}, Message: paramErr.Message}})
 			return
 		}
-		req.Param = param
+		req.Params = params
 
 		res, err := handlers.Get(r.Context(), req)
 		if err != nil {
@@ -311,15 +315,16 @@ func wrapFilesPathGet(route filesPath.RouteDefinition) http.Handler {
 	})
 }
 
-func decodeFilesPathGetParam(r *http.Request) (*[]string, error) {
-	var param *[]string
-	val := r.PathValue("path")
-	if val == "" {
-		return param, nil
+func decodeFilesPathGetParams(r *http.Request) (filesPath.Params, *frourioParamDecodeError) {
+	var params filesPath.Params
+	{
+		val := r.PathValue("path")
+		if val != "" {
+			vals := strings.Split(val, "/")
+			params.Path = &vals
+		}
 	}
-	vals := strings.Split(val, "/")
-	param = &vals
-	return param, nil
+	return params, nil
 }
 
 func wrapFormsGet(route forms.RouteDefinition) http.Handler {
@@ -1280,14 +1285,14 @@ func wrapUsersUseridGet(route usersUserid.RouteDefinition) http.Handler {
 		}
 
 		req := usersUserid.GetRequest{}
-		param, err := decodeUsersUseridGetParam(r)
-		if err != nil {
-			writeRequestError(w, []frourioIssue{{Path: []any{"param"}, Message: err.Error()}})
+		params, paramErr := decodeUsersUseridGetParams(r)
+		if paramErr != nil {
+			writeRequestError(w, []frourioIssue{{Path: []any{"params", paramErr.Field}, Message: paramErr.Message}})
 			return
 		}
-		req.Param = param
-		if err := frourioValidate.Var(req.Param, "required"); err != nil {
-			writeValidationError(w, err, "param")
+		req.Params = params
+		if err := frourioValidate.Struct(req.Params); err != nil {
+			writeValidationError(w, err, "params")
 			return
 		}
 
@@ -1320,18 +1325,86 @@ func wrapUsersUseridGet(route usersUserid.RouteDefinition) http.Handler {
 	})
 }
 
-func decodeUsersUseridGetParam(r *http.Request) (int, error) {
-	var param int
-	val := r.PathValue("userid")
-	if val == "" {
-		return param, fmt.Errorf("missing path parameter")
+func decodeUsersUseridGetParams(r *http.Request) (usersUserid.Params, *frourioParamDecodeError) {
+	var params usersUserid.Params
+	{
+		val := r.PathValue("userid")
+		if val == "" {
+			return params, &frourioParamDecodeError{Field: "userid", Message: "missing path parameter"}
+		}
+		v, err := strconv.Atoi(val)
+		if err != nil {
+			return params, &frourioParamDecodeError{Field: "userid", Message: "invalid int"}
+		}
+		params.Userid = v
 	}
-	v, err := strconv.Atoi(val)
-	if err != nil {
-		return param, fmt.Errorf("invalid int")
+	return params, nil
+}
+
+func wrapUsersUseridPostsPostidGet(route usersUseridPostsPostid.RouteDefinition) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		handlers := route.Handlers()
+		if handlers.Get == nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		req := usersUseridPostsPostid.GetRequest{}
+		params, paramErr := decodeUsersUseridPostsPostidGetParams(r)
+		if paramErr != nil {
+			writeRequestError(w, []frourioIssue{{Path: []any{"params", paramErr.Field}, Message: paramErr.Message}})
+			return
+		}
+		req.Params = params
+		if err := frourioValidate.Struct(req.Params); err != nil {
+			writeValidationError(w, err, "params")
+			return
+		}
+
+		res, err := handlers.Get(r.Context(), req)
+		if err != nil {
+			writeInternalError(w)
+			return
+		}
+		if res == nil {
+			writeInternalError(w)
+			return
+		}
+
+		switch v := res.(type) {
+		case usersUseridPostsPostid.GetStatus200:
+			if err := frourioValidate.Struct(v); err != nil {
+				writeInternalError(w)
+				return
+			}
+			writeText(w, v.StatusCode(), v.Body, true)
+		default:
+			writeInternalError(w)
+		}
+	})
+}
+
+func decodeUsersUseridPostsPostidGetParams(r *http.Request) (usersUseridPostsPostid.Params, *frourioParamDecodeError) {
+	var params usersUseridPostsPostid.Params
+	{
+		val := r.PathValue("userid")
+		if val == "" {
+			return params, &frourioParamDecodeError{Field: "userid", Message: "missing path parameter"}
+		}
+		v, err := strconv.Atoi(val)
+		if err != nil {
+			return params, &frourioParamDecodeError{Field: "userid", Message: "invalid int"}
+		}
+		params.Userid = v
 	}
-	param = v
-	return param, nil
+	{
+		val := r.PathValue("postid")
+		if val == "" {
+			return params, &frourioParamDecodeError{Field: "postid", Message: "missing path parameter"}
+		}
+		params.Postid = val
+	}
+	return params, nil
 }
 
 type frourioError struct {
@@ -1343,6 +1416,15 @@ type frourioError struct {
 type frourioIssue struct {
 	Message string `json:"message"`
 	Path    []any  `json:"path"`
+}
+
+type frourioParamDecodeError struct {
+	Field   string
+	Message string
+}
+
+func (e *frourioParamDecodeError) Error() string {
+	return e.Message
 }
 
 func writeValidationError(w http.ResponseWriter, err error, root string) {

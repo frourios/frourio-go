@@ -577,12 +577,14 @@ func TestSchemaAndDecodeHelpers(t *testing.T) {
 	}
 
 	b.Reset()
-	writeParamDecode(&b, RouteSpec{RelDir: "id"}, FieldSpec{Type: "*string", Pointer: true})
-	writeParamDecode(&b, RouteSpec{RelDir: "id"}, FieldSpec{Type: "int"})
-	writeParamDecode(&b, RouteSpec{RelDir: "slug"}, FieldSpec{Type: "[]int", Slice: true})
-	writeParamDecode(&b, RouteSpec{RelDir: "id"}, FieldSpec{Type: "float64"})
+	writeParamFieldDecode(&b, ParamAncestor{SlugName: "id", FieldKey: "Id", Param: &FieldSpec{Type: "*string", Pointer: true}})
+	writeParamFieldDecode(&b, ParamAncestor{SlugName: "id", FieldKey: "Id", Param: &FieldSpec{Type: "int"}})
+	writeParamFieldDecode(&b, ParamAncestor{SlugName: "slug", FieldKey: "Slug", Param: &FieldSpec{Type: "[]int", Slice: true}})
+	writeParamFieldDecode(&b, ParamAncestor{SlugName: "slug", FieldKey: "Slug", Param: &FieldSpec{Type: "*[]string", Pointer: true, Slice: true}})
+	writeParamFieldDecode(&b, ParamAncestor{SlugName: "slug", FieldKey: "Slug", Param: &FieldSpec{Type: "*[]int", Pointer: true, Slice: true}})
+	writeParamFieldDecode(&b, ParamAncestor{SlugName: "id", FieldKey: "Id", Param: &FieldSpec{Type: "float64"}})
 	if !strings.Contains(b.String(), "unsupported param type") {
-		t.Fatalf("writeParamDecode missing unsupported branch: %s", b.String())
+		t.Fatalf("writeParamFieldDecode missing unsupported branch: %s", b.String())
 	}
 
 	for _, status := range []int{200, 201, 204, 400, 404, 418} {
@@ -616,8 +618,8 @@ func TestSchemaAndDecodeHelpers(t *testing.T) {
 	if _, ok := optionalCatchAllPath(MethodSpec{URLPath: "/api/files/{path}", Param: &FieldSpec{Pointer: true, Slice: true}}); ok {
 		t.Fatal("unexpected optional catch-all")
 	}
-	if got := routePath("admin//users", map[string]string{"admin/users": "members"}, nil); got != "/api/admin/users" {
-		t.Fatalf("routePath empty part = %s", got)
+	if got := routePathWithAncestors("admin//users", map[string]string{"admin/users": "members"}, map[string]*FieldSpec{}, nil); got != "/api/admin/users" {
+		t.Fatalf("routePathWithAncestors empty part = %s", got)
 	}
 	if _, err := parseStruct("Bad", &ast.Ident{Name: "string"}, nil, nil); err == nil {
 		t.Fatal("expected parseStruct error")
@@ -700,7 +702,7 @@ func TestResponseHelpers(t *testing.T) {
 	}
 
 	b.Reset()
-	writeMethodTypes(&b, MethodSpec{Name: "Get", Raw: true})
+	writeMethodTypes(&b, RouteSpec{}, MethodSpec{Name: "Get", Raw: true})
 	if !strings.Contains(b.String(), "type RawResponse interface") {
 		t.Fatalf("raw response type missing: %s", b.String())
 	}

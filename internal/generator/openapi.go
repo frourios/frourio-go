@@ -62,15 +62,22 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 	}
 	addSummaryDescription(op, method.Doc)
 	params := []any{}
-	if method.Param != nil && includePathParam {
+	for i, ancestor := range route.ParamAncestors {
+		if ancestor.Param == nil {
+			continue
+		}
+		isSelf := i == len(route.ParamAncestors)-1 && ancestor.RelDir == route.RelDir
+		if isSelf && !includePathParam {
+			continue
+		}
 		param := map[string]any{
-			"name":     pathParamName(route.RelDir),
+			"name":     ancestor.SlugName,
 			"in":       "path",
 			"required": true,
-			"schema":   schemaForField(*method.Param),
+			"schema":   schemaForField(*ancestor.Param),
 		}
-		addDescription(param, method.Param.Doc)
-		if method.Param.Slice {
+		addDescription(param, ancestor.Param.Doc)
+		if ancestor.Param.Slice {
 			param["style"] = "simple"
 			param["explode"] = false
 			param["x-frourio-catch-all"] = true

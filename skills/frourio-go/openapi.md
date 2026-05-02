@@ -53,7 +53,9 @@ Path parameters become `By<ParamName>`.
 ### Parameters
 
 `Param`, `Query`, and `Header` fields become entries in the operation's
-`parameters` array. Each parameter carries:
+`parameters` array. Path parameters cascade — a route under
+`api/users/userid/posts/postid/` emits one `path` parameter per ancestor
+(`userid`) plus its own (`postid`). Each parameter carries:
 
 - `name` (from JSON tag, falling back to Go field name)
 - `in` (`path`, `query`, or `header`)

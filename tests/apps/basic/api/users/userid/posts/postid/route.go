@@ -1,12 +1,12 @@
-package slug
+package postid
 
 import (
 	"context"
-	"strings"
+	"fmt"
 )
 
 var Route = DefineRoute(RouteHandlers{
 	Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
-		return GetStatus200{Body: strings.Join(req.Params.Slug, "/")}, nil
+		return GetStatus200{Body: fmt.Sprintf("user:%d/post:%s", req.Params.Userid, req.Params.Postid)}, nil
 	},
 })

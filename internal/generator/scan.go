@@ -703,35 +703,6 @@ func parseStatusName(name string) (int, bool) {
 	return status, err == nil
 }
 
-func routePath(rel string, overrides map[string]string, param *FieldSpec) string {
-	if rel == "" {
-		return "/api"
-	}
-
-	parts := []string{"api"}
-	relParts := strings.Split(rel, "/")
-	for i, part := range relParts {
-		if part == "" {
-			continue
-		}
-		currentRel := strings.Join(relParts[:i+1], "/")
-		if param != nil && i == len(relParts)-1 {
-			if param.Slice {
-				parts = append(parts, "{"+part+"...}")
-			} else {
-				parts = append(parts, "{"+part+"}")
-			}
-			continue
-		}
-		if override := overrides[currentRel]; override != "" {
-			parts = append(parts, override)
-			continue
-		}
-		parts = append(parts, part)
-	}
-	return "/" + strings.Join(parts, "/")
-}
-
 func pathParamName(rel string) string {
 	part := filepath.Base(filepath.FromSlash(rel))
 	if part != "." && part != string(filepath.Separator) && part != "" {

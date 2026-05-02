@@ -24,8 +24,11 @@ func relayText(route RouteSpec) string {
 	b.WriteString("type routeMetadata struct{}\n\n")
 	b.WriteString("var routeSpec = routeMetadata{}\n\n")
 
+	if len(route.ParamAncestors) > 0 {
+		writeParamsType(&b, route)
+	}
 	for _, method := range route.Methods {
-		writeMethodTypes(&b, method)
+		writeMethodTypes(&b, route, method)
 	}
 	if hasMiddleware(route) || len(route.Ancestors) > 0 {
 		writeMiddlewareTypes(&b, route)
@@ -137,10 +140,21 @@ func writeMiddlewareTypes(b *strings.Builder, route RouteSpec) {
 	b.WriteString("}\n\n")
 }
 
-func writeMethodTypes(b *strings.Builder, method MethodSpec) {
+func writeParamsType(b *strings.Builder, route RouteSpec) {
+	b.WriteString("type Params struct {\n")
+	for _, ancestor := range route.ParamAncestors {
+		if ancestor.Param == nil {
+			continue
+		}
+		fmt.Fprintf(b, "\t%s %s %s\n", ancestor.FieldKey, ancestor.Param.Type, goTag(ancestor.Param, ""))
+	}
+	b.WriteString("}\n\n")
+}
+
+func writeMethodTypes(b *strings.Builder, route RouteSpec, method MethodSpec) {
 	fmt.Fprintf(b, "type %sRequest struct {\n", method.Name)
-	if method.Param != nil {
-		fmt.Fprintf(b, "\tParam %s %s\n", method.Param.Type, goTag(method.Param, ""))
+	if len(route.ParamAncestors) > 0 {
+		b.WriteString("\tParams Params\n")
 	}
 	if method.Query != nil {
 		fmt.Fprintf(b, "\tQuery %s\n", requestPartType(method, "Query", method.Query))

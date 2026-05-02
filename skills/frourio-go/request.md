@@ -20,9 +20,9 @@ type FrourioSpec struct {
     }
 }
 
-// Generated:
+// Generated (handler-facing):
 // type PostRequest struct {
-//     Param  int
+//     Params Params                    // {Userid int} for api/users/userid/
 //     Query  struct{ Filter *string }
 //     Header struct{ XAPIKey string }
 //     Body   struct{ Name string }
@@ -33,14 +33,30 @@ The handler signature:
 
 ```go
 Post: func(ctx context.Context, req PostRequest) (PostResponse, error) {
-    // req.Param, req.Query.Filter, req.Header.XAPIKey, req.Body.Name
+    // req.Params.Userid, req.Query.Filter, req.Header.XAPIKey, req.Body.Name
 }
 ```
 
 (With middleware, an additional `mw <Method>Context` argument follows; see
 [middleware.md](middleware.md).)
 
-## `Param`
+## `Param` (spec) → `Params` (handler)
+
+Each directory declares **its own** path-parameter type via `Param` inside the
+method block. The generated handler input is **`req.Params`** — a struct that
+flattens the directory's slug **plus every ancestor's** `Param` slug into a
+single object. This mirrors frourio-next's `params` shape.
+
+```go
+// api/users/userid/posts/postid/route.go
+Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
+    // req.Params.Userid (int, from api/users/userid/)
+    // req.Params.Postid (string, from api/users/userid/posts/postid/)
+}
+```
+
+Cascade is automatic — no middleware required. Decoding all ancestor params
+happens before any validation or middleware.
 
 See [routing.md](routing.md) for shapes, optional, catch-all variants.
 Briefly: scalar `string|int`, optional `*string|*int`, catch-all `[]string`,

@@ -41,6 +41,10 @@ points you at the handler line to fix.
 - **Use Go-friendly directory names for params.** `userid`, not `userId`,
   `[id]`, or `:id`. The directory name becomes the URL parameter name; for
   multibyte or symbol-bearing URLs, set `FrourioPath` (no `Param` then).
+- **Read params via `req.Params.<Slug>`, not `req.Param`.** Each directory
+  declares its own slug type with `Param`, and the handler receives a
+  flattened `Params` struct that includes every ancestor's slug plus its
+  own. There is no scalar `req.Param` field.
 
 ## Inheritance Has No Opt-Out
 

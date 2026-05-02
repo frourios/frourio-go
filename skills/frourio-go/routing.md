@@ -49,16 +49,35 @@ Supported scalar types are `string` and `int`. Use a pointer (`*string`,
 `*int`) to make the parameter optional — omitting the segment then produces
 a separate route that does not match the parameter slot.
 
-The handler receives the param at `req.Param` (not wrapped in a struct):
+The handler receives the param under `req.Params.<Slug>`. The slug field
+is named after the directory (capitalized — `userid` → `Userid`):
 
 ```go
 Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
-    return GetStatus200{Body: fmt.Sprintf("user:%d", req.Param)}, nil
+    return GetStatus200{Body: fmt.Sprintf("user:%d", req.Params.Userid)}, nil
 }
 ```
 
-Validation tags work on `Param` directly — `validate:"required,gte=1"` is
-typical. Validation errors return 422.
+`req.Params` is a struct that aggregates **every** path parameter from the
+route's ancestors **and** itself, flat. So a deeper handler at
+`api/users/userid/posts/postid/route.go` reads both:
+
+```go
+Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
+    return GetStatus200{
+        Body: fmt.Sprintf("user:%d/post:%s", req.Params.Userid, req.Params.Postid),
+    }, nil
+}
+```
+
+This matches frourio-next's `params` shape — the slug is declared as a single
+`Param` in each directory's `frourio.go`, and descendants read all ancestor
+params via the unified `req.Params` struct. Cascade requires no middleware;
+it's automatic for any descendant of a `Param`-bearing directory.
+
+Validation tags on `Param` are preserved on the slug field of the generated
+`Params` struct — `validate:"required,gte=1"` is typical. Decode failures and
+validation errors both return 422 with `path: ["params", "<slug>"]`.
 
 ### Catch-All (variadic)
 
@@ -75,11 +94,11 @@ type FrourioSpec struct {
 ```
 
 URL: `GET /api/blog/{slug...}`. Matches one or more remaining segments and
-captures them as `req.Param []string`.
+captures them as `req.Params.Slug []string`.
 
 ```go
 Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
-    return GetStatus200{Body: strings.Join(req.Param, "/")}, nil
+    return GetStatus200{Body: strings.Join(req.Params.Slug, "/")}, nil
 }
 ```
 
@@ -102,14 +121,14 @@ generator registers two routes pointing at the same handler.
 
 ```go
 Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
-    if req.Param == nil {
+    if req.Params.Path == nil {
         return GetStatus200{Body: "root"}, nil
     }
-    return GetStatus200{Body: strings.Join(*req.Param, "/")}, nil
+    return GetStatus200{Body: strings.Join(*req.Params.Path, "/")}, nil
 }
 ```
 
-`req.Param == nil` → no segments. `*req.Param` → the captured segments.
+`req.Params.Path == nil` → no segments. `*req.Params.Path` → captured segments.
 
 ## `FrourioPath` URL Override
 
@@ -162,7 +181,7 @@ directory name becomes the param identifier in:
 
 - The URL pattern (`{userid}`)
 - The OpenAPI parameter name
-- The Go field on `GetRequest` (capitalized: `req.Param`)
+- The Go field on `req.Params` (capitalized: `req.Params.Userid`)
 
 `userid` is conventional in this project. `userId`, `[id]`, `:id`, etc., are
 not valid Go package names and must be avoided.

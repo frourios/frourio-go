@@ -145,6 +145,7 @@ Prefer `http.Server` with timeouts over `http.ListenAndServe` directly.
 - Status codes: `StatusNNN` (any 100–599) — see [response.md](response.md).
 - Body format markers: `URLEncoded bool`, `FormData bool` — see [request.md](request.md), [response.md](response.md).
 - Path parameter shapes: `Param string|int`, `Param []string`, `Param *[]string`, optional `*string` — see [routing.md](routing.md).
+- Path parameter cascade: each directory declares its own `Param`; handlers receive a flat `req.Params.<Slug>` containing every ancestor's slug plus its own — no middleware required. See [routing.md](routing.md).
 - URL override: `const FrourioPath = "..."` — see [routing.md](routing.md).
 - Raw escape hatch: omit `Res`, return `RawResponseFunc(...)` — see [response.md](response.md).
 - Middleware: `Middleware.All` and per-method, with `Context` struct or `bool` — see [middleware.md](middleware.md).

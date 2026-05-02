@@ -13,8 +13,12 @@ type routeMetadata struct{}
 
 var routeSpec = routeMetadata{}
 
+type Params struct {
+	Userid int `validate:"required"`
+}
+
 type GetRequest struct {
-	Param int `validate:"required"`
+	Params Params
 }
 
 type GetResponse interface {

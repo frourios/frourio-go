@@ -100,16 +100,23 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 	b.WriteString("\t\t\treturn\n")
 	b.WriteString("\t\t}\n\n")
 	fmt.Fprintf(b, "\t\treq := %s%sRequest{}\n", q, method.Name)
-	if method.Param != nil {
-		fmt.Fprintf(b, "\t\tparam, err := %s(r)\n", decodeName(route, method, "Param"))
-		b.WriteString("\t\tif err != nil {\n")
-		b.WriteString("\t\t\twriteRequestError(w, []frourioIssue{{Path: []any{\"param\"}, Message: err.Error()}})\n")
+	if len(route.ParamAncestors) > 0 {
+		fmt.Fprintf(b, "\t\tparams, paramErr := %s(r)\n", decodeName(route, method, "Params"))
+		b.WriteString("\t\tif paramErr != nil {\n")
+		b.WriteString("\t\t\twriteRequestError(w, []frourioIssue{{Path: []any{\"params\", paramErr.Field}, Message: paramErr.Message}})\n")
 		b.WriteString("\t\t\treturn\n")
 		b.WriteString("\t\t}\n")
-		b.WriteString("\t\treq.Param = param\n")
-		if method.Param.ValidateTag != "" {
-			fmt.Fprintf(b, "\t\tif err := frourioValidate.Var(req.Param, %q); err != nil {\n", method.Param.ValidateTag)
-			b.WriteString("\t\t\twriteValidationError(w, err, \"param\")\n")
+		b.WriteString("\t\treq.Params = params\n")
+		hasValidate := false
+		for _, ancestor := range route.ParamAncestors {
+			if ancestor.Param != nil && ancestor.Param.ValidateTag != "" {
+				hasValidate = true
+				break
+			}
+		}
+		if hasValidate {
+			b.WriteString("\t\tif err := frourioValidate.Struct(req.Params); err != nil {\n")
+			b.WriteString("\t\t\twriteValidationError(w, err, \"params\")\n")
 			b.WriteString("\t\t\treturn\n")
 			b.WriteString("\t\t}\n")
 		}
@@ -182,11 +189,12 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 	b.WriteString("\t})\n")
 	b.WriteString("}\n\n")
 
-	if method.Param != nil {
-		fmt.Fprintf(b, "func %s(r *http.Request) (%s, error) {\n", decodeName(route, method, "Param"), method.Param.Type)
-		fmt.Fprintf(b, "\tvar param %s\n", method.Param.Type)
-		writeParamDecode(b, route, *method.Param)
-		b.WriteString("\treturn param, nil\n")
+	if len(route.ParamAncestors) > 0 {
+		paramsType := q + "Params"
+		fmt.Fprintf(b, "func %s(r *http.Request) (%s, *frourioParamDecodeError) {\n", decodeName(route, method, "Params"), paramsType)
+		fmt.Fprintf(b, "\tvar params %s\n", paramsType)
+		writeParamsDecode(b, route)
+		b.WriteString("\treturn params, nil\n")
 		b.WriteString("}\n\n")
 	}
 	if method.Query != nil {
@@ -394,48 +402,66 @@ func writeCopyMiddlewareFields(b *strings.Builder, fields []FieldSpec) {
 	}
 }
 
-func writeParamDecode(b *strings.Builder, route RouteSpec, field FieldSpec) {
-	key := pathParamName(route.RelDir)
+func writeParamsDecode(b *strings.Builder, route RouteSpec) {
+	for _, ancestor := range route.ParamAncestors {
+		if ancestor.Param == nil {
+			continue
+		}
+		writeParamFieldDecode(b, ancestor)
+	}
+}
+
+func writeParamFieldDecode(b *strings.Builder, ancestor ParamAncestor) {
+	field := *ancestor.Param
+	key := ancestor.SlugName
+	target := "params." + ancestor.FieldKey
 	baseType := strings.TrimPrefix(field.Type, "*")
 	baseType = strings.TrimPrefix(baseType, "[]")
-	fmt.Fprintf(b, "\tval := r.PathValue(%q)\n", key)
+	fmt.Fprintf(b, "\t{\n\t\tval := r.PathValue(%q)\n", key)
 	if field.Pointer && field.Slice {
-		b.WriteString("\tif val == \"\" { return param, nil }\n")
-	} else {
-		b.WriteString("\tif val == \"\" { return param, fmt.Errorf(\"missing path parameter\") }\n")
-	}
-	if field.Slice {
-		b.WriteString("\tvals := strings.Split(val, \"/\")\n")
+		b.WriteString("\t\tif val != \"\" {\n")
+		b.WriteString("\t\t\tvals := strings.Split(val, \"/\")\n")
 		switch baseType {
 		case "string":
-			if field.Pointer {
-				b.WriteString("\tparam = &vals\n")
-			} else {
-				b.WriteString("\tparam = vals\n")
-			}
+			fmt.Fprintf(b, "\t\t\t%s = &vals\n", target)
 		default:
-			fmt.Fprintf(b, "\treturn param, fmt.Errorf(\"unsupported catch-all param type %s\")\n", field.Type)
+			fmt.Fprintf(b, "\t\t\treturn params, &frourioParamDecodeError{Field: %q, Message: \"unsupported catch-all param type %s\"}\n", key, field.Type)
 		}
+		b.WriteString("\t\t}\n")
+		b.WriteString("\t}\n")
+		return
+	}
+	fmt.Fprintf(b, "\t\tif val == \"\" { return params, &frourioParamDecodeError{Field: %q, Message: \"missing path parameter\"} }\n", key)
+	if field.Slice {
+		b.WriteString("\t\tvals := strings.Split(val, \"/\")\n")
+		switch baseType {
+		case "string":
+			fmt.Fprintf(b, "\t\t%s = vals\n", target)
+		default:
+			fmt.Fprintf(b, "\t\treturn params, &frourioParamDecodeError{Field: %q, Message: \"unsupported catch-all param type %s\"}\n", key, field.Type)
+		}
+		b.WriteString("\t}\n")
 		return
 	}
 	switch baseType {
 	case "string":
 		if field.Pointer {
-			b.WriteString("\tparam = &val\n")
+			fmt.Fprintf(b, "\t\t%s = &val\n", target)
 		} else {
-			b.WriteString("\tparam = val\n")
+			fmt.Fprintf(b, "\t\t%s = val\n", target)
 		}
 	case "int":
-		b.WriteString("\tv, err := strconv.Atoi(val)\n")
-		b.WriteString("\tif err != nil { return param, fmt.Errorf(\"invalid int\") }\n")
+		b.WriteString("\t\tv, err := strconv.Atoi(val)\n")
+		fmt.Fprintf(b, "\t\tif err != nil { return params, &frourioParamDecodeError{Field: %q, Message: \"invalid int\"} }\n", key)
 		if field.Pointer {
-			b.WriteString("\tparam = &v\n")
+			fmt.Fprintf(b, "\t\t%s = &v\n", target)
 		} else {
-			b.WriteString("\tparam = v\n")
+			fmt.Fprintf(b, "\t\t%s = v\n", target)
 		}
 	default:
-		fmt.Fprintf(b, "\treturn param, fmt.Errorf(\"unsupported param type %s\")\n", field.Type)
+		fmt.Fprintf(b, "\t\treturn params, &frourioParamDecodeError{Field: %q, Message: \"unsupported param type %s\"}\n", key, field.Type)
 	}
+	b.WriteString("\t}\n")
 }
 
 func optionalCatchAllPath(method MethodSpec) (string, bool) {
@@ -516,6 +542,15 @@ func runtimeText() string {
 type frourioIssue struct {
 	Message string ` + "`json:\"message\"`" + `
 	Path    []any  ` + "`json:\"path\"`" + `
+}
+
+type frourioParamDecodeError struct {
+	Field   string
+	Message string
+}
+
+func (e *frourioParamDecodeError) Error() string {
+	return e.Message
 }
 
 func writeValidationError(w http.ResponseWriter, err error, root string) {

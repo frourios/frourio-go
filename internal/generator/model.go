@@ -7,16 +7,24 @@ type Options struct {
 }
 
 type RouteSpec struct {
-	Dir          string
-	RelDir       string
-	PackageName  string
-	ImportPath   string
-	Alias        string
-	PathOverride string
-	URLPath      string
-	Middleware   MiddlewareSpec
-	Ancestors    []RouteSpec
-	Methods      []MethodSpec
+	Dir            string
+	RelDir         string
+	PackageName    string
+	ImportPath     string
+	Alias          string
+	PathOverride   string
+	URLPath        string
+	Middleware     MiddlewareSpec
+	Ancestors      []RouteSpec
+	ParamAncestors []ParamAncestor
+	Methods        []MethodSpec
+}
+
+type ParamAncestor struct {
+	Param    *FieldSpec
+	RelDir   string
+	SlugName string
+	FieldKey string
 }
 
 type MiddlewareSpec struct {
