@@ -29,6 +29,11 @@ linters:
         text: fieldalignment
         linters:
           - govet
+      - path: tests/apps/basic/openapiclient/client\.gen\.go$
+        linters:
+          - bodyclose
+          - govet
+          - noctx
 
 formatters:
   exclusions:

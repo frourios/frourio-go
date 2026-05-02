@@ -30,7 +30,9 @@ jobs:
           git diff --exit-code -- go.mod go.sum
 
       - name: Generate fixtures
-        run: go run . generate tests/apps/basic/api --openapi tests/apps/basic/openapi.json
+        run: |
+          go generate ./tests/apps/basic
+          go generate ./tests/apps/basic/openapiclient
 
       - name: Check generated files are committed
         run: git diff --exit-code -- tests/apps/basic
