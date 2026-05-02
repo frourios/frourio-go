@@ -10,6 +10,13 @@ your handlers to `http.ServeMux`, validation, response writing, and OpenAPI.
 The goal is to keep API contracts close to the code that implements them while
 still producing a portable OpenAPI document for clients, documentation, and CI.
 
+## Quick Start With AI Coding Tools
+
+This repo ships a Skill at [skills/frourio-go/](skills/frourio-go/) for AI
+coding tools that support the Skill format. Point your tool at it and ask for
+what you want — adding endpoints, editing specs, regenerating, writing tests.
+The agent reads the Skill and follows the project's conventions.
+
 ## Design Principles
 
 - Use Go types as the source of truth for request and response contracts.
@@ -359,7 +366,3 @@ frourio-go openapi ./api --output ./openapi.json
 `generate` writes relay files, the root server file, and OpenAPI.
 `openapi` writes only the OpenAPI document.
 
-## Documentation
-
-This README focuses on the design, generated shape, and core examples.
-Task-oriented usage guides are intended to be distributed as Skills.
