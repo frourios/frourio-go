@@ -29,11 +29,13 @@ func TestRunErrors(t *testing.T) {
 		nil,
 		{"generate"},
 		{"generate", "api", "--openapi"},
+		{"generate", "api", "--template"},
 		{"generate", "api", "--watch"},
 		{"generate", "api", "--bad"},
 		{"openapi"},
 		{"openapi", "api"},
 		{"openapi", "api", "--output"},
+		{"openapi", "api", "--output", "/tmp/x.json", "--template"},
 		{"openapi", "api", "--bad"},
 		{"unknown"},
 	}
@@ -73,6 +75,20 @@ type FrourioSpec struct {
 		t.Fatal(err)
 	}
 	assertMainTestFileContains(t, openAPIOnly, `"204"`)
+
+	// Custom --template path on both subcommands.
+	tmpl := filepath.Join(dir, "custom-template.json")
+	writeMainTestFile(t, dir, "custom-template.json", `{"openapi":"3.0.3","info":{"title":"custom","version":"1.0.0"},"servers":[{"url":"https://example.test"}]}`)
+	openAPI2 := filepath.Join(dir, "openapi2.json")
+	if err := run([]string{"generate", api, "--openapi", openAPI2, "--template", tmpl}); err != nil {
+		t.Fatal(err)
+	}
+	assertMainTestFileContains(t, openAPI2, `"https://example.test"`)
+	openAPIOnly2 := filepath.Join(dir, "openapi-only2.json")
+	if err := run([]string{"openapi", api, "--output", openAPIOnly2, "--template", tmpl}); err != nil {
+		t.Fatal(err)
+	}
+	assertMainTestFileContains(t, openAPIOnly2, `"custom"`)
 }
 
 func writeMainTestFile(t *testing.T, root, rel, body string) {

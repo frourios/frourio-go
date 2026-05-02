@@ -18,13 +18,13 @@ func main() {
 
 func run(args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("usage: frourio-go generate <api-dir> [--openapi <path>] | frourio-go openapi <api-dir> --output <path>")
+		return fmt.Errorf("usage: frourio-go generate <api-dir> [--openapi <path>] [--template <path>] | frourio-go openapi <api-dir> --output <path> [--template <path>]")
 	}
 
 	switch args[0] {
 	case "generate":
 		if len(args) < 2 {
-			return fmt.Errorf("usage: frourio-go generate <api-dir> [--openapi <path>]")
+			return fmt.Errorf("usage: frourio-go generate <api-dir> [--openapi <path>] [--template <path>]")
 		}
 
 		opts := generator.Options{APIDir: args[1]}
@@ -36,6 +36,12 @@ func run(args []string) error {
 				}
 				opts.OpenAPIPath = rest[1]
 				rest = rest[2:]
+			case "--template":
+				if len(rest) < 2 {
+					return fmt.Errorf("--template requires a path")
+				}
+				opts.TemplatePath = rest[1]
+				rest = rest[2:]
 			case "--watch":
 				return fmt.Errorf("--watch is not implemented yet")
 			default:
@@ -46,7 +52,7 @@ func run(args []string) error {
 		return generator.Generate(opts)
 	case "openapi":
 		if len(args) < 2 {
-			return fmt.Errorf("usage: frourio-go openapi <api-dir> --output <path>")
+			return fmt.Errorf("usage: frourio-go openapi <api-dir> --output <path> [--template <path>]")
 		}
 
 		opts := generator.Options{APIDir: args[1], OnlyOpenAPI: true}
@@ -57,6 +63,12 @@ func run(args []string) error {
 					return fmt.Errorf("--output requires a path")
 				}
 				opts.OpenAPIPath = rest[1]
+				rest = rest[2:]
+			case "--template":
+				if len(rest) < 2 {
+					return fmt.Errorf("--template requires a path")
+				}
+				opts.TemplatePath = rest[1]
 				rest = rest[2:]
 			default:
 				return fmt.Errorf("unknown option: %s", rest[0])

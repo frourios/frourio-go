@@ -8,8 +8,8 @@ package declarations, and writes generated Go and JSON files.
 The binary has two subcommands:
 
 ```bash
-frourio-go generate <api-dir> [--openapi <path>]
-frourio-go openapi  <api-dir> --output <path>
+frourio-go generate <api-dir> [--openapi <path>] [--template <path>]
+frourio-go openapi  <api-dir> --output <path>    [--template <path>]
 ```
 
 ### `generate`
@@ -18,7 +18,7 @@ Produces:
 
 - `<api-dir>/frourio_server.go` — `Handler()`, `Mount(mux)`, decode helpers
 - `<route-dir>/frourio_relay.go` — per-route types and `DefineRoute`
-- `<api-dir>/openapi.json` (default) — overridable with `--openapi <path>`
+- OpenAPI JSON at the path given by `--openapi <path>` (skipped when omitted)
 
 Required: `<api-dir>` (the root of your `api/` tree).
 
@@ -26,7 +26,8 @@ Flags:
 
 | Flag           | Meaning                                                       |
 |----------------|---------------------------------------------------------------|
-| `--openapi`    | Output path for OpenAPI JSON. Default: `<api-dir>/openapi.json` |
+| `--openapi`    | Output path for OpenAPI JSON. When omitted, OpenAPI is not generated. |
+| `--template`   | OpenAPI template (JSON) merged into the output. Default: `openapi_template.json` next to `--openapi`. Auto-created if absent and the path is the default. |
 | `--watch`      | Reserved (returns "not implemented yet" today)                |
 
 ### `openapi`
@@ -106,8 +107,10 @@ In the api-root directory only. Declares:
 
 ### `openapi.json`
 
-OpenAPI 3.0.3 JSON, indented. Usually committed to source control to keep
-client generation reproducible. See [openapi.md](openapi.md).
+OpenAPI 3.0.3 JSON, indented. Written only when `--openapi <path>` (or
+`openapi --output <path>`) is supplied — there is no default location.
+Usually committed to source control to keep client generation reproducible.
+See [openapi.md](openapi.md).
 
 ## Module / Import Resolution
 

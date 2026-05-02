@@ -233,10 +233,39 @@ type FrourioSpec struct {
 	Get struct{}
 }
 `)
+	writeFile(t, api, "mwonly/frourio.go", `package mwonly
+
+type FrourioSpec struct {
+	Middleware struct {
+		All struct {
+			Context struct {
+				TraceID string `+"`json:\"traceId\" validate:\"required\"`"+`
+			}
+		}
+	}
+}
+`)
+	writeFile(t, api, "mwonly/child/frourio.go", `package child
+
+type FrourioSpec struct {
+	Get struct {
+		Res struct {
+			Status200 struct {
+				Body string `+"`json:\"body\" validate:\"required\"`"+`
+			}
+		}
+	}
+}
+`)
 
 	openAPI := filepath.Join(dir, "openapi.json")
 	if err := Generate(Options{APIDir: api, OpenAPIPath: openAPI}); err != nil {
 		t.Fatal(err)
+	}
+	if data, err := os.ReadFile(openAPI); err != nil {
+		t.Fatal(err)
+	} else if strings.Contains(string(data), `"":`) {
+		t.Fatalf("openapi.json should not contain an empty path key: %s", data)
 	}
 
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/users/{userid}\"")
@@ -352,7 +381,123 @@ type FrourioSpec struct {
 	if err := Generate(Options{APIDir: api}); err != nil {
 		t.Fatal(err)
 	}
-	assertFileContains(t, filepath.Join(api, "openapi.json"), `"204"`)
+	if _, err := os.Stat(filepath.Join(api, "openapi.json")); !os.IsNotExist(err) {
+		t.Fatalf("openapi.json should not be generated without OpenAPIPath, err=%v", err)
+	}
+}
+
+func TestGenerateOpenAPITemplate(t *testing.T) {
+	t.Run("creates skeleton when template missing", func(t *testing.T) {
+		dir := t.TempDir()
+		writeFile(t, dir, "go.mod", "module example.com/tmpl\n\ngo 1.26\n")
+		api := filepath.Join(dir, "api")
+		writeFile(t, api, "frourio.go", `package api
+
+type FrourioSpec struct {
+	Get struct {
+		Res struct {
+			Status204 struct{}
+		}
+	}
+}
+`)
+		out := filepath.Join(dir, "openapi.json")
+		if err := Generate(Options{APIDir: api, OpenAPIPath: out}); err != nil {
+			t.Fatal(err)
+		}
+		tmplPath := filepath.Join(dir, "openapi_template.json")
+		assertFileContains(t, tmplPath, `"openapi": "3.0.3"`)
+		assertFileContains(t, tmplPath, `"frourio-go API"`)
+		assertFileContains(t, out, `"openapi": "3.0.3"`)
+		assertFileContains(t, out, `"frourio-go API"`)
+	})
+
+	t.Run("merges template fields and overrides paths/components.schemas", func(t *testing.T) {
+		dir := t.TempDir()
+		writeFile(t, dir, "go.mod", "module example.com/tmpl\n\ngo 1.26\n")
+		api := filepath.Join(dir, "api")
+		writeFile(t, api, "frourio.go", `package api
+
+type FrourioSpec struct {
+	Get struct {
+		Res struct {
+			Status204 struct{}
+		}
+	}
+}
+`)
+		// Pre-write a template with custom info, servers, and a stale paths
+		// entry that the generator must override.
+		out := filepath.Join(dir, "openapi.json")
+		writeFile(t, dir, "openapi_template.json", `{
+  "openapi": "3.0.3",
+  "info": {"title": "custom title", "version": "9.9.9", "description": "hi"},
+  "servers": [{"url": "https://example.test"}],
+  "paths": {"/should-be-replaced": {"get": {"summary": "stale"}}},
+  "components": {"schemas": {"Custom": {"type": "string"}}}
+}
+`)
+		if err := Generate(Options{APIDir: api, OpenAPIPath: out}); err != nil {
+			t.Fatal(err)
+		}
+		assertFileContains(t, out, `"custom title"`)
+		assertFileContains(t, out, `"https://example.test"`)
+		assertFileContains(t, out, `"Custom"`)         // template-defined schema preserved
+		assertFileContains(t, out, `"FrourioError"`)   // generator-defined schema added
+		assertFileContains(t, out, `"/api"`)           // generator-emitted path present
+		if data, err := os.ReadFile(out); err != nil {
+			t.Fatal(err)
+		} else if strings.Contains(string(data), "/should-be-replaced") {
+			t.Fatalf("template paths should be overridden, got: %s", data)
+		}
+	})
+
+	t.Run("invalid template JSON is an error", func(t *testing.T) {
+		dir := t.TempDir()
+		writeFile(t, dir, "go.mod", "module example.com/tmpl\n\ngo 1.26\n")
+		api := filepath.Join(dir, "api")
+		writeFile(t, api, "frourio.go", `package api
+
+type FrourioSpec struct {
+	Get struct {
+		Res struct {
+			Status204 struct{}
+		}
+	}
+}
+`)
+		out := filepath.Join(dir, "openapi.json")
+		writeFile(t, dir, "openapi_template.json", "{not valid json")
+		err := Generate(Options{APIDir: api, OpenAPIPath: out})
+		if err == nil || !strings.Contains(err.Error(), "parse") {
+			t.Fatalf("expected parse error, got %v", err)
+		}
+	})
+
+	t.Run("explicit --template path missing is an error", func(t *testing.T) {
+		dir := t.TempDir()
+		writeFile(t, dir, "go.mod", "module example.com/tmpl\n\ngo 1.26\n")
+		api := filepath.Join(dir, "api")
+		writeFile(t, api, "frourio.go", `package api
+
+type FrourioSpec struct {
+	Get struct {
+		Res struct {
+			Status204 struct{}
+		}
+	}
+}
+`)
+		out := filepath.Join(dir, "openapi.json")
+		err := Generate(Options{
+			APIDir:       api,
+			OpenAPIPath:  out,
+			TemplatePath: filepath.Join(dir, "no-such-template.json"),
+		})
+		if err == nil || !strings.Contains(err.Error(), "template not found") {
+			t.Fatalf("expected 'template not found' error, got %v", err)
+		}
+	})
 }
 
 func TestGenerateErrors(t *testing.T) {

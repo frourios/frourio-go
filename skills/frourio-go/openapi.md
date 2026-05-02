@@ -1,16 +1,40 @@
 # OpenAPI Generation
 
-frourio-go produces an OpenAPI 3.0.3 document on every generation, alongside
-the Go relay and server files. The default output path is
-`<api-dir>/openapi.json`; override with `--openapi <path>`.
+frourio-go can produce an OpenAPI 3.0.3 document alongside the Go relay and
+server files. Output is **opt-in** — you must supply a path; there is no
+default location.
 
 ## When It's Generated
 
-- `frourio-go generate <api-dir> [--openapi <path>]` — generates Go relay /
-  server files **and** OpenAPI.
-- `frourio-go openapi <api-dir> --output <path>` — generates **only** the
-  OpenAPI document, without touching Go files. Useful for CI checks or
-  doc-only updates.
+- `frourio-go generate <api-dir> --openapi <path> [--template <path>]` —
+  generates Go relay / server files **and** writes OpenAPI to `<path>`.
+  Without `--openapi`, only the Go files are produced.
+- `frourio-go openapi <api-dir> --output <path> [--template <path>]` —
+  generates **only** the OpenAPI document, without touching Go files.
+  `--output` is required. Useful for CI checks or doc-only updates.
+
+## Template Merging
+
+Settings that are outside frourio-go's responsibility — `info`, `servers`,
+`tags`, `security`, `externalDocs`, custom schemas — go in a JSON template
+that frourio-go reads on every generation and merges into the output.
+
+| Source            | Wins for                                            |
+|-------------------|-----------------------------------------------------|
+| Template          | `info`, `servers`, `tags`, `security`, `externalDocs`, anything generator doesn't emit |
+| Template          | `components.schemas.<YourType>` for names not collided with generated ones |
+| Generator         | `paths` (always — generator owns the API contract)  |
+| Generator         | `components.schemas.<GeneratedType>` for any name it emits |
+
+Resolution:
+
+- `--template <path>` — explicit path. Missing file is an error.
+- No `--template` — defaults to `openapi_template.json` next to the OpenAPI
+  output. Missing → frourio-go writes a minimal skeleton there
+  (`openapi: 3.0.3`, `info.title`, `info.version`) and uses it.
+
+Commit the template alongside the source. It's a hand-edited input, not a
+generated artifact, even when frourio-go scaffolds the initial skeleton.
 
 ## What's in the Document
 
@@ -169,15 +193,15 @@ Comments in `frourio.go` directly above a spec element flow through:
 
 See [spec.md](spec.md) for the line-vs-block-comment rules.
 
-## Default Output Location
+## Output Location
 
 ```bash
-go run ../../.. generate ./api                       # → ./api/openapi.json
+go run ../../.. generate ./api                       # no OpenAPI written
 go run ../../.. generate ./api --openapi ../doc.json # → ../doc.json
 ```
 
-The basic test app uses `--openapi` to publish the doc one level up so the
-sibling `openapiclient` package can consume it. See
+The basic test app passes `--openapi ./openapi.json` so the sibling
+`openapiclient` package can consume the doc. See
 [tests/apps/basic/main.go](../../tests/apps/basic/main.go) and
 [tests/apps/basic/openapi.json](../../tests/apps/basic/openapi.json).
 

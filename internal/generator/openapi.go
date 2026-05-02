@@ -30,6 +30,9 @@ func openAPIDocument(routes []RouteSpec) map[string]any {
 	}
 
 	for _, route := range routes {
+		if len(route.Methods) == 0 {
+			continue
+		}
 		pathItem := map[string]any{}
 		for _, method := range route.Methods {
 			pathItem[strings.ToLower(method.HTTPName)] = operationObject(route, method, components["schemas"].(map[string]any), method.URLPath, true)
@@ -45,11 +48,6 @@ func openAPIDocument(routes []RouteSpec) map[string]any {
 	}
 
 	return map[string]any{
-		"openapi": "3.0.3",
-		"info": map[string]any{
-			"title":   "frourio-go API",
-			"version": "0.1.0",
-		},
 		"paths":      paths,
 		"components": components,
 	}

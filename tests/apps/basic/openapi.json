@@ -217,7 +217,6 @@
   },
   "openapi": "3.0.3",
   "paths": {
-    "": {},
     "/api": {
       "get": {
         "description": "List root endpoint.\n\tIndented detail is preserved.",

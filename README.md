@@ -50,11 +50,14 @@ frourio-go generates:
 api/
   frourio_relay.go       # typed request/response helpers for api/route.go
   frourio_server.go      # http.ServeMux registration for the whole API tree
-  openapi.json           # OpenAPI 3.0.3 document
   users/
     userid/
       frourio_relay.go   # typed helpers for users/userid/route.go
 ```
+
+OpenAPI 3.0.3 document (`openapi.json`) is written only when `--openapi <path>`
+is given (or via the `openapi` subcommand's `--output <path>`); without it the
+relay/server files are generated and the OpenAPI step is skipped.
 
 `route.go` is never generated. It is your application code.
 
@@ -360,9 +363,29 @@ other ecosystems through existing OpenAPI client generators.
 ```bash
 frourio-go generate ./api
 frourio-go generate ./api --openapi ./openapi.json
-frourio-go openapi ./api --output ./openapi.json
+frourio-go generate ./api --openapi ./openapi.json --template ./openapi_template.json
+frourio-go openapi   ./api --output ./openapi.json
+frourio-go openapi   ./api --output ./openapi.json --template ./openapi_template.json
 ```
 
-`generate` writes relay files, the root server file, and OpenAPI.
-`openapi` writes only the OpenAPI document.
+`generate` writes relay files and the root server file. The OpenAPI document
+is written only when `--openapi <path>` is supplied. `openapi` writes only the
+OpenAPI document and requires `--output <path>`.
+
+### OpenAPI template
+
+When OpenAPI is generated, frourio-go reads a JSON template and merges its
+fields into the output. This is where you put settings that are outside
+frourio-go's responsibility — `info`, `servers`, `tags`, `security`,
+`externalDocs`, custom schemas, etc.
+
+- `--template <path>` lets you point at any file. Missing → error.
+- Without `--template`, the default is `openapi_template.json` next to the
+  output file. Missing → frourio-go writes a minimal skeleton there
+  (`openapi`, `info.title`, `info.version`) and uses it.
+- Merge rules: template fields are kept; the generator's `paths` and
+  `components.schemas` always override anything the template tries to put
+  under those slots (frourio-go owns the API contract). Custom schemas you
+  add under `components.schemas.<YourType>` are preserved as long as the
+  name doesn't collide with a generated one.
 

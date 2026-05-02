@@ -52,22 +52,123 @@ func Generate(opts Options) error {
 		}
 	}
 
-	openAPIPath := opts.OpenAPIPath
-	if openAPIPath == "" {
-		openAPIPath = filepath.Join(apiDir, "openapi.json")
+	if opts.OpenAPIPath == "" {
+		return nil
 	}
+
 	// Generated API documentation is source output, so it should be readable and traversable by the project owner.
-	if err := os.MkdirAll(filepath.Dir(openAPIPath), 0o755); err != nil { //nolint:gosec // Generated source directories should be traversable in the repository.
+	if err := os.MkdirAll(filepath.Dir(opts.OpenAPIPath), 0o755); err != nil { //nolint:gosec // Generated source directories should be traversable in the repository.
 		return err
 	}
 
-	doc := openAPIDocument(routes)
+	templatePath := opts.TemplatePath
+	if templatePath == "" {
+		templatePath = filepath.Join(filepath.Dir(opts.OpenAPIPath), "openapi_template.json")
+	}
+	template, err := loadOrCreateTemplate(templatePath, opts.TemplatePath != "")
+	if err != nil {
+		return err
+	}
+
+	doc := mergeOpenAPI(template, openAPIDocument(routes))
 	data, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
 		return err
 	}
 
-	return os.WriteFile(openAPIPath, append(data, '\n'), 0o644) //nolint:gosec // Generated source artifact, not a secret.
+	return os.WriteFile(opts.OpenAPIPath, append(data, '\n'), 0o644) //nolint:gosec // Generated source artifact, not a secret.
+}
+
+// loadOrCreateTemplate reads the OpenAPI template at path. If the file doesn't
+// exist and explicit is false (default-derived path), it writes a minimal
+// skeleton there and returns it. If explicit is true, a missing file is an
+// error — the user pointed us somewhere that should already exist.
+func loadOrCreateTemplate(path string, explicit bool) (map[string]any, error) {
+	data, err := os.ReadFile(path) //nolint:gosec // Template path is a user-controlled build-time input.
+	if err == nil {
+		var t map[string]any
+		if err := json.Unmarshal(data, &t); err != nil {
+			return nil, fmt.Errorf("parse %s: %w", path, err)
+		}
+		return t, nil
+	}
+	if !os.IsNotExist(err) {
+		return nil, err
+	}
+	if explicit {
+		return nil, fmt.Errorf("template not found: %s", path)
+	}
+
+	skeleton := map[string]any{
+		"openapi": "3.0.3",
+		"info": map[string]any{
+			"title":   "frourio-go API",
+			"version": "0.1.0",
+		},
+	}
+	out, err := json.MarshalIndent(skeleton, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	if err := os.WriteFile(path, append(out, '\n'), 0o644); err != nil { //nolint:gosec // Generated source artifact.
+		return nil, err
+	}
+	return skeleton, nil
+}
+
+// mergeOpenAPI overlays generated paths/components onto the template. The
+// template provides info / servers / tags / security / etc.; generated keys
+// (paths, components.schemas) always win over anything the template tried to
+// declare under those slots.
+func mergeOpenAPI(template, generated map[string]any) map[string]any {
+	out := map[string]any{}
+	for k, v := range template {
+		out[k] = v
+	}
+	for k, v := range generated {
+		if k == "components" {
+			out[k] = mergeComponents(template["components"], v)
+			continue
+		}
+		out[k] = v
+	}
+	return out
+}
+
+func mergeComponents(templateComponents, generated any) any {
+	tc, _ := templateComponents.(map[string]any)
+	gc, _ := generated.(map[string]any)
+	if tc == nil {
+		return gc
+	}
+	merged := map[string]any{}
+	for k, v := range tc {
+		merged[k] = v
+	}
+	for k, v := range gc {
+		if k == "schemas" {
+			merged[k] = mergeMaps(tc["schemas"], v)
+			continue
+		}
+		merged[k] = v
+	}
+	return merged
+}
+
+func mergeMaps(template, generated any) any {
+	tm, _ := template.(map[string]any)
+	gm, _ := generated.(map[string]any)
+	if tm == nil {
+		return gm
+	}
+	merged := map[string]any{}
+	for k, v := range tm {
+		merged[k] = v
+	}
+	for k, v := range gm {
+		merged[k] = v
+	}
+	return merged
 }
 
 func fillAncestors(routes []RouteSpec) {

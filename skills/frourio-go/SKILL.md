@@ -16,7 +16,7 @@ Use this skill when the user asks to:
 - add validation, comments-as-OpenAPI metadata
 - add middleware (route-wide `All`, method-specific, ancestor inheritance)
 - expose URL-encoded forms, multipart form-data, raw responses, or custom content types
-- regenerate `frourio_relay.go`, `frourio_server.go`, or `openapi.json`
+- regenerate `frourio_relay.go`, `frourio_server.go`, or `openapi.json` (the latter only when `--openapi <path>` is set)
 - generate OpenAPI clients via oapi-codegen
 - write tests against the generated handler
 
@@ -35,7 +35,7 @@ Generated files are glue and **must not be hand-edited**:
 ```text
 api/users/userid/frourio_relay.go  # per-route types: GetRequest, GetStatus200, ...
 api/frourio_server.go              # root net/http integration: Handler(), Mount()
-api/openapi.json (or path from --openapi)
+<path from --openapi>              # only when --openapi (or `openapi` subcommand) is used
 ```
 
 Change `frourio.go` or `route.go`, then regenerate.
@@ -45,7 +45,7 @@ Change `frourio.go` or `route.go`, then regenerate.
 1. Find or create the target API directory under your `api/` root.
 2. Edit or create `frourio.go` (the spec).
 3. Edit or create `route.go` (the handler).
-4. Run `go generate` to refresh `frourio_relay.go`, `frourio_server.go`, `openapi.json`.
+4. Run `go generate` to refresh `frourio_relay.go` and `frourio_server.go` (and `openapi.json` if `--openapi <path>` is set).
 5. Run tests.
 6. If OpenAPI clients are part of the fixture, regenerate them too.
 

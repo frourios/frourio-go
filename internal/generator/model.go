@@ -1,9 +1,10 @@
 package generator
 
 type Options struct {
-	APIDir      string
-	OpenAPIPath string
-	OnlyOpenAPI bool
+	APIDir       string
+	OpenAPIPath  string
+	TemplatePath string
+	OnlyOpenAPI  bool
 }
 
 type RouteSpec struct {
