@@ -24,8 +24,10 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Install goimports
-        run: go install golang.org/x/tools/cmd/goimports@v0.44.0
+      - name: Check go mod tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
 
       - name: Generate fixtures
         run: go run . generate tests/apps/basic/api --openapi tests/apps/basic/openapi.json
@@ -35,20 +37,14 @@ jobs:
 
       - name: Check Go imports and formatting
         run: |
-          goimports -w main.go internal tests
+          go tool goimports -w main.go internal tests
           git diff --exit-code -- main.go internal tests
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v9
-        with:
-          version: v2.11
-          args: ./...
-
-      - name: Install govulncheck
-        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+        run: go tool golangci-lint run ./...
 
       - name: govulncheck
-        run: govulncheck ./...
+        run: go tool govulncheck ./...
 
       - name: Test
         run: go test ./...
