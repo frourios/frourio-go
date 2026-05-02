@@ -1,13 +1,16 @@
 package mw
 
-import "context"
+import (
+	"context"
+	"net/http"
+)
 
 var Route = DefineRoute(RouteHandlers{
 	Middleware: RouteMiddleware{
-		All: func(ctx context.Context, next MiddlewareNext) (any, error) {
+		All: func(ctx context.Context, r *http.Request, next MiddlewareNext) (any, error) {
 			return next(context.WithValue(ctx, roleKey{}, "admin"))
 		},
-		Get: func(ctx context.Context, req GetRequest, mw MiddlewareContext, next GetNext) (GetResponse, error) {
+		Get: func(ctx context.Context, r *http.Request, req GetRequest, mw MiddlewareContext, next GetNext) (GetResponse, error) {
 			role, _ := ctx.Value(roleKey{}).(string)
 			if role == "" {
 				return GetStatus403{Body: "forbidden"}, nil

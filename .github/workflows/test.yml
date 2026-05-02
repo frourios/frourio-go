@@ -33,9 +33,10 @@ jobs:
         run: |
           go generate ./tests/apps/basic
           go generate ./tests/apps/basic/openapiclient
+          go generate ./tests/apps/middleware
 
       - name: Check generated files are committed
-        run: git diff --exit-code -- tests/apps/basic
+        run: git diff --exit-code -- tests/apps
 
       - name: Check Go imports and formatting
         run: |

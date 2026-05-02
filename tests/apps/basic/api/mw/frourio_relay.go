@@ -2,7 +2,10 @@
 
 package mw
 
-import "context"
+import (
+	"context"
+	"net/http"
+)
 
 type RouteDefinition struct {
 	spec     routeMetadata
@@ -39,7 +42,7 @@ type MiddlewareContext struct {
 }
 
 type MiddlewareNext func(context.Context) (any, error)
-type MiddlewareAll func(context.Context, MiddlewareNext) (any, error)
+type MiddlewareAll func(context.Context, *http.Request, MiddlewareNext) (any, error)
 
 type GetMiddlewareContext struct {
 	Role string `json:"role" validate:"required"`
@@ -51,7 +54,7 @@ type GetContext struct {
 }
 
 type GetNext func(context.Context, GetRequest, GetMiddlewareContext) (GetResponse, error)
-type GetMiddleware func(context.Context, GetRequest, MiddlewareContext, GetNext) (GetResponse, error)
+type GetMiddleware func(context.Context, *http.Request, GetRequest, MiddlewareContext, GetNext) (GetResponse, error)
 
 type RouteMiddleware struct {
 	All MiddlewareAll

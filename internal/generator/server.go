@@ -304,14 +304,14 @@ func writeMiddlewareCall(b *strings.Builder, route RouteSpec, method MethodSpec)
 	if item != nil {
 		fmt.Fprintf(b, "\t\t\tif middleware.%s != nil {\n", method.Name)
 		if item.Context != nil {
-			fmt.Fprintf(b, "\t\t\t\treturn middleware.%s(ctx, req, mwState, func(ctx context.Context, req %s%sRequest, methodCtx %s%sMiddlewareContext) (%s%sResponse, error) {\n", method.Name, q, method.Name, q, method.Name, q, method.Name)
+			fmt.Fprintf(b, "\t\t\t\treturn middleware.%s(ctx, r, req, mwState, func(ctx context.Context, req %s%sRequest, methodCtx %s%sMiddlewareContext) (%s%sResponse, error) {\n", method.Name, q, method.Name, q, method.Name, q, method.Name)
 			b.WriteString("\t\t\t\t\tif err := frourioValidate.Struct(methodCtx); err != nil {\n")
 			b.WriteString("\t\t\t\t\t\treturn nil, err\n")
 			b.WriteString("\t\t\t\t\t}\n")
 			fmt.Fprintf(b, "\t\t\t\t\treturn runHandler(ctx, %s%sContext{MiddlewareContext: mwState, %sMiddlewareContext: methodCtx})\n", q, method.Name, method.Name)
 			b.WriteString("\t\t\t\t})\n")
 		} else {
-			fmt.Fprintf(b, "\t\t\t\treturn middleware.%s(ctx, req, mwState, func(ctx context.Context, req %s%sRequest) (%s%sResponse, error) {\n", method.Name, q, method.Name, q, method.Name)
+			fmt.Fprintf(b, "\t\t\t\treturn middleware.%s(ctx, r, req, mwState, func(ctx context.Context, req %s%sRequest) (%s%sResponse, error) {\n", method.Name, q, method.Name, q, method.Name)
 			fmt.Fprintf(b, "\t\t\t\t\treturn runHandler(ctx, %s%sContext{MiddlewareContext: mwState})\n", q, method.Name)
 			b.WriteString("\t\t\t\t})\n")
 		}
@@ -325,7 +325,7 @@ func writeMiddlewareCall(b *strings.Builder, route RouteSpec, method MethodSpec)
 		fmt.Fprintf(b, "\t\trunCurrentAll := func(ctx context.Context, mwState %sMiddlewareContext) (%s%sResponse, error) {\n", q, q, method.Name)
 		b.WriteString("\t\t\tif middleware.All != nil {\n")
 		if route.Middleware.All.Context != nil {
-			b.WriteString("\t\t\t\tres, err := middleware.All(ctx, func(ctx context.Context, allCtx " + q + "MiddlewareAllContext) (any, error) {\n")
+			b.WriteString("\t\t\t\tres, err := middleware.All(ctx, r, func(ctx context.Context, allCtx " + q + "MiddlewareAllContext) (any, error) {\n")
 			b.WriteString("\t\t\t\t\tif err := frourioValidate.Struct(allCtx); err != nil {\n")
 			b.WriteString("\t\t\t\t\t\treturn nil, err\n")
 			b.WriteString("\t\t\t\t\t}\n")
@@ -333,7 +333,7 @@ func writeMiddlewareCall(b *strings.Builder, route RouteSpec, method MethodSpec)
 			b.WriteString("\t\t\t\t\treturn runMethod(ctx, mwState)\n")
 			b.WriteString("\t\t\t\t})\n")
 		} else {
-			b.WriteString("\t\t\t\tres, err := middleware.All(ctx, func(ctx context.Context) (any, error) {\n")
+			b.WriteString("\t\t\t\tres, err := middleware.All(ctx, r, func(ctx context.Context) (any, error) {\n")
 			b.WriteString("\t\t\t\t\treturn runMethod(ctx, mwState)\n")
 			b.WriteString("\t\t\t\t})\n")
 		}
@@ -360,7 +360,7 @@ func writeMiddlewareCall(b *strings.Builder, route RouteSpec, method MethodSpec)
 		fmt.Fprintf(b, "\t\t%s := func(ctx context.Context, mwState %sMiddlewareContext) (%s%sResponse, error) {\n", wrapperName, q, q, method.Name)
 		fmt.Fprintf(b, "\t\t\tif ancestorHandlers%d.Middleware.All != nil {\n", i)
 		if ancestor.Middleware.All.Context != nil {
-			fmt.Fprintf(b, "\t\t\t\tres, err := ancestorHandlers%d.Middleware.All(ctx, func(ctx context.Context, allCtx %sMiddlewareAllContext) (any, error) {\n", i, aq)
+			fmt.Fprintf(b, "\t\t\t\tres, err := ancestorHandlers%d.Middleware.All(ctx, r, func(ctx context.Context, allCtx %sMiddlewareAllContext) (any, error) {\n", i, aq)
 			b.WriteString("\t\t\t\t\tif err := frourioValidate.Struct(allCtx); err != nil {\n")
 			b.WriteString("\t\t\t\t\t\treturn nil, err\n")
 			b.WriteString("\t\t\t\t\t}\n")
@@ -368,7 +368,7 @@ func writeMiddlewareCall(b *strings.Builder, route RouteSpec, method MethodSpec)
 			fmt.Fprintf(b, "\t\t\t\t\treturn %s(ctx, mwState)\n", nextName)
 			b.WriteString("\t\t\t\t})\n")
 		} else {
-			fmt.Fprintf(b, "\t\t\t\tres, err := ancestorHandlers%d.Middleware.All(ctx, func(ctx context.Context) (any, error) {\n", i)
+			fmt.Fprintf(b, "\t\t\t\tres, err := ancestorHandlers%d.Middleware.All(ctx, r, func(ctx context.Context) (any, error) {\n", i)
 			fmt.Fprintf(b, "\t\t\t\t\treturn %s(ctx, mwState)\n", nextName)
 			b.WriteString("\t\t\t\t})\n")
 		}

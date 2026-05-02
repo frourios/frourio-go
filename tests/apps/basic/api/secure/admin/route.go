@@ -3,18 +3,19 @@ package admin
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 )
 
 var Route = DefineRoute(RouteHandlers{
 	Middleware: RouteMiddleware{
-		All: func(ctx context.Context, next MiddlewareNext) (any, error) {
+		All: func(ctx context.Context, r *http.Request, next MiddlewareNext) (any, error) {
 			return next(ctx, MiddlewareAllContext{
 				IsAdmin:     true,
 				Permissions: []string{"read", "write", "delete"},
 			})
 		},
-		Post: func(ctx context.Context, req PostRequest, mw MiddlewareContext, next PostNext) (PostResponse, error) {
+		Post: func(ctx context.Context, r *http.Request, req PostRequest, mw MiddlewareContext, next PostNext) (PostResponse, error) {
 			if !mw.IsAdmin {
 				return PostStatus403{Body: "Forbidden: Admin access required"}, nil
 			}

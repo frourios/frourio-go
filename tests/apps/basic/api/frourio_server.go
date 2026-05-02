@@ -177,7 +177,7 @@ func wrapAuthGet(route auth.RouteDefinition) http.Handler {
 		}
 		runCurrentAll := func(ctx context.Context, mwState auth.MiddlewareContext) (auth.GetResponse, error) {
 			if middleware.All != nil {
-				res, err := middleware.All(ctx, func(ctx context.Context, allCtx auth.MiddlewareAllContext) (any, error) {
+				res, err := middleware.All(ctx, r, func(ctx context.Context, allCtx auth.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -597,7 +597,7 @@ func wrapMwGet(route mw.RouteDefinition) http.Handler {
 		}
 		runMethod := func(ctx context.Context, mwState mw.MiddlewareContext) (mw.GetResponse, error) {
 			if middleware.Get != nil {
-				return middleware.Get(ctx, req, mwState, func(ctx context.Context, req mw.GetRequest, methodCtx mw.GetMiddlewareContext) (mw.GetResponse, error) {
+				return middleware.Get(ctx, r, req, mwState, func(ctx context.Context, req mw.GetRequest, methodCtx mw.GetMiddlewareContext) (mw.GetResponse, error) {
 					if err := frourioValidate.Struct(methodCtx); err != nil {
 						return nil, err
 					}
@@ -608,7 +608,7 @@ func wrapMwGet(route mw.RouteDefinition) http.Handler {
 		}
 		runCurrentAll := func(ctx context.Context, mwState mw.MiddlewareContext) (mw.GetResponse, error) {
 			if middleware.All != nil {
-				res, err := middleware.All(ctx, func(ctx context.Context) (any, error) {
+				res, err := middleware.All(ctx, r, func(ctx context.Context) (any, error) {
 					return runMethod(ctx, mwState)
 				})
 				if err != nil {
@@ -669,7 +669,7 @@ func wrapNestChildGet(route nestChild.RouteDefinition) http.Handler {
 		}
 		runAncestorAll0 := func(ctx context.Context, mwState nestChild.MiddlewareContext) (nestChild.GetResponse, error) {
 			if ancestorHandlers0.Middleware.All != nil {
-				res, err := ancestorHandlers0.Middleware.All(ctx, func(ctx context.Context, allCtx nest.MiddlewareAllContext) (any, error) {
+				res, err := ancestorHandlers0.Middleware.All(ctx, r, func(ctx context.Context, allCtx nest.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -817,7 +817,7 @@ func wrapSecureGet(route secure.RouteDefinition) http.Handler {
 		}
 		runCurrentAll := func(ctx context.Context, mwState secure.MiddlewareContext) (secure.GetResponse, error) {
 			if middleware.All != nil {
-				res, err := middleware.All(ctx, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
+				res, err := middleware.All(ctx, r, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -877,7 +877,7 @@ func wrapSecureAdminGet(route secureAdmin.RouteDefinition) http.Handler {
 		}
 		runCurrentAll := func(ctx context.Context, mwState secureAdmin.MiddlewareContext) (secureAdmin.GetResponse, error) {
 			if middleware.All != nil {
-				res, err := middleware.All(ctx, func(ctx context.Context, allCtx secureAdmin.MiddlewareAllContext) (any, error) {
+				res, err := middleware.All(ctx, r, func(ctx context.Context, allCtx secureAdmin.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -897,7 +897,7 @@ func wrapSecureAdminGet(route secureAdmin.RouteDefinition) http.Handler {
 		}
 		runAncestorAll0 := func(ctx context.Context, mwState secureAdmin.MiddlewareContext) (secureAdmin.GetResponse, error) {
 			if ancestorHandlers0.Middleware.All != nil {
-				res, err := ancestorHandlers0.Middleware.All(ctx, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
+				res, err := ancestorHandlers0.Middleware.All(ctx, r, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -966,7 +966,7 @@ func wrapSecureAdminPost(route secureAdmin.RouteDefinition) http.Handler {
 		}
 		runMethod := func(ctx context.Context, mwState secureAdmin.MiddlewareContext) (secureAdmin.PostResponse, error) {
 			if middleware.Post != nil {
-				return middleware.Post(ctx, req, mwState, func(ctx context.Context, req secureAdmin.PostRequest) (secureAdmin.PostResponse, error) {
+				return middleware.Post(ctx, r, req, mwState, func(ctx context.Context, req secureAdmin.PostRequest) (secureAdmin.PostResponse, error) {
 					return runHandler(ctx, secureAdmin.PostContext{MiddlewareContext: mwState})
 				})
 			}
@@ -974,7 +974,7 @@ func wrapSecureAdminPost(route secureAdmin.RouteDefinition) http.Handler {
 		}
 		runCurrentAll := func(ctx context.Context, mwState secureAdmin.MiddlewareContext) (secureAdmin.PostResponse, error) {
 			if middleware.All != nil {
-				res, err := middleware.All(ctx, func(ctx context.Context, allCtx secureAdmin.MiddlewareAllContext) (any, error) {
+				res, err := middleware.All(ctx, r, func(ctx context.Context, allCtx secureAdmin.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -994,7 +994,7 @@ func wrapSecureAdminPost(route secureAdmin.RouteDefinition) http.Handler {
 		}
 		runAncestorAll0 := func(ctx context.Context, mwState secureAdmin.MiddlewareContext) (secureAdmin.PostResponse, error) {
 			if ancestorHandlers0.Middleware.All != nil {
-				res, err := ancestorHandlers0.Middleware.All(ctx, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
+				res, err := ancestorHandlers0.Middleware.All(ctx, r, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -1080,7 +1080,7 @@ func wrapSecureAdminUsersGet(route secureAdminUsers.RouteDefinition) http.Handle
 		}
 		runAncestorAll1 := func(ctx context.Context, mwState secureAdminUsers.MiddlewareContext) (secureAdminUsers.GetResponse, error) {
 			if ancestorHandlers1.Middleware.All != nil {
-				res, err := ancestorHandlers1.Middleware.All(ctx, func(ctx context.Context, allCtx secureAdmin.MiddlewareAllContext) (any, error) {
+				res, err := ancestorHandlers1.Middleware.All(ctx, r, func(ctx context.Context, allCtx secureAdmin.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}
@@ -1101,7 +1101,7 @@ func wrapSecureAdminUsersGet(route secureAdminUsers.RouteDefinition) http.Handle
 		}
 		runAncestorAll0 := func(ctx context.Context, mwState secureAdminUsers.MiddlewareContext) (secureAdminUsers.GetResponse, error) {
 			if ancestorHandlers0.Middleware.All != nil {
-				res, err := ancestorHandlers0.Middleware.All(ctx, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
+				res, err := ancestorHandlers0.Middleware.All(ctx, r, func(ctx context.Context, allCtx secure.MiddlewareAllContext) (any, error) {
 					if err := frourioValidate.Struct(allCtx); err != nil {
 						return nil, err
 					}

@@ -8,7 +8,8 @@ import (
 func relayText(route RouteSpec) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "package %s\n\n", route.PackageName)
-	if routeHasRaw(route) {
+	needsHTTP := routeHasRaw(route) || hasMiddleware(route)
+	if needsHTTP {
 		b.WriteString("import (\n")
 		b.WriteString("\t\"context\"\n")
 		b.WriteString("\t\"net/http\"\n")
@@ -98,7 +99,7 @@ func writeMiddlewareTypes(b *strings.Builder, route RouteSpec) {
 		} else {
 			b.WriteString("type MiddlewareNext func(context.Context) (any, error)\n")
 		}
-		b.WriteString("type MiddlewareAll func(context.Context, MiddlewareNext) (any, error)\n\n")
+		b.WriteString("type MiddlewareAll func(context.Context, *http.Request, MiddlewareNext) (any, error)\n\n")
 	}
 
 	for _, method := range route.Methods {
@@ -120,7 +121,7 @@ func writeMiddlewareTypes(b *strings.Builder, route RouteSpec) {
 			} else {
 				fmt.Fprintf(b, "type %sNext func(context.Context, %sRequest) (%sResponse, error)\n", method.Name, method.Name, method.Name)
 			}
-			fmt.Fprintf(b, "type %sMiddleware func(context.Context, %sRequest, MiddlewareContext, %sNext) (%sResponse, error)\n\n", method.Name, method.Name, method.Name, method.Name)
+			fmt.Fprintf(b, "type %sMiddleware func(context.Context, *http.Request, %sRequest, MiddlewareContext, %sNext) (%sResponse, error)\n\n", method.Name, method.Name, method.Name, method.Name)
 		}
 	}
 

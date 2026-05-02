@@ -2,7 +2,10 @@
 
 package secure
 
-import "context"
+import (
+	"context"
+	"net/http"
+)
 
 type RouteDefinition struct {
 	spec     routeMetadata
@@ -38,7 +41,7 @@ type MiddlewareContext struct {
 }
 
 type MiddlewareNext func(context.Context, MiddlewareAllContext) (any, error)
-type MiddlewareAll func(context.Context, MiddlewareNext) (any, error)
+type MiddlewareAll func(context.Context, *http.Request, MiddlewareNext) (any, error)
 
 type GetContext struct {
 	MiddlewareContext
