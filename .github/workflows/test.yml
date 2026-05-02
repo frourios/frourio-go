@@ -25,37 +25,22 @@ jobs:
           cache: true
 
       - name: Check go mod tidy
-        run: |
-          go mod tidy
-          git diff --exit-code -- go.mod go.sum
-
-      - name: Generate fixtures
-        run: |
-          go generate ./tests/apps/basic
-          go generate ./tests/apps/basic/openapiclient
-          go generate ./tests/apps/middleware
+        run: make tidy-check
 
       - name: Check generated files are committed
-        run: git diff --exit-code -- tests/apps
+        run: make generate-check
 
       - name: Check Go imports and formatting
-        run: |
-          go tool goimports -w main.go internal tests
-          git diff --exit-code -- main.go internal tests
+        run: make fmt-check
 
       - name: golangci-lint
-        run: go tool golangci-lint run ./...
+        run: make lint
 
       - name: govulncheck
-        run: go tool govulncheck ./...
+        run: make vuln
 
       - name: Test
-        run: go test ./...
+        run: make test
 
       - name: Check coverage
-        run: |
-          packages="$(go list ./... | grep -v '/tests/apps/' | tr '\n' ' ')"
-          go test $packages -coverprofile=coverage.out -covermode=atomic
-          go tool cover -func=coverage.out
-          total="$(go tool cover -func=coverage.out | awk '/^total:/ { sub(/%/, "", $3); print $3 }')"
-          awk -v total="$total" 'BEGIN { if (total < 95) exit 1 }'
+        run: make coverage
