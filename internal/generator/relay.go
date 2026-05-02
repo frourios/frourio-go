@@ -17,8 +17,8 @@ func relayText(route RouteSpec) string {
 		b.WriteString("import \"context\"\n\n")
 	}
 	b.WriteString("type RouteDefinition struct {\n")
-	b.WriteString("\thandlers RouteHandlers\n")
 	b.WriteString("\tspec routeMetadata\n")
+	b.WriteString("\thandlers RouteHandlers\n")
 	b.WriteString("}\n\n")
 	b.WriteString("type routeMetadata struct{}\n\n")
 	b.WriteString("var routeSpec = routeMetadata{}\n\n")
@@ -43,7 +43,7 @@ func relayText(route RouteSpec) string {
 	}
 	b.WriteString("}\n\n")
 	b.WriteString("func DefineRoute(handlers RouteHandlers) RouteDefinition {\n")
-	b.WriteString("\treturn RouteDefinition{handlers: handlers, spec: routeSpec}\n")
+	b.WriteString("\treturn RouteDefinition{spec: routeSpec, handlers: handlers}\n")
 	b.WriteString("}\n")
 	b.WriteString("\nfunc (route RouteDefinition) Handlers() RouteHandlers {\n")
 	b.WriteString("\treturn route.handlers\n")

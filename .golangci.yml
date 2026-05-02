@@ -12,12 +12,23 @@ linters:
     - gosec
     - noctx
     - reassign
+  settings:
+    govet:
+      enable:
+        - fieldalignment
   exclusions:
     generated: disable
     rules:
       - path: _test\.go
         linters:
           - gosec
+      - path: (^|/)frourio\.go$
+        linters:
+          - govet
+      - path: (^|/)frourio_relay\.go$
+        text: fieldalignment
+        linters:
+          - govet
 
 formatters:
   exclusions:

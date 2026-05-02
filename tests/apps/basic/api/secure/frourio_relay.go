@@ -5,8 +5,8 @@ package secure
 import "context"
 
 type RouteDefinition struct {
-	handlers RouteHandlers
 	spec     routeMetadata
+	handlers RouteHandlers
 }
 
 type routeMetadata struct{}
@@ -54,7 +54,7 @@ type RouteHandlers struct {
 }
 
 func DefineRoute(handlers RouteHandlers) RouteDefinition {
-	return RouteDefinition{handlers: handlers, spec: routeSpec}
+	return RouteDefinition{spec: routeSpec, handlers: handlers}
 }
 
 func (route RouteDefinition) Handlers() RouteHandlers {

@@ -648,14 +648,14 @@ func TestResponseHelpers(t *testing.T) {
 	structBody := &StructSpec{Fields: []FieldSpec{{Name: "Name", SourceName: "Name", Type: "string", JSONName: "name", JSONTagged: true}}}
 
 	cases := []struct {
-		res  ResponseSpec
 		want string
+		res  ResponseSpec
 	}{
-		{ResponseSpec{Body: stringBody}, "text/plain"},
-		{ResponseSpec{Body: bytesBody}, "application/octet-stream"},
-		{ResponseSpec{Body: stringBody, FormData: true}, "multipart/form-data"},
-		{ResponseSpec{Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "any"}, BodyStruct: structBody}, "application/json"},
-		{ResponseSpec{Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "int"}}, "application/json"},
+		{res: ResponseSpec{Body: stringBody}, want: "text/plain"},
+		{res: ResponseSpec{Body: bytesBody}, want: "application/octet-stream"},
+		{res: ResponseSpec{Body: stringBody, FormData: true}, want: "multipart/form-data"},
+		{res: ResponseSpec{Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "any"}, BodyStruct: structBody}, want: "application/json"},
+		{res: ResponseSpec{Body: &FieldSpec{Name: "Body", SourceName: "Body", Type: "int"}}, want: "application/json"},
 	}
 	for _, tc := range cases {
 		if got := responseContentType(tc.res); got != tc.want {

@@ -25,40 +25,40 @@ type MiddlewareSpec struct {
 }
 
 type MiddlewareItem struct {
-	Name    string
 	Context *StructSpec
+	Name    string
 }
 
 type MethodSpec struct {
-	Name      string
-	HTTPName  string
-	URLPath   string
-	Doc       DocSpec
-	Format    string
 	Param     *FieldSpec
 	Query     *StructSpec
 	Body      *StructSpec
 	Header    *StructSpec
-	Raw       bool
+	Doc       DocSpec
+	Name      string
+	HTTPName  string
+	URLPath   string
+	Format    string
 	Responses []ResponseSpec
+	Raw       bool
 }
 
 type ResponseSpec struct {
-	Status     int
-	Doc        DocSpec
 	Body       *FieldSpec
-	BodyType   string
 	BodyStruct *StructSpec
 	Header     *StructSpec
+	Doc        DocSpec
+	BodyType   string
+	Status     int
 	FormData   bool
 }
 
 type StructSpec struct {
+	Doc      DocSpec
 	Name     string
 	TypeName string
-	Inline   bool
-	Doc      DocSpec
 	Fields   []FieldSpec
+	Inline   bool
 }
 
 type FieldSpec struct {
@@ -66,10 +66,10 @@ type FieldSpec struct {
 	SourceName  string
 	Type        string
 	JSONName    string
-	JSONTagged  bool
 	Doc         DocSpec
 	ValidateTag string
 	Tag         string
+	JSONTagged  bool
 	Pointer     bool
 	Slice       bool
 }

@@ -1335,14 +1335,14 @@ func decodeUsersUseridGetParam(r *http.Request) (int, error) {
 }
 
 type frourioError struct {
-	Status int            `json:"status"`
 	Error  string         `json:"error"`
 	Issues []frourioIssue `json:"issues,omitempty"`
+	Status int            `json:"status"`
 }
 
 type frourioIssue struct {
-	Path    []any  `json:"path"`
 	Message string `json:"message"`
+	Path    []any  `json:"path"`
 }
 
 func writeValidationError(w http.ResponseWriter, err error, root string) {
