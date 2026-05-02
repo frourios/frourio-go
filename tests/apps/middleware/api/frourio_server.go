@@ -26,12 +26,12 @@ type Option func(*serverOptions)
 type serverOptions struct{}
 
 func Mount(mux *http.ServeMux, options ...Option) {
-	mux.Handle("GET /api", wrapGet(Route))
-	mux.Handle("GET /api/mw", wrapMwGet(mw.Route))
-	mux.Handle("GET /api/mw/admin", wrapMwAdminGet(mwAdmin.Route))
-	mux.Handle("POST /api/mw/admin", wrapMwAdminPost(mwAdmin.Route))
-	mux.Handle("GET /api/mw/admin/users", wrapMwAdminUsersGet(mwAdminUsers.Route))
-	mux.Handle("GET /api/public", wrapPublicGet(public.Route))
+	mux.Handle("GET /", wrapGet(Route))
+	mux.Handle("GET /mw", wrapMwGet(mw.Route))
+	mux.Handle("GET /mw/admin", wrapMwAdminGet(mwAdmin.Route))
+	mux.Handle("POST /mw/admin", wrapMwAdminPost(mwAdmin.Route))
+	mux.Handle("GET /mw/admin/users", wrapMwAdminUsersGet(mwAdminUsers.Route))
+	mux.Handle("GET /public", wrapPublicGet(public.Route))
 }
 
 func Handler(options ...Option) http.Handler {

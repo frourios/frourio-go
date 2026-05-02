@@ -1,144 +1,15 @@
 {
   "components": {
     "schemas": {
-      "ApiAuthGetStatus200Body": {
+      "AuthGetStatus200Body": {
         "type": "string",
         "x-go-validate": "required"
       },
-      "ApiBlogSlugGetStatus200Body": {
+      "BlogSlugGetStatus200Body": {
         "type": "string",
         "x-go-validate": "required"
       },
-      "ApiFilesPathGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiFormsGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiFormsPatchStatus200Body": {
-        "format": "binary",
-        "type": "string"
-      },
-      "ApiFormsPostStatus201Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiFormsPutBody": {
-        "properties": {
-          "count": {
-            "type": "integer",
-            "x-go-validate": "gte=1"
-          },
-          "title": {
-            "type": "string",
-            "x-go-validate": "required"
-          }
-        },
-        "required": [
-          "title"
-        ],
-        "type": "object"
-      },
-      "ApiFormsPutStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiMwGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiMwGetStatus403Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiNestChildGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiProductsGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiPublicGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiSecureAdminGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiSecureAdminPostBody": {
-        "properties": {
-          "data": {
-            "type": "string",
-            "x-go-validate": "required"
-          }
-        },
-        "required": [
-          "data"
-        ],
-        "type": "object"
-      },
-      "ApiSecureAdminPostStatus201Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiSecureAdminPostStatus403Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiSecureAdminUsersGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiSecureGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiUsersGetStatus200Body": {
-        "items": {
-          "type": "string"
-        },
-        "type": "array"
-      },
-      "ApiUsersPostBody": {
-        "properties": {
-          "age": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string",
-            "x-go-validate": "required"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "type": "object"
-      },
-      "ApiUsersPostStatus201Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiUsersPostStatus400Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiUsersUseridGetStatus200Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiUsersUseridGetStatus404Body": {
-        "type": "string",
-        "x-go-validate": "required"
-      },
-      "ApiUsersUseridPostsPostidGetStatus200Body": {
+      "FilesPathGetStatus200Body": {
         "type": "string",
         "x-go-validate": "required"
       },
@@ -172,6 +43,10 @@
         ],
         "type": "object"
       },
+      "FormsGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
       "FormsMultipartResponseBody": {
         "properties": {
           "Count": {
@@ -182,6 +57,34 @@
           }
         },
         "type": "object"
+      },
+      "FormsPatchStatus200Body": {
+        "format": "binary",
+        "type": "string"
+      },
+      "FormsPostStatus201Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "FormsPutBody": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "x-go-validate": "gte=1"
+          },
+          "title": {
+            "type": "string",
+            "x-go-validate": "required"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "type": "object"
+      },
+      "FormsPutStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
       },
       "FrourioError": {
         "properties": {
@@ -208,6 +111,103 @@
           }
         },
         "type": "object"
+      },
+      "MwGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "MwGetStatus403Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "NestChildGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "ProductsGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "PublicGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "RootGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "SecureAdminGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "SecureAdminPostBody": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "x-go-validate": "required"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      },
+      "SecureAdminPostStatus201Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "SecureAdminPostStatus403Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "SecureAdminUsersGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "SecureGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "UsersGetStatus200Body": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "UsersPostBody": {
+        "properties": {
+          "age": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "x-go-validate": "required"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "UsersPostStatus201Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "UsersPostStatus400Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "UsersUseridGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "UsersUseridGetStatus404Body": {
+        "type": "string",
+        "x-go-validate": "required"
+      },
+      "UsersUseridPostsPostidGetStatus200Body": {
+        "type": "string",
+        "x-go-validate": "required"
       }
     }
   },
@@ -217,10 +217,10 @@
   },
   "openapi": "3.0.3",
   "paths": {
-    "/api": {
+    "/": {
       "get": {
         "description": "List root endpoint.\n\tIndented detail is preserved.",
-        "operationId": "getApi",
+        "operationId": "get",
         "parameters": [
           {
             "description": "Search term",
@@ -275,7 +275,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiGetStatus200Body"
+                  "$ref": "#/components/schemas/RootGetStatus200Body"
                 }
               }
             },
@@ -295,15 +295,15 @@
         "summary": "List root"
       }
     },
-    "/api/auth": {
+    "/auth": {
       "get": {
-        "operationId": "getApiAuth",
+        "operationId": "getAuth",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiAuthGetStatus200Body"
+                  "$ref": "#/components/schemas/AuthGetStatus200Body"
                 }
               }
             },
@@ -322,9 +322,9 @@
         }
       }
     },
-    "/api/blog/{slug}": {
+    "/blog/{slug}": {
       "get": {
-        "operationId": "getApiBlogBySlug",
+        "operationId": "getBlogBySlug",
         "parameters": [
           {
             "explode": false,
@@ -347,7 +347,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiBlogSlugGetStatus200Body"
+                  "$ref": "#/components/schemas/BlogSlugGetStatus200Body"
                 }
               }
             },
@@ -366,15 +366,15 @@
         }
       }
     },
-    "/api/files": {
+    "/files": {
       "get": {
-        "operationId": "getApiFiles",
+        "operationId": "getFiles",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFilesPathGetStatus200Body"
+                  "$ref": "#/components/schemas/FilesPathGetStatus200Body"
                 }
               }
             },
@@ -393,9 +393,9 @@
         }
       }
     },
-    "/api/files/{path}": {
+    "/files/{path}": {
       "get": {
-        "operationId": "getApiFilesByPath",
+        "operationId": "getFilesByPath",
         "parameters": [
           {
             "explode": false,
@@ -417,7 +417,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFilesPathGetStatus200Body"
+                  "$ref": "#/components/schemas/FilesPathGetStatus200Body"
                 }
               }
             },
@@ -436,9 +436,9 @@
         }
       }
     },
-    "/api/forms": {
+    "/forms": {
       "delete": {
-        "operationId": "deleteApiForms",
+        "operationId": "deleteForms",
         "responses": {
           "200": {
             "content": {
@@ -463,13 +463,13 @@
         }
       },
       "get": {
-        "operationId": "getApiForms",
+        "operationId": "getForms",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFormsGetStatus200Body"
+                  "$ref": "#/components/schemas/FormsGetStatus200Body"
                 }
               }
             },
@@ -488,13 +488,13 @@
         }
       },
       "patch": {
-        "operationId": "patchApiForms",
+        "operationId": "patchForms",
         "responses": {
           "200": {
             "content": {
               "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFormsPatchStatus200Body"
+                  "$ref": "#/components/schemas/FormsPatchStatus200Body"
                 }
               }
             },
@@ -513,7 +513,7 @@
         }
       },
       "post": {
-        "operationId": "postApiForms",
+        "operationId": "postForms",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
@@ -529,7 +529,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFormsPostStatus201Body"
+                  "$ref": "#/components/schemas/FormsPostStatus201Body"
                 }
               }
             },
@@ -548,12 +548,12 @@
         }
       },
       "put": {
-        "operationId": "putApiForms",
+        "operationId": "putForms",
         "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/ApiFormsPutBody"
+                "$ref": "#/components/schemas/FormsPutBody"
               }
             }
           },
@@ -564,7 +564,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFormsPutStatus200Body"
+                  "$ref": "#/components/schemas/FormsPutStatus200Body"
                 }
               }
             },
@@ -583,15 +583,15 @@
         }
       }
     },
-    "/api/mw": {
+    "/mw": {
       "get": {
-        "operationId": "getApiMw",
+        "operationId": "getMw",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiMwGetStatus200Body"
+                  "$ref": "#/components/schemas/MwGetStatus200Body"
                 }
               }
             },
@@ -601,7 +601,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiMwGetStatus403Body"
+                  "$ref": "#/components/schemas/MwGetStatus403Body"
                 }
               }
             },
@@ -620,15 +620,15 @@
         }
       }
     },
-    "/api/nest/child": {
+    "/nest/child": {
       "get": {
-        "operationId": "getApiNestChild",
+        "operationId": "getNestChild",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiNestChildGetStatus200Body"
+                  "$ref": "#/components/schemas/NestChildGetStatus200Body"
                 }
               }
             },
@@ -647,15 +647,15 @@
         }
       }
     },
-    "/api/products/セール品": {
+    "/products/セール品": {
       "get": {
-        "operationId": "getApiProducts",
+        "operationId": "getProducts",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiProductsGetStatus200Body"
+                  "$ref": "#/components/schemas/ProductsGetStatus200Body"
                 }
               }
             },
@@ -674,15 +674,15 @@
         }
       }
     },
-    "/api/public": {
+    "/public": {
       "get": {
-        "operationId": "getApiPublic",
+        "operationId": "getPublic",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiPublicGetStatus200Body"
+                  "$ref": "#/components/schemas/PublicGetStatus200Body"
                 }
               }
             },
@@ -701,9 +701,9 @@
         }
       }
     },
-    "/api/raw": {
+    "/raw": {
       "get": {
-        "operationId": "getApiRaw",
+        "operationId": "getRaw",
         "responses": {
           "422": {
             "content": {
@@ -718,15 +718,15 @@
         }
       }
     },
-    "/api/secure": {
+    "/secure": {
       "get": {
-        "operationId": "getApiSecure",
+        "operationId": "getSecure",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiSecureGetStatus200Body"
+                  "$ref": "#/components/schemas/SecureGetStatus200Body"
                 }
               }
             },
@@ -745,15 +745,15 @@
         }
       }
     },
-    "/api/secure/admin": {
+    "/secure/admin": {
       "get": {
-        "operationId": "getApiSecureAdmin",
+        "operationId": "getSecureAdmin",
         "responses": {
           "200": {
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiSecureAdminGetStatus200Body"
+                  "$ref": "#/components/schemas/SecureAdminGetStatus200Body"
                 }
               }
             },
@@ -772,12 +772,12 @@
         }
       },
       "post": {
-        "operationId": "postApiSecureAdmin",
+        "operationId": "postSecureAdmin",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ApiSecureAdminPostBody"
+                "$ref": "#/components/schemas/SecureAdminPostBody"
               }
             }
           },
@@ -788,7 +788,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiSecureAdminPostStatus201Body"
+                  "$ref": "#/components/schemas/SecureAdminPostStatus201Body"
                 }
               }
             },
@@ -798,7 +798,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiSecureAdminPostStatus403Body"
+                  "$ref": "#/components/schemas/SecureAdminPostStatus403Body"
                 }
               }
             },
@@ -817,9 +817,9 @@
         }
       }
     },
-    "/api/secure/admin/users": {
+    "/secure/admin/users": {
       "get": {
-        "operationId": "getApiSecureAdminUsers",
+        "operationId": "getSecureAdminUsers",
         "parameters": [
           {
             "in": "query",
@@ -835,7 +835,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiSecureAdminUsersGetStatus200Body"
+                  "$ref": "#/components/schemas/SecureAdminUsersGetStatus200Body"
                 }
               }
             },
@@ -854,9 +854,9 @@
         }
       }
     },
-    "/api/users": {
+    "/users": {
       "get": {
-        "operationId": "getApiUsers",
+        "operationId": "getUsers",
         "parameters": [
           {
             "in": "query",
@@ -872,7 +872,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiUsersGetStatus200Body"
+                  "$ref": "#/components/schemas/UsersGetStatus200Body"
                 }
               }
             },
@@ -891,12 +891,12 @@
         }
       },
       "post": {
-        "operationId": "postApiUsers",
+        "operationId": "postUsers",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ApiUsersPostBody"
+                "$ref": "#/components/schemas/UsersPostBody"
               }
             }
           },
@@ -907,7 +907,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiUsersPostStatus201Body"
+                  "$ref": "#/components/schemas/UsersPostStatus201Body"
                 }
               }
             },
@@ -917,7 +917,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiUsersPostStatus400Body"
+                  "$ref": "#/components/schemas/UsersPostStatus400Body"
                 }
               }
             },
@@ -936,9 +936,9 @@
         }
       }
     },
-    "/api/users/{userid}": {
+    "/users/{userid}": {
       "get": {
-        "operationId": "getApiUsersByUserid",
+        "operationId": "getUsersByUserid",
         "parameters": [
           {
             "in": "path",
@@ -955,7 +955,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiUsersUseridGetStatus200Body"
+                  "$ref": "#/components/schemas/UsersUseridGetStatus200Body"
                 }
               }
             },
@@ -965,7 +965,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiUsersUseridGetStatus404Body"
+                  "$ref": "#/components/schemas/UsersUseridGetStatus404Body"
                 }
               }
             },
@@ -984,9 +984,9 @@
         }
       }
     },
-    "/api/users/{userid}/posts/{postid}": {
+    "/users/{userid}/posts/{postid}": {
       "get": {
-        "operationId": "getApiUsersByUseridPostsByPostid",
+        "operationId": "getUsersByUseridPostsByPostid",
         "parameters": [
           {
             "in": "path",
@@ -1012,7 +1012,7 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiUsersUseridPostsPostidGetStatus200Body"
+                  "$ref": "#/components/schemas/UsersUseridPostsPostidGetStatus200Body"
                 }
               }
             },

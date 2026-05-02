@@ -94,7 +94,7 @@ var Route = DefineRoute(RouteHandlers{
 })
 ```
 
-This produces `GET /api/users` with a JSON body response.
+This produces `GET /users` with a JSON body response.
 
 ## Topic Index
 

@@ -336,9 +336,9 @@ func fillRoutePaths(routes []RouteSpec) {
 
 func routePathWithAncestors(rel string, overrides map[string]string, paramRels map[string]*FieldSpec, ownParam *FieldSpec) string {
 	if rel == "" {
-		return "/api"
+		return "/"
 	}
-	parts := []string{"api"}
+	var parts []string
 	relParts := strings.Split(rel, "/")
 	for i, part := range relParts {
 		if part == "" {

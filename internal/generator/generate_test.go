@@ -268,9 +268,9 @@ type FrourioSpec struct {
 		t.Fatalf("openapi.json should not contain an empty path key: %s", data)
 	}
 
-	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/users/{userid}\"")
-	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/files\"")
-	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /api/products/セール品\"")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /users/{userid}\"")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /files\"")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "mux.Handle(\"GET /products/セール品\"")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values := r.PostForm")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values := r.MultipartForm.Value")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values[\"RawName\"]")
@@ -292,12 +292,12 @@ type FrourioSpec struct {
 		t.Fatal(err)
 	}
 	paths := doc["paths"].(map[string]any)
-	for _, path := range []string{"/api", "/api/users/{userid}", "/api/blog/{slug}", "/api/files", "/api/files/{path}", "/api/products/セール品", "/api/forms", "/api/raw"} {
+	for _, path := range []string{"/", "/users/{userid}", "/blog/{slug}", "/files", "/files/{path}", "/products/セール品", "/forms", "/raw"} {
 		if _, ok := paths[path]; !ok {
 			t.Fatalf("OpenAPI path %s not found in %#v", path, paths)
 		}
 	}
-	apiPost := paths["/api"].(map[string]any)["post"].(map[string]any)
+	apiPost := paths["/"].(map[string]any)["post"].(map[string]any)
 	requestBody := apiPost["requestBody"].(map[string]any)
 	content := requestBody["content"].(map[string]any)
 	if _, ok := content["application/x-www-form-urlencoded"]; !ok {
@@ -307,7 +307,7 @@ type FrourioSpec struct {
 	if _, ok := schemas["ApiCreateBody"]; !ok {
 		t.Fatalf("named type schema ApiCreateBody not found in %#v", schemas)
 	}
-	parameters := paths["/api"].(map[string]any)["get"].(map[string]any)["parameters"].([]any)
+	parameters := paths["/"].(map[string]any)["get"].(map[string]any)["parameters"].([]any)
 	foundRawName := false
 	for _, param := range parameters {
 		if param.(map[string]any)["name"] == "RawName" {
@@ -317,7 +317,7 @@ type FrourioSpec struct {
 	if !foundRawName {
 		t.Fatalf("RawName query parameter not found in %#v", parameters)
 	}
-	apiGet := paths["/api"].(map[string]any)["get"].(map[string]any)
+	apiGet := paths["/"].(map[string]any)["get"].(map[string]any)
 	if apiGet["summary"] != "List root" {
 		t.Fatalf("operation summary = %#v", apiGet["summary"])
 	}
@@ -333,7 +333,7 @@ type FrourioSpec struct {
 	if apiGet["responses"].(map[string]any)["200"].(map[string]any)["description"] != "Successful root response" {
 		t.Fatalf("response description = %#v", apiGet["responses"].(map[string]any)["200"])
 	}
-	apiPut := paths["/api"].(map[string]any)["put"].(map[string]any)
+	apiPut := paths["/"].(map[string]any)["put"].(map[string]any)
 	putRequestBody := apiPut["requestBody"].(map[string]any)
 	putContent := putRequestBody["content"].(map[string]any)
 	if _, ok := putContent["multipart/form-data"]; !ok {
@@ -442,9 +442,9 @@ type FrourioSpec struct {
 		}
 		assertFileContains(t, out, `"custom title"`)
 		assertFileContains(t, out, `"https://example.test"`)
-		assertFileContains(t, out, `"Custom"`)         // template-defined schema preserved
-		assertFileContains(t, out, `"FrourioError"`)   // generator-defined schema added
-		assertFileContains(t, out, `"/api"`)           // generator-emitted path present
+		assertFileContains(t, out, `"Custom"`)       // template-defined schema preserved
+		assertFileContains(t, out, `"FrourioError"`) // generator-defined schema added
+		assertFileContains(t, out, `"/"`)            // generator-emitted path present
 		if data, err := os.ReadFile(out); err != nil {
 			t.Fatal(err)
 		} else if strings.Contains(string(data), "/should-be-replaced") {
@@ -763,7 +763,7 @@ func TestSchemaAndDecodeHelpers(t *testing.T) {
 	if _, ok := optionalCatchAllPath(MethodSpec{URLPath: "/api/files/{path}", Param: &FieldSpec{Pointer: true, Slice: true}}); ok {
 		t.Fatal("unexpected optional catch-all")
 	}
-	if got := routePathWithAncestors("admin//users", map[string]string{"admin/users": "members"}, map[string]*FieldSpec{}, nil); got != "/api/admin/users" {
+	if got := routePathWithAncestors("admin//users", map[string]string{"admin/users": "members"}, map[string]*FieldSpec{}, nil); got != "/admin/users" {
 		t.Fatalf("routePathWithAncestors empty part = %s", got)
 	}
 	if _, err := parseStruct("Bad", &ast.Ident{Name: "string"}, nil, nil); err == nil {

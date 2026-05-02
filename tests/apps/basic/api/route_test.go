@@ -11,7 +11,7 @@ import (
 )
 
 func TestHandlerGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?search=hello&limit=10&RawName=raw&active=true&score=1.5&score=2.5", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/?search=hello&limit=10&RawName=raw&active=true&score=1.5&score=2.5", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -25,7 +25,7 @@ func TestHandlerGet(t *testing.T) {
 }
 
 func TestHandlerGetInvalidQueryBool(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?active=maybe", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/?active=maybe", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -36,7 +36,7 @@ func TestHandlerGetInvalidQueryBool(t *testing.T) {
 }
 
 func TestHandlerGetInvalidQuery(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api?limit=bad", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/?limit=bad", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -50,7 +50,7 @@ func TestHandlerGetInvalidQuery(t *testing.T) {
 }
 
 func TestHandlerUsersGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/users?limit=1", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/users?limit=1", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -64,7 +64,7 @@ func TestHandlerUsersGet(t *testing.T) {
 }
 
 func TestHandlerUsersPost(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/users", strings.NewReader(`{"name":"alice","age":20}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/users", strings.NewReader(`{"name":"alice","age":20}`))
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -78,7 +78,7 @@ func TestHandlerUsersPost(t *testing.T) {
 }
 
 func TestHandlerUsersPostInvalidBody(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/users", strings.NewReader(`{"age":20}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/users", strings.NewReader(`{"age":20}`))
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -89,7 +89,7 @@ func TestHandlerUsersPostInvalidBody(t *testing.T) {
 }
 
 func TestHandlerFormsPostURLEncoded(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/forms", strings.NewReader("name=alice&Alias=ally&age=20&active=true&score=1.5&score=2.5"))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/forms", strings.NewReader("name=alice&Alias=ally&age=20&active=true&score=1.5&score=2.5"))
 	req.Header.Set("content-type", "application/x-www-form-urlencoded")
 	res := httptest.NewRecorder()
 
@@ -104,7 +104,7 @@ func TestHandlerFormsPostURLEncoded(t *testing.T) {
 }
 
 func TestHandlerFormsGetText(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/forms", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/forms", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -121,7 +121,7 @@ func TestHandlerFormsGetText(t *testing.T) {
 }
 
 func TestHandlerFormsPatchBytes(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPatch, "/api/forms", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPatch, "/forms", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -138,7 +138,7 @@ func TestHandlerFormsPatchBytes(t *testing.T) {
 }
 
 func TestHandlerFormsDeleteMultipartResponse(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodDelete, "/api/forms", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodDelete, "/forms", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -158,7 +158,7 @@ func TestHandlerFormsDeleteMultipartResponse(t *testing.T) {
 }
 
 func TestHandlerFormsPostInvalidURLEncoded(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/forms", strings.NewReader("name=alice&age=bad&active=true&score=1.5"))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/forms", strings.NewReader("name=alice&age=bad&active=true&score=1.5"))
 	req.Header.Set("content-type", "application/x-www-form-urlencoded")
 	res := httptest.NewRecorder()
 
@@ -170,7 +170,7 @@ func TestHandlerFormsPostInvalidURLEncoded(t *testing.T) {
 }
 
 func TestHandlerRawStreamGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/raw", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/raw", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -198,7 +198,7 @@ func TestHandlerFormsPutMultipart(t *testing.T) {
 	if err := writer.Close(); err != nil {
 		t.Fatal(err)
 	}
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPut, "/api/forms", &body)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPut, "/forms", &body)
 	req.Header.Set("content-type", writer.FormDataContentType())
 	res := httptest.NewRecorder()
 
@@ -213,7 +213,7 @@ func TestHandlerFormsPutMultipart(t *testing.T) {
 }
 
 func TestHandlerUserGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/users/123", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/users/123", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -227,7 +227,7 @@ func TestHandlerUserGet(t *testing.T) {
 }
 
 func TestHandlerProductsSaleGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/products/セール品", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/products/セール品", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -241,7 +241,7 @@ func TestHandlerProductsSaleGet(t *testing.T) {
 }
 
 func TestHandlerBlogCatchAllGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/blog/a/b/c", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/blog/a/b/c", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -255,7 +255,7 @@ func TestHandlerBlogCatchAllGet(t *testing.T) {
 }
 
 func TestHandlerFilesOptionalCatchAllRootGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/files", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/files", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -269,7 +269,7 @@ func TestHandlerFilesOptionalCatchAllRootGet(t *testing.T) {
 }
 
 func TestHandlerFilesOptionalCatchAllPathGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/files/a/b", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/files/a/b", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -283,7 +283,7 @@ func TestHandlerFilesOptionalCatchAllPathGet(t *testing.T) {
 }
 
 func TestHandlerMiddlewareGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -297,7 +297,7 @@ func TestHandlerMiddlewareGet(t *testing.T) {
 }
 
 func TestHandlerMiddlewareAllContextGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/auth", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/auth", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -311,7 +311,7 @@ func TestHandlerMiddlewareAllContextGet(t *testing.T) {
 }
 
 func TestHandlerInheritedMiddlewareContextGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/nest/child", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/nest/child", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -325,7 +325,7 @@ func TestHandlerInheritedMiddlewareContextGet(t *testing.T) {
 }
 
 func TestHandlerSecureRootMiddlewareContextGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/secure", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/secure", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -339,7 +339,7 @@ func TestHandlerSecureRootMiddlewareContextGet(t *testing.T) {
 }
 
 func TestHandlerSecureAdminNestedMiddlewareGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/secure/admin", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/secure/admin", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -354,7 +354,7 @@ func TestHandlerSecureAdminNestedMiddlewareGet(t *testing.T) {
 }
 
 func TestHandlerSecureAdminPostMiddleware(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/secure/admin", strings.NewReader(`{"data":"admin data"}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/secure/admin", strings.NewReader(`{"data":"admin data"}`))
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -369,7 +369,7 @@ func TestHandlerSecureAdminPostMiddleware(t *testing.T) {
 }
 
 func TestHandlerSecureAdminUsersMiddlewareInheritanceGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/secure/admin/users?role=admin", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/secure/admin/users?role=admin", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -384,7 +384,7 @@ func TestHandlerSecureAdminUsersMiddlewareInheritanceGet(t *testing.T) {
 }
 
 func TestHandlerSecurePublicNoMiddlewareGet(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/public", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/public", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -398,7 +398,7 @@ func TestHandlerSecurePublicNoMiddlewareGet(t *testing.T) {
 }
 
 func TestHandlerUserGetInvalidParam(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/users/bad", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/users/bad", nil)
 	res := httptest.NewRecorder()
 
 	Handler().ServeHTTP(res, req)
@@ -413,11 +413,11 @@ func TestHandlerGetInvalidQueryCases(t *testing.T) {
 		name string
 		url  string
 	}{
-		{"limit not number", "/api?limit=bad"},
-		{"active not bool", "/api?active=maybe"},
-		{"score not float", "/api?score=abc"},
-		{"score mixed", "/api?score=1.0&score=bad"},
-		{"limit float", "/api?limit=1.5"},
+		{"limit not number", "/?limit=bad"},
+		{"active not bool", "/?active=maybe"},
+		{"score not float", "/?score=abc"},
+		{"score mixed", "/?score=1.0&score=bad"},
+		{"limit float", "/?limit=1.5"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -436,12 +436,12 @@ func TestHandlerGetValidQueryCases(t *testing.T) {
 		name string
 		url  string
 	}{
-		{"all fields", "/api?search=hello&limit=10&RawName=raw&active=true&score=1.5&score=2.5"},
-		{"only optional empty", "/api"},
-		{"empty score", "/api?active=false"},
-		{"single score", "/api?score=0.5"},
-		{"limit zero", "/api?limit=0"},
-		{"active false", "/api?active=false"},
+		{"all fields", "/?search=hello&limit=10&RawName=raw&active=true&score=1.5&score=2.5"},
+		{"only optional empty", "/"},
+		{"empty score", "/?active=false"},
+		{"single score", "/?score=0.5"},
+		{"limit zero", "/?limit=0"},
+		{"active false", "/?active=false"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -468,7 +468,7 @@ func TestHandlerUsersPostInvalidBodyCases(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/users", strings.NewReader(c.body))
+			req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/users", strings.NewReader(c.body))
 			res := httptest.NewRecorder()
 			Handler().ServeHTTP(res, req)
 			if res.Code == http.StatusCreated {
@@ -492,7 +492,7 @@ func TestHandlerFormsPostURLEncodedInvalidCases(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/forms", strings.NewReader(c.body))
+			req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/forms", strings.NewReader(c.body))
 			req.Header.Set("content-type", "application/x-www-form-urlencoded")
 			res := httptest.NewRecorder()
 			Handler().ServeHTTP(res, req)
@@ -526,7 +526,7 @@ func TestHandlerFormsPutMultipartInvalidCases(t *testing.T) {
 			if err := writer.Close(); err != nil {
 				t.Fatal(err)
 			}
-			req := httptest.NewRequestWithContext(context.Background(), http.MethodPut, "/api/forms", &body)
+			req := httptest.NewRequestWithContext(context.Background(), http.MethodPut, "/forms", &body)
 			req.Header.Set("content-type", writer.FormDataContentType())
 			res := httptest.NewRecorder()
 			Handler().ServeHTTP(res, req)
@@ -545,9 +545,8 @@ func TestHandlerUserGetInvalidParamCases(t *testing.T) {
 		name string
 		url  string
 	}{
-		{"non-numeric", "/api/users/bad"},
-		{"float", "/api/users/1.5"},
-		{"empty after slash", "/api/users/"},
+		{"non-numeric", "/users/bad"},
+		{"float", "/users/1.5"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -562,7 +561,7 @@ func TestHandlerUserGetInvalidParamCases(t *testing.T) {
 }
 
 func TestHandlerForms_GetTextHeaderEcho(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/forms", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/forms", nil)
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
 	if res.Code != http.StatusOK {
@@ -574,7 +573,7 @@ func TestHandlerForms_GetTextHeaderEcho(t *testing.T) {
 }
 
 func TestHandlerSecureAdminPostMiddleware_InvalidBody(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/secure/admin", strings.NewReader(`{}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/secure/admin", strings.NewReader(`{}`))
 	req.Header.Set("Content-Type", "application/json")
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
@@ -584,7 +583,7 @@ func TestHandlerSecureAdminPostMiddleware_InvalidBody(t *testing.T) {
 }
 
 func TestHandlerNestedParamCascade(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/users/42/posts/hello", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/users/42/posts/hello", nil)
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
 	if res.Code != http.StatusOK {
@@ -596,7 +595,7 @@ func TestHandlerNestedParamCascade(t *testing.T) {
 }
 
 func TestHandlerNestedParamAncestorDecodeFailure(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/users/abc/posts/hello", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/users/abc/posts/hello", nil)
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
 	if res.Code != http.StatusUnprocessableEntity {

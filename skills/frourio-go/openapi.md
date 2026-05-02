@@ -52,10 +52,14 @@ generated artifact, even when frourio-go scaffolds the initial skeleton.
 Each `frourio.go` method becomes one operation under the route's URL:
 
 ```text
-api/users/userid/   →  /api/users/{userid}    (GET, etc.)
-api/blog/slug/      →  /api/blog/{slug...}
-api/files/path/     →  /api/files  AND  /api/files/{path...}   (optional catch-all)
+api/users/userid/   →  /users/{userid}    (GET, etc.)
+api/blog/slug/      →  /blog/{slug...}
+api/files/path/     →  /files  AND  /files/{path...}   (optional catch-all)
 ```
+
+The OpenAPI document reflects the prefix-agnostic routing — paths begin with
+the api root (`/`), not `/api`. Add a `servers` entry in the template to point
+clients at the deployed prefix (e.g. `https://example.com/api`).
 
 Optional catch-all routes are emitted as **two** path entries — the base
 path and the catch-all — both bound to the same operation pair.
@@ -66,10 +70,10 @@ Auto-generated as `<method><PascalCasePath>`:
 
 | Path                          | Method | operationId             |
 |-------------------------------|--------|-------------------------|
-| `/api/users`                  | GET    | `getApiUsers`           |
-| `/api/users`                  | POST   | `postApiUsers`          |
-| `/api/users/{userid}`         | GET    | `getApiUsersByUserid`   |
-| `/api/blog/{slug...}`         | GET    | `getApiBlogBySlug`      |
+| `/users`                      | GET    | `getUsers`              |
+| `/users`                      | POST   | `postUsers`             |
+| `/users/{userid}`             | GET    | `getUsersByUserid`      |
+| `/blog/{slug...}`             | GET    | `getBlogBySlug`         |
 
 Hyphens, underscores, and dots in path segments become PascalCase boundaries.
 Path parameters become `By<ParamName>`.

@@ -10,18 +10,19 @@ three controls that tweak this mapping:
 ## Directory → URL
 
 ```text
-api/                    → /api
-api/users/              → /api/users
-api/users/userid/       → /api/users/{userid}    (when Param is declared)
-api/blog/slug/          → /api/blog/{slug...}    (catch-all)
-api/files/path/         → /api/files  AND  /api/files/{path...}  (optional catch-all)
-api/products/sale/      → /api/products/<override>   (FrourioPath)
-api/secure/admin/users/ → /api/secure/admin/users
+api/                    → /
+api/users/              → /users
+api/users/userid/       → /users/{userid}    (when Param is declared)
+api/blog/slug/          → /blog/{slug...}    (catch-all)
+api/files/path/         → /files  AND  /files/{path...}  (optional catch-all)
+api/products/sale/      → /products/<override>   (FrourioPath)
+api/secure/admin/users/ → /secure/admin/users
 ```
 
-The api root can be any directory. The `go:generate` directive specifies it
-(e.g. `go run ../../.. generate ./api`). All routes mount under that root's
-package name as the first URL segment.
+frourio-go's generated `Handler()` is **prefix-agnostic** — paths start at the
+api root with no extra prefix. To mount under `/api`, wrap with
+`http.StripPrefix("/api", api.Handler())` in `main.go`. The generator never
+bakes in a URL prefix; that's the http server's job.
 
 ## Path Parameters
 
@@ -44,7 +45,7 @@ type FrourioSpec struct {
 }
 ```
 
-URL: `GET /api/users/{userid}`. The parameter name is the directory's name.
+URL: `GET /users/{userid}`. The parameter name is the directory's name.
 Supported scalar types are `string` and `int`. Use a pointer (`*string`,
 `*int`) to make the parameter optional — omitting the segment then produces
 a separate route that does not match the parameter slot.
@@ -93,7 +94,7 @@ type FrourioSpec struct {
 }
 ```
 
-URL: `GET /api/blog/{slug...}`. Matches one or more remaining segments and
+URL: `GET /blog/{slug...}`. Matches one or more remaining segments and
 captures them as `req.Params.Slug []string`.
 
 ```go
@@ -116,7 +117,7 @@ type FrourioSpec struct {
 }
 ```
 
-URL: matches both `GET /api/files` and `GET /api/files/{path...}`. The
+URL: matches both `GET /files` and `GET /files/{path...}`. The
 generator registers two routes pointing at the same handler.
 
 ```go
@@ -151,7 +152,7 @@ type FrourioSpec struct {
 }
 ```
 
-URL: `GET /api/products/セール品`.
+URL: `GET /products/セール品`.
 
 ### Constraints
 

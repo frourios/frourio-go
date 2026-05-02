@@ -14,7 +14,7 @@ func TestUsersGet(t *testing.T) {
     req := httptest.NewRequestWithContext(
         context.Background(),
         http.MethodGet,
-        "/api/users?limit=1",
+        "/users?limit=1",
         nil,
     )
     res := httptest.NewRecorder()
@@ -38,7 +38,7 @@ func TestUsersGet(t *testing.T) {
 
 ```go
 body := strings.NewReader(`{"name":"alice","age":20}`)
-req := httptest.NewRequestWithContext(ctx, http.MethodPost, "/api/users", body)
+req := httptest.NewRequestWithContext(ctx, http.MethodPost, "/users", body)
 req.Header.Set("content-type", "application/json")
 ```
 
@@ -46,7 +46,7 @@ req.Header.Set("content-type", "application/json")
 
 ```go
 body := strings.NewReader("name=alice&age=20&active=true&score=1.5&score=2.5")
-req := httptest.NewRequestWithContext(ctx, http.MethodPost, "/api/forms", body)
+req := httptest.NewRequestWithContext(ctx, http.MethodPost, "/forms", body)
 req.Header.Set("content-type", "application/x-www-form-urlencoded")
 ```
 
@@ -59,7 +59,7 @@ _ = w.WriteField("title", "report")
 _ = w.WriteField("count", "3")
 _ = w.Close()
 
-req := httptest.NewRequestWithContext(ctx, http.MethodPut, "/api/forms", &buf)
+req := httptest.NewRequestWithContext(ctx, http.MethodPut, "/forms", &buf)
 req.Header.Set("content-type", w.FormDataContentType())
 ```
 
@@ -121,7 +121,7 @@ if !strings.Contains(res.Body.String(), `name="name"`) {
 Send malformed input and assert 422 plus the structured error envelope:
 
 ```go
-req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/users/abc", nil)
+req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/users/abc", nil)
 res := httptest.NewRecorder()
 api.Handler().ServeHTTP(res, req)
 
@@ -148,7 +148,7 @@ if body.Status != 422 {
 ### Authenticated request
 
 ```go
-req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/api/mw/admin", nil)
+req := httptest.NewRequestWithContext(ctx, http.MethodGet, "/mw/admin", nil)
 req.Header.Set("Authorization", "Bearer user-admin")
 api.Handler().ServeHTTP(res, req)
 ```
@@ -156,7 +156,7 @@ api.Handler().ServeHTTP(res, req)
 ### Unauthenticated → 403
 
 ```go
-req := httptest.NewRequestWithContext(ctx, http.MethodPost, "/api/mw/admin",
+req := httptest.NewRequestWithContext(ctx, http.MethodPost, "/mw/admin",
     strings.NewReader(`{"data":"hi"}`))
 req.Header.Set("content-type", "application/json")
 api.Handler().ServeHTTP(res, req)
@@ -169,7 +169,7 @@ if res.Code != http.StatusForbidden {
 ### Inherited context
 
 Middleware-set context fields appear in the response when the handler echoes
-them. For deep routes like `/api/secure/admin/users?role=admin`, decode the
+them. For deep routes like `/secure/admin/users?role=admin`, decode the
 JSON and assert `UserID`, `TraceID`, `IsAdmin`, `Permissions`, etc.
 
 ## Table-Driven Tests
@@ -193,7 +193,7 @@ cases := []struct {
 for _, tc := range cases {
     t.Run(tc.name, func(t *testing.T) {
         req := httptest.NewRequestWithContext(ctx, http.MethodPost,
-            "/api/users", strings.NewReader(tc.body))
+            "/users", strings.NewReader(tc.body))
         req.Header.Set("content-type", "application/json")
         res := httptest.NewRecorder()
         api.Handler().ServeHTTP(res, req)

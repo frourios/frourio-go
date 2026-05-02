@@ -17,94 +17,14 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// ApiAuthGetStatus200Body defines model for ApiAuthGetStatus200Body.
-type ApiAuthGetStatus200Body = string
+// AuthGetStatus200Body defines model for AuthGetStatus200Body.
+type AuthGetStatus200Body = string
 
-// ApiBlogSlugGetStatus200Body defines model for ApiBlogSlugGetStatus200Body.
-type ApiBlogSlugGetStatus200Body = string
+// BlogSlugGetStatus200Body defines model for BlogSlugGetStatus200Body.
+type BlogSlugGetStatus200Body = string
 
-// ApiFilesPathGetStatus200Body defines model for ApiFilesPathGetStatus200Body.
-type ApiFilesPathGetStatus200Body = string
-
-// ApiFormsGetStatus200Body defines model for ApiFormsGetStatus200Body.
-type ApiFormsGetStatus200Body = string
-
-// ApiFormsPatchStatus200Body defines model for ApiFormsPatchStatus200Body.
-type ApiFormsPatchStatus200Body = openapi_types.File
-
-// ApiFormsPostStatus201Body defines model for ApiFormsPostStatus201Body.
-type ApiFormsPostStatus201Body = string
-
-// ApiFormsPutBody defines model for ApiFormsPutBody.
-type ApiFormsPutBody struct {
-	Count *int   `json:"count,omitempty"`
-	Title string `json:"title"`
-}
-
-// ApiFormsPutStatus200Body defines model for ApiFormsPutStatus200Body.
-type ApiFormsPutStatus200Body = string
-
-// ApiGetStatus200Body defines model for ApiGetStatus200Body.
-type ApiGetStatus200Body = string
-
-// ApiMwGetStatus200Body defines model for ApiMwGetStatus200Body.
-type ApiMwGetStatus200Body = string
-
-// ApiMwGetStatus403Body defines model for ApiMwGetStatus403Body.
-type ApiMwGetStatus403Body = string
-
-// ApiNestChildGetStatus200Body defines model for ApiNestChildGetStatus200Body.
-type ApiNestChildGetStatus200Body = string
-
-// ApiProductsGetStatus200Body defines model for ApiProductsGetStatus200Body.
-type ApiProductsGetStatus200Body = string
-
-// ApiPublicGetStatus200Body defines model for ApiPublicGetStatus200Body.
-type ApiPublicGetStatus200Body = string
-
-// ApiSecureAdminGetStatus200Body defines model for ApiSecureAdminGetStatus200Body.
-type ApiSecureAdminGetStatus200Body = string
-
-// ApiSecureAdminPostBody defines model for ApiSecureAdminPostBody.
-type ApiSecureAdminPostBody struct {
-	Data string `json:"data"`
-}
-
-// ApiSecureAdminPostStatus201Body defines model for ApiSecureAdminPostStatus201Body.
-type ApiSecureAdminPostStatus201Body = string
-
-// ApiSecureAdminPostStatus403Body defines model for ApiSecureAdminPostStatus403Body.
-type ApiSecureAdminPostStatus403Body = string
-
-// ApiSecureAdminUsersGetStatus200Body defines model for ApiSecureAdminUsersGetStatus200Body.
-type ApiSecureAdminUsersGetStatus200Body = string
-
-// ApiSecureGetStatus200Body defines model for ApiSecureGetStatus200Body.
-type ApiSecureGetStatus200Body = string
-
-// ApiUsersGetStatus200Body defines model for ApiUsersGetStatus200Body.
-type ApiUsersGetStatus200Body = []string
-
-// ApiUsersPostBody defines model for ApiUsersPostBody.
-type ApiUsersPostBody struct {
-	Age  *int   `json:"age,omitempty"`
-	Name string `json:"name"`
-}
-
-// ApiUsersPostStatus201Body defines model for ApiUsersPostStatus201Body.
-type ApiUsersPostStatus201Body = string
-
-// ApiUsersPostStatus400Body defines model for ApiUsersPostStatus400Body.
-type ApiUsersPostStatus400Body = string
-
-// ApiUsersUseridGetStatus200Body defines model for ApiUsersUseridGetStatus200Body.
-type ApiUsersUseridGetStatus200Body = string
-
-// ApiUsersUseridGetStatus404Body defines model for ApiUsersUseridGetStatus404Body.
-type ApiUsersUseridGetStatus404Body = string
-
-// ApiUsersUseridPostsPostidGetStatus200Body defines model for ApiUsersUseridPostsPostidGetStatus200Body.
-type ApiUsersUseridPostsPostidGetStatus200Body = string
+// FilesPathGetStatus200Body defines model for FilesPathGetStatus200Body.
+type FilesPathGetStatus200Body = string
 
 // FormsFormPostBody defines model for FormsFormPostBody.
 type FormsFormPostBody struct {
@@ -115,11 +35,29 @@ type FormsFormPostBody struct {
 	Score  []float32 `json:"score"`
 }
 
+// FormsGetStatus200Body defines model for FormsGetStatus200Body.
+type FormsGetStatus200Body = string
+
 // FormsMultipartResponseBody defines model for FormsMultipartResponseBody.
 type FormsMultipartResponseBody struct {
 	Count *int    `json:"Count,omitempty"`
 	Name  *string `json:"name,omitempty"`
 }
+
+// FormsPatchStatus200Body defines model for FormsPatchStatus200Body.
+type FormsPatchStatus200Body = openapi_types.File
+
+// FormsPostStatus201Body defines model for FormsPostStatus201Body.
+type FormsPostStatus201Body = string
+
+// FormsPutBody defines model for FormsPutBody.
+type FormsPutBody struct {
+	Count *int   `json:"count,omitempty"`
+	Title string `json:"title"`
+}
+
+// FormsPutStatus200Body defines model for FormsPutStatus200Body.
+type FormsPutStatus200Body = string
 
 // FrourioError defines model for FrourioError.
 type FrourioError struct {
@@ -131,8 +69,70 @@ type FrourioError struct {
 	Status *int `json:"status,omitempty"`
 }
 
-// GetApiParams defines parameters for GetApi.
-type GetApiParams struct {
+// MwGetStatus200Body defines model for MwGetStatus200Body.
+type MwGetStatus200Body = string
+
+// MwGetStatus403Body defines model for MwGetStatus403Body.
+type MwGetStatus403Body = string
+
+// NestChildGetStatus200Body defines model for NestChildGetStatus200Body.
+type NestChildGetStatus200Body = string
+
+// ProductsGetStatus200Body defines model for ProductsGetStatus200Body.
+type ProductsGetStatus200Body = string
+
+// PublicGetStatus200Body defines model for PublicGetStatus200Body.
+type PublicGetStatus200Body = string
+
+// RootGetStatus200Body defines model for RootGetStatus200Body.
+type RootGetStatus200Body = string
+
+// SecureAdminGetStatus200Body defines model for SecureAdminGetStatus200Body.
+type SecureAdminGetStatus200Body = string
+
+// SecureAdminPostBody defines model for SecureAdminPostBody.
+type SecureAdminPostBody struct {
+	Data string `json:"data"`
+}
+
+// SecureAdminPostStatus201Body defines model for SecureAdminPostStatus201Body.
+type SecureAdminPostStatus201Body = string
+
+// SecureAdminPostStatus403Body defines model for SecureAdminPostStatus403Body.
+type SecureAdminPostStatus403Body = string
+
+// SecureAdminUsersGetStatus200Body defines model for SecureAdminUsersGetStatus200Body.
+type SecureAdminUsersGetStatus200Body = string
+
+// SecureGetStatus200Body defines model for SecureGetStatus200Body.
+type SecureGetStatus200Body = string
+
+// UsersGetStatus200Body defines model for UsersGetStatus200Body.
+type UsersGetStatus200Body = []string
+
+// UsersPostBody defines model for UsersPostBody.
+type UsersPostBody struct {
+	Age  *int   `json:"age,omitempty"`
+	Name string `json:"name"`
+}
+
+// UsersPostStatus201Body defines model for UsersPostStatus201Body.
+type UsersPostStatus201Body = string
+
+// UsersPostStatus400Body defines model for UsersPostStatus400Body.
+type UsersPostStatus400Body = string
+
+// UsersUseridGetStatus200Body defines model for UsersUseridGetStatus200Body.
+type UsersUseridGetStatus200Body = string
+
+// UsersUseridGetStatus404Body defines model for UsersUseridGetStatus404Body.
+type UsersUseridGetStatus404Body = string
+
+// UsersUseridPostsPostidGetStatus200Body defines model for UsersUseridPostsPostidGetStatus200Body.
+type UsersUseridPostsPostidGetStatus200Body = string
+
+// GetParams defines parameters for Get.
+type GetParams struct {
 	// Search Search term
 	Search *string `form:"search,omitempty" json:"search,omitempty"`
 
@@ -144,27 +144,27 @@ type GetApiParams struct {
 	Score   []float32 `form:"score" json:"score"`
 }
 
-// GetApiSecureAdminUsersParams defines parameters for GetApiSecureAdminUsers.
-type GetApiSecureAdminUsersParams struct {
+// GetSecureAdminUsersParams defines parameters for GetSecureAdminUsers.
+type GetSecureAdminUsersParams struct {
 	Role *string `form:"role,omitempty" json:"role,omitempty"`
 }
 
-// GetApiUsersParams defines parameters for GetApiUsers.
-type GetApiUsersParams struct {
+// GetUsersParams defines parameters for GetUsers.
+type GetUsersParams struct {
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// PostApiFormsFormdataRequestBody defines body for PostApiForms for application/x-www-form-urlencoded ContentType.
-type PostApiFormsFormdataRequestBody = FormsFormPostBody
+// PostFormsFormdataRequestBody defines body for PostForms for application/x-www-form-urlencoded ContentType.
+type PostFormsFormdataRequestBody = FormsFormPostBody
 
-// PutApiFormsMultipartRequestBody defines body for PutApiForms for multipart/form-data ContentType.
-type PutApiFormsMultipartRequestBody = ApiFormsPutBody
+// PutFormsMultipartRequestBody defines body for PutForms for multipart/form-data ContentType.
+type PutFormsMultipartRequestBody = FormsPutBody
 
-// PostApiSecureAdminJSONRequestBody defines body for PostApiSecureAdmin for application/json ContentType.
-type PostApiSecureAdminJSONRequestBody = ApiSecureAdminPostBody
+// PostSecureAdminJSONRequestBody defines body for PostSecureAdmin for application/json ContentType.
+type PostSecureAdminJSONRequestBody = SecureAdminPostBody
 
-// PostApiUsersJSONRequestBody defines body for PostApiUsers for application/json ContentType.
-type PostApiUsersJSONRequestBody = ApiUsersPostBody
+// PostUsersJSONRequestBody defines body for PostUsers for application/json ContentType.
+type PostUsersJSONRequestBody = UsersPostBody
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -239,84 +239,84 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
-	// GetApi request
-	GetApi(ctx context.Context, params *GetApiParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// Get request
+	Get(ctx context.Context, params *GetParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiAuth request
-	GetApiAuth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetAuth request
+	GetAuth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiBlogBySlug request
-	GetApiBlogBySlug(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetBlogBySlug request
+	GetBlogBySlug(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiFiles request
-	GetApiFiles(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetFiles request
+	GetFiles(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiFilesByPath request
-	GetApiFilesByPath(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetFilesByPath request
+	GetFilesByPath(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// DeleteApiForms request
-	DeleteApiForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// DeleteForms request
+	DeleteForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiForms request
-	GetApiForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetForms request
+	GetForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PatchApiForms request
-	PatchApiForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PatchForms request
+	PatchForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostApiFormsWithBody request with any body
-	PostApiFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostFormsWithBody request with any body
+	PostFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostApiFormsWithFormdataBody(ctx context.Context, body PostApiFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostFormsWithFormdataBody(ctx context.Context, body PostFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PutApiFormsWithBody request with any body
-	PutApiFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PutFormsWithBody request with any body
+	PutFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiMw request
-	GetApiMw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetMw request
+	GetMw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiNestChild request
-	GetApiNestChild(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetNestChild request
+	GetNestChild(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiProducts request
-	GetApiProducts(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetProducts request
+	GetProducts(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiPublic request
-	GetApiPublic(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetPublic request
+	GetPublic(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiRaw request
-	GetApiRaw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetRaw request
+	GetRaw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiSecure request
-	GetApiSecure(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetSecure request
+	GetSecure(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiSecureAdmin request
-	GetApiSecureAdmin(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetSecureAdmin request
+	GetSecureAdmin(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostApiSecureAdminWithBody request with any body
-	PostApiSecureAdminWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostSecureAdminWithBody request with any body
+	PostSecureAdminWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostApiSecureAdmin(ctx context.Context, body PostApiSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostSecureAdmin(ctx context.Context, body PostSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiSecureAdminUsers request
-	GetApiSecureAdminUsers(ctx context.Context, params *GetApiSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetSecureAdminUsers request
+	GetSecureAdminUsers(ctx context.Context, params *GetSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiUsers request
-	GetApiUsers(ctx context.Context, params *GetApiUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetUsers request
+	GetUsers(ctx context.Context, params *GetUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PostApiUsersWithBody request with any body
-	PostApiUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// PostUsersWithBody request with any body
+	PostUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	PostApiUsers(ctx context.Context, body PostApiUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PostUsers(ctx context.Context, body PostUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiUsersByUserid request
-	GetApiUsersByUserid(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetUsersByUserid request
+	GetUsersByUserid(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetApiUsersByUseridPostsByPostid request
-	GetApiUsersByUseridPostsByPostid(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// GetUsersByUseridPostsByPostid request
+	GetUsersByUseridPostsByPostid(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) GetApi(ctx context.Context, params *GetApiParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiRequest(c.Server, params)
+func (c *Client) Get(ctx context.Context, params *GetParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -327,8 +327,8 @@ func (c *Client) GetApi(ctx context.Context, params *GetApiParams, reqEditors ..
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiAuth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiAuthRequest(c.Server)
+func (c *Client) GetAuth(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAuthRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -339,8 +339,8 @@ func (c *Client) GetApiAuth(ctx context.Context, reqEditors ...RequestEditorFn) 
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiBlogBySlug(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiBlogBySlugRequest(c.Server, slug)
+func (c *Client) GetBlogBySlug(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetBlogBySlugRequest(c.Server, slug)
 	if err != nil {
 		return nil, err
 	}
@@ -351,8 +351,8 @@ func (c *Client) GetApiBlogBySlug(ctx context.Context, slug []string, reqEditors
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiFiles(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiFilesRequest(c.Server)
+func (c *Client) GetFiles(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetFilesRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -363,8 +363,8 @@ func (c *Client) GetApiFiles(ctx context.Context, reqEditors ...RequestEditorFn)
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiFilesByPath(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiFilesByPathRequest(c.Server, path)
+func (c *Client) GetFilesByPath(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetFilesByPathRequest(c.Server, path)
 	if err != nil {
 		return nil, err
 	}
@@ -375,8 +375,8 @@ func (c *Client) GetApiFilesByPath(ctx context.Context, path []string, reqEditor
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteApiForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteApiFormsRequest(c.Server)
+func (c *Client) DeleteForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteFormsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -387,8 +387,8 @@ func (c *Client) DeleteApiForms(ctx context.Context, reqEditors ...RequestEditor
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiFormsRequest(c.Server)
+func (c *Client) GetForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetFormsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -399,8 +399,8 @@ func (c *Client) GetApiForms(ctx context.Context, reqEditors ...RequestEditorFn)
 	return c.Client.Do(req)
 }
 
-func (c *Client) PatchApiForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPatchApiFormsRequest(c.Server)
+func (c *Client) PatchForms(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPatchFormsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -411,8 +411,8 @@ func (c *Client) PatchApiForms(ctx context.Context, reqEditors ...RequestEditorF
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostApiFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiFormsRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostFormsRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -423,8 +423,8 @@ func (c *Client) PostApiFormsWithBody(ctx context.Context, contentType string, b
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostApiFormsWithFormdataBody(ctx context.Context, body PostApiFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiFormsRequestWithFormdataBody(c.Server, body)
+func (c *Client) PostFormsWithFormdataBody(ctx context.Context, body PostFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostFormsRequestWithFormdataBody(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -435,8 +435,8 @@ func (c *Client) PostApiFormsWithFormdataBody(ctx context.Context, body PostApiF
 	return c.Client.Do(req)
 }
 
-func (c *Client) PutApiFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutApiFormsRequestWithBody(c.Server, contentType, body)
+func (c *Client) PutFormsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutFormsRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -447,8 +447,8 @@ func (c *Client) PutApiFormsWithBody(ctx context.Context, contentType string, bo
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiMw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiMwRequest(c.Server)
+func (c *Client) GetMw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMwRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -459,8 +459,8 @@ func (c *Client) GetApiMw(ctx context.Context, reqEditors ...RequestEditorFn) (*
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiNestChild(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiNestChildRequest(c.Server)
+func (c *Client) GetNestChild(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetNestChildRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -471,8 +471,8 @@ func (c *Client) GetApiNestChild(ctx context.Context, reqEditors ...RequestEdito
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiProducts(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiProductsRequest(c.Server)
+func (c *Client) GetProducts(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProductsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -483,8 +483,8 @@ func (c *Client) GetApiProducts(ctx context.Context, reqEditors ...RequestEditor
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiPublic(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiPublicRequest(c.Server)
+func (c *Client) GetPublic(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetPublicRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -495,8 +495,8 @@ func (c *Client) GetApiPublic(ctx context.Context, reqEditors ...RequestEditorFn
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiRaw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiRawRequest(c.Server)
+func (c *Client) GetRaw(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetRawRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -507,8 +507,8 @@ func (c *Client) GetApiRaw(ctx context.Context, reqEditors ...RequestEditorFn) (
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiSecure(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiSecureRequest(c.Server)
+func (c *Client) GetSecure(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSecureRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -519,8 +519,8 @@ func (c *Client) GetApiSecure(ctx context.Context, reqEditors ...RequestEditorFn
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiSecureAdmin(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiSecureAdminRequest(c.Server)
+func (c *Client) GetSecureAdmin(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSecureAdminRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -531,8 +531,8 @@ func (c *Client) GetApiSecureAdmin(ctx context.Context, reqEditors ...RequestEdi
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostApiSecureAdminWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiSecureAdminRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostSecureAdminWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostSecureAdminRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -543,8 +543,8 @@ func (c *Client) PostApiSecureAdminWithBody(ctx context.Context, contentType str
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostApiSecureAdmin(ctx context.Context, body PostApiSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiSecureAdminRequest(c.Server, body)
+func (c *Client) PostSecureAdmin(ctx context.Context, body PostSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostSecureAdminRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -555,8 +555,8 @@ func (c *Client) PostApiSecureAdmin(ctx context.Context, body PostApiSecureAdmin
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiSecureAdminUsers(ctx context.Context, params *GetApiSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiSecureAdminUsersRequest(c.Server, params)
+func (c *Client) GetSecureAdminUsers(ctx context.Context, params *GetSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetSecureAdminUsersRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -567,8 +567,8 @@ func (c *Client) GetApiSecureAdminUsers(ctx context.Context, params *GetApiSecur
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiUsers(ctx context.Context, params *GetApiUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiUsersRequest(c.Server, params)
+func (c *Client) GetUsers(ctx context.Context, params *GetUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetUsersRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -579,8 +579,8 @@ func (c *Client) GetApiUsers(ctx context.Context, params *GetApiUsersParams, req
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostApiUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiUsersRequestWithBody(c.Server, contentType, body)
+func (c *Client) PostUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostUsersRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -591,8 +591,8 @@ func (c *Client) PostApiUsersWithBody(ctx context.Context, contentType string, b
 	return c.Client.Do(req)
 }
 
-func (c *Client) PostApiUsers(ctx context.Context, body PostApiUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostApiUsersRequest(c.Server, body)
+func (c *Client) PostUsers(ctx context.Context, body PostUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostUsersRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -603,8 +603,8 @@ func (c *Client) PostApiUsers(ctx context.Context, body PostApiUsersJSONRequestB
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiUsersByUserid(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiUsersByUseridRequest(c.Server, userid)
+func (c *Client) GetUsersByUserid(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetUsersByUseridRequest(c.Server, userid)
 	if err != nil {
 		return nil, err
 	}
@@ -615,8 +615,8 @@ func (c *Client) GetApiUsersByUserid(ctx context.Context, userid int, reqEditors
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApiUsersByUseridPostsByPostid(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApiUsersByUseridPostsByPostidRequest(c.Server, userid, postid)
+func (c *Client) GetUsersByUseridPostsByPostid(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetUsersByUseridPostsByPostidRequest(c.Server, userid, postid)
 	if err != nil {
 		return nil, err
 	}
@@ -627,8 +627,8 @@ func (c *Client) GetApiUsersByUseridPostsByPostid(ctx context.Context, userid in
 	return c.Client.Do(req)
 }
 
-// NewGetApiRequest generates requests for GetApi
-func NewGetApiRequest(server string, params *GetApiParams) (*http.Request, error) {
+// NewGetRequest generates requests for Get
+func NewGetRequest(server string, params *GetParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -636,7 +636,7 @@ func NewGetApiRequest(server string, params *GetApiParams) (*http.Request, error
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api")
+	operationPath := fmt.Sprintf("/")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -729,8 +729,8 @@ func NewGetApiRequest(server string, params *GetApiParams) (*http.Request, error
 	return req, nil
 }
 
-// NewGetApiAuthRequest generates requests for GetApiAuth
-func NewGetApiAuthRequest(server string) (*http.Request, error) {
+// NewGetAuthRequest generates requests for GetAuth
+func NewGetAuthRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -738,7 +738,7 @@ func NewGetApiAuthRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/auth")
+	operationPath := fmt.Sprintf("/auth")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -756,8 +756,8 @@ func NewGetApiAuthRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiBlogBySlugRequest generates requests for GetApiBlogBySlug
-func NewGetApiBlogBySlugRequest(server string, slug []string) (*http.Request, error) {
+// NewGetBlogBySlugRequest generates requests for GetBlogBySlug
+func NewGetBlogBySlugRequest(server string, slug []string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -772,7 +772,7 @@ func NewGetApiBlogBySlugRequest(server string, slug []string) (*http.Request, er
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/blog/%s", pathParam0)
+	operationPath := fmt.Sprintf("/blog/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -790,8 +790,8 @@ func NewGetApiBlogBySlugRequest(server string, slug []string) (*http.Request, er
 	return req, nil
 }
 
-// NewGetApiFilesRequest generates requests for GetApiFiles
-func NewGetApiFilesRequest(server string) (*http.Request, error) {
+// NewGetFilesRequest generates requests for GetFiles
+func NewGetFilesRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -799,7 +799,7 @@ func NewGetApiFilesRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/files")
+	operationPath := fmt.Sprintf("/files")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -817,8 +817,8 @@ func NewGetApiFilesRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiFilesByPathRequest generates requests for GetApiFilesByPath
-func NewGetApiFilesByPathRequest(server string, path []string) (*http.Request, error) {
+// NewGetFilesByPathRequest generates requests for GetFilesByPath
+func NewGetFilesByPathRequest(server string, path []string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -833,7 +833,7 @@ func NewGetApiFilesByPathRequest(server string, path []string) (*http.Request, e
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/files/%s", pathParam0)
+	operationPath := fmt.Sprintf("/files/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -851,8 +851,8 @@ func NewGetApiFilesByPathRequest(server string, path []string) (*http.Request, e
 	return req, nil
 }
 
-// NewDeleteApiFormsRequest generates requests for DeleteApiForms
-func NewDeleteApiFormsRequest(server string) (*http.Request, error) {
+// NewDeleteFormsRequest generates requests for DeleteForms
+func NewDeleteFormsRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -860,7 +860,7 @@ func NewDeleteApiFormsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/forms")
+	operationPath := fmt.Sprintf("/forms")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -878,8 +878,8 @@ func NewDeleteApiFormsRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiFormsRequest generates requests for GetApiForms
-func NewGetApiFormsRequest(server string) (*http.Request, error) {
+// NewGetFormsRequest generates requests for GetForms
+func NewGetFormsRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -887,7 +887,7 @@ func NewGetApiFormsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/forms")
+	operationPath := fmt.Sprintf("/forms")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -905,8 +905,8 @@ func NewGetApiFormsRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewPatchApiFormsRequest generates requests for PatchApiForms
-func NewPatchApiFormsRequest(server string) (*http.Request, error) {
+// NewPatchFormsRequest generates requests for PatchForms
+func NewPatchFormsRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -914,7 +914,7 @@ func NewPatchApiFormsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/forms")
+	operationPath := fmt.Sprintf("/forms")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -932,19 +932,19 @@ func NewPatchApiFormsRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewPostApiFormsRequestWithFormdataBody calls the generic PostApiForms builder with application/x-www-form-urlencoded body
-func NewPostApiFormsRequestWithFormdataBody(server string, body PostApiFormsFormdataRequestBody) (*http.Request, error) {
+// NewPostFormsRequestWithFormdataBody calls the generic PostForms builder with application/x-www-form-urlencoded body
+func NewPostFormsRequestWithFormdataBody(server string, body PostFormsFormdataRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	bodyStr, err := runtime.MarshalForm(body, nil)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = strings.NewReader(bodyStr.Encode())
-	return NewPostApiFormsRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
+	return NewPostFormsRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
 }
 
-// NewPostApiFormsRequestWithBody generates requests for PostApiForms with any type of body
-func NewPostApiFormsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostFormsRequestWithBody generates requests for PostForms with any type of body
+func NewPostFormsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -952,7 +952,7 @@ func NewPostApiFormsRequestWithBody(server string, contentType string, body io.R
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/forms")
+	operationPath := fmt.Sprintf("/forms")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -972,8 +972,8 @@ func NewPostApiFormsRequestWithBody(server string, contentType string, body io.R
 	return req, nil
 }
 
-// NewPutApiFormsRequestWithBody generates requests for PutApiForms with any type of body
-func NewPutApiFormsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPutFormsRequestWithBody generates requests for PutForms with any type of body
+func NewPutFormsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -981,7 +981,7 @@ func NewPutApiFormsRequestWithBody(server string, contentType string, body io.Re
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/forms")
+	operationPath := fmt.Sprintf("/forms")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1001,8 +1001,8 @@ func NewPutApiFormsRequestWithBody(server string, contentType string, body io.Re
 	return req, nil
 }
 
-// NewGetApiMwRequest generates requests for GetApiMw
-func NewGetApiMwRequest(server string) (*http.Request, error) {
+// NewGetMwRequest generates requests for GetMw
+func NewGetMwRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1010,7 +1010,7 @@ func NewGetApiMwRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/mw")
+	operationPath := fmt.Sprintf("/mw")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1028,8 +1028,8 @@ func NewGetApiMwRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiNestChildRequest generates requests for GetApiNestChild
-func NewGetApiNestChildRequest(server string) (*http.Request, error) {
+// NewGetNestChildRequest generates requests for GetNestChild
+func NewGetNestChildRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1037,7 +1037,7 @@ func NewGetApiNestChildRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/nest/child")
+	operationPath := fmt.Sprintf("/nest/child")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1055,8 +1055,8 @@ func NewGetApiNestChildRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiProductsRequest generates requests for GetApiProducts
-func NewGetApiProductsRequest(server string) (*http.Request, error) {
+// NewGetProductsRequest generates requests for GetProducts
+func NewGetProductsRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1064,7 +1064,7 @@ func NewGetApiProductsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/products/セール品")
+	operationPath := fmt.Sprintf("/products/セール品")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1082,8 +1082,8 @@ func NewGetApiProductsRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiPublicRequest generates requests for GetApiPublic
-func NewGetApiPublicRequest(server string) (*http.Request, error) {
+// NewGetPublicRequest generates requests for GetPublic
+func NewGetPublicRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1091,7 +1091,7 @@ func NewGetApiPublicRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/public")
+	operationPath := fmt.Sprintf("/public")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1109,8 +1109,8 @@ func NewGetApiPublicRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiRawRequest generates requests for GetApiRaw
-func NewGetApiRawRequest(server string) (*http.Request, error) {
+// NewGetRawRequest generates requests for GetRaw
+func NewGetRawRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1118,7 +1118,7 @@ func NewGetApiRawRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/raw")
+	operationPath := fmt.Sprintf("/raw")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1136,8 +1136,8 @@ func NewGetApiRawRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiSecureRequest generates requests for GetApiSecure
-func NewGetApiSecureRequest(server string) (*http.Request, error) {
+// NewGetSecureRequest generates requests for GetSecure
+func NewGetSecureRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1145,7 +1145,7 @@ func NewGetApiSecureRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/secure")
+	operationPath := fmt.Sprintf("/secure")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1163,8 +1163,8 @@ func NewGetApiSecureRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewGetApiSecureAdminRequest generates requests for GetApiSecureAdmin
-func NewGetApiSecureAdminRequest(server string) (*http.Request, error) {
+// NewGetSecureAdminRequest generates requests for GetSecureAdmin
+func NewGetSecureAdminRequest(server string) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1172,7 +1172,7 @@ func NewGetApiSecureAdminRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/secure/admin")
+	operationPath := fmt.Sprintf("/secure/admin")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1190,19 +1190,19 @@ func NewGetApiSecureAdminRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewPostApiSecureAdminRequest calls the generic PostApiSecureAdmin builder with application/json body
-func NewPostApiSecureAdminRequest(server string, body PostApiSecureAdminJSONRequestBody) (*http.Request, error) {
+// NewPostSecureAdminRequest calls the generic PostSecureAdmin builder with application/json body
+func NewPostSecureAdminRequest(server string, body PostSecureAdminJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostApiSecureAdminRequestWithBody(server, "application/json", bodyReader)
+	return NewPostSecureAdminRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewPostApiSecureAdminRequestWithBody generates requests for PostApiSecureAdmin with any type of body
-func NewPostApiSecureAdminRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostSecureAdminRequestWithBody generates requests for PostSecureAdmin with any type of body
+func NewPostSecureAdminRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1210,7 +1210,7 @@ func NewPostApiSecureAdminRequestWithBody(server string, contentType string, bod
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/secure/admin")
+	operationPath := fmt.Sprintf("/secure/admin")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1230,8 +1230,8 @@ func NewPostApiSecureAdminRequestWithBody(server string, contentType string, bod
 	return req, nil
 }
 
-// NewGetApiSecureAdminUsersRequest generates requests for GetApiSecureAdminUsers
-func NewGetApiSecureAdminUsersRequest(server string, params *GetApiSecureAdminUsersParams) (*http.Request, error) {
+// NewGetSecureAdminUsersRequest generates requests for GetSecureAdminUsers
+func NewGetSecureAdminUsersRequest(server string, params *GetSecureAdminUsersParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1239,7 +1239,7 @@ func NewGetApiSecureAdminUsersRequest(server string, params *GetApiSecureAdminUs
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/secure/admin/users")
+	operationPath := fmt.Sprintf("/secure/admin/users")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1284,8 +1284,8 @@ func NewGetApiSecureAdminUsersRequest(server string, params *GetApiSecureAdminUs
 	return req, nil
 }
 
-// NewGetApiUsersRequest generates requests for GetApiUsers
-func NewGetApiUsersRequest(server string, params *GetApiUsersParams) (*http.Request, error) {
+// NewGetUsersRequest generates requests for GetUsers
+func NewGetUsersRequest(server string, params *GetUsersParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1293,7 +1293,7 @@ func NewGetApiUsersRequest(server string, params *GetApiUsersParams) (*http.Requ
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/users")
+	operationPath := fmt.Sprintf("/users")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1338,19 +1338,19 @@ func NewGetApiUsersRequest(server string, params *GetApiUsersParams) (*http.Requ
 	return req, nil
 }
 
-// NewPostApiUsersRequest calls the generic PostApiUsers builder with application/json body
-func NewPostApiUsersRequest(server string, body PostApiUsersJSONRequestBody) (*http.Request, error) {
+// NewPostUsersRequest calls the generic PostUsers builder with application/json body
+func NewPostUsersRequest(server string, body PostUsersJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewPostApiUsersRequestWithBody(server, "application/json", bodyReader)
+	return NewPostUsersRequestWithBody(server, "application/json", bodyReader)
 }
 
-// NewPostApiUsersRequestWithBody generates requests for PostApiUsers with any type of body
-func NewPostApiUsersRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+// NewPostUsersRequestWithBody generates requests for PostUsers with any type of body
+func NewPostUsersRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -1358,7 +1358,7 @@ func NewPostApiUsersRequestWithBody(server string, contentType string, body io.R
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/users")
+	operationPath := fmt.Sprintf("/users")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1378,8 +1378,8 @@ func NewPostApiUsersRequestWithBody(server string, contentType string, body io.R
 	return req, nil
 }
 
-// NewGetApiUsersByUseridRequest generates requests for GetApiUsersByUserid
-func NewGetApiUsersByUseridRequest(server string, userid int) (*http.Request, error) {
+// NewGetUsersByUseridRequest generates requests for GetUsersByUserid
+func NewGetUsersByUseridRequest(server string, userid int) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1394,7 +1394,7 @@ func NewGetApiUsersByUseridRequest(server string, userid int) (*http.Request, er
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/users/%s", pathParam0)
+	operationPath := fmt.Sprintf("/users/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1412,8 +1412,8 @@ func NewGetApiUsersByUseridRequest(server string, userid int) (*http.Request, er
 	return req, nil
 }
 
-// NewGetApiUsersByUseridPostsByPostidRequest generates requests for GetApiUsersByUseridPostsByPostid
-func NewGetApiUsersByUseridPostsByPostidRequest(server string, userid int, postid string) (*http.Request, error) {
+// NewGetUsersByUseridPostsByPostidRequest generates requests for GetUsersByUseridPostsByPostid
+func NewGetUsersByUseridPostsByPostidRequest(server string, userid int, postid string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -1435,7 +1435,7 @@ func NewGetApiUsersByUseridPostsByPostidRequest(server string, userid int, posti
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/api/users/%s/posts/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/users/%s/posts/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1496,90 +1496,90 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
-	// GetApiWithResponse request
-	GetApiWithResponse(ctx context.Context, params *GetApiParams, reqEditors ...RequestEditorFn) (*GetApiResponse, error)
+	// GetWithResponse request
+	GetWithResponse(ctx context.Context, params *GetParams, reqEditors ...RequestEditorFn) (*GetResponse, error)
 
-	// GetApiAuthWithResponse request
-	GetApiAuthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiAuthResponse, error)
+	// GetAuthWithResponse request
+	GetAuthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAuthResponse, error)
 
-	// GetApiBlogBySlugWithResponse request
-	GetApiBlogBySlugWithResponse(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*GetApiBlogBySlugResponse, error)
+	// GetBlogBySlugWithResponse request
+	GetBlogBySlugWithResponse(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*GetBlogBySlugResponse, error)
 
-	// GetApiFilesWithResponse request
-	GetApiFilesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiFilesResponse, error)
+	// GetFilesWithResponse request
+	GetFilesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetFilesResponse, error)
 
-	// GetApiFilesByPathWithResponse request
-	GetApiFilesByPathWithResponse(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*GetApiFilesByPathResponse, error)
+	// GetFilesByPathWithResponse request
+	GetFilesByPathWithResponse(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*GetFilesByPathResponse, error)
 
-	// DeleteApiFormsWithResponse request
-	DeleteApiFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteApiFormsResponse, error)
+	// DeleteFormsWithResponse request
+	DeleteFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteFormsResponse, error)
 
-	// GetApiFormsWithResponse request
-	GetApiFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiFormsResponse, error)
+	// GetFormsWithResponse request
+	GetFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetFormsResponse, error)
 
-	// PatchApiFormsWithResponse request
-	PatchApiFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PatchApiFormsResponse, error)
+	// PatchFormsWithResponse request
+	PatchFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PatchFormsResponse, error)
 
-	// PostApiFormsWithBodyWithResponse request with any body
-	PostApiFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiFormsResponse, error)
+	// PostFormsWithBodyWithResponse request with any body
+	PostFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostFormsResponse, error)
 
-	PostApiFormsWithFormdataBodyWithResponse(ctx context.Context, body PostApiFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostApiFormsResponse, error)
+	PostFormsWithFormdataBodyWithResponse(ctx context.Context, body PostFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostFormsResponse, error)
 
-	// PutApiFormsWithBodyWithResponse request with any body
-	PutApiFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiFormsResponse, error)
+	// PutFormsWithBodyWithResponse request with any body
+	PutFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutFormsResponse, error)
 
-	// GetApiMwWithResponse request
-	GetApiMwWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiMwResponse, error)
+	// GetMwWithResponse request
+	GetMwWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetMwResponse, error)
 
-	// GetApiNestChildWithResponse request
-	GetApiNestChildWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiNestChildResponse, error)
+	// GetNestChildWithResponse request
+	GetNestChildWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetNestChildResponse, error)
 
-	// GetApiProductsWithResponse request
-	GetApiProductsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiProductsResponse, error)
+	// GetProductsWithResponse request
+	GetProductsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetProductsResponse, error)
 
-	// GetApiPublicWithResponse request
-	GetApiPublicWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiPublicResponse, error)
+	// GetPublicWithResponse request
+	GetPublicWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetPublicResponse, error)
 
-	// GetApiRawWithResponse request
-	GetApiRawWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiRawResponse, error)
+	// GetRawWithResponse request
+	GetRawWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetRawResponse, error)
 
-	// GetApiSecureWithResponse request
-	GetApiSecureWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSecureResponse, error)
+	// GetSecureWithResponse request
+	GetSecureWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSecureResponse, error)
 
-	// GetApiSecureAdminWithResponse request
-	GetApiSecureAdminWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSecureAdminResponse, error)
+	// GetSecureAdminWithResponse request
+	GetSecureAdminWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSecureAdminResponse, error)
 
-	// PostApiSecureAdminWithBodyWithResponse request with any body
-	PostApiSecureAdminWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSecureAdminResponse, error)
+	// PostSecureAdminWithBodyWithResponse request with any body
+	PostSecureAdminWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostSecureAdminResponse, error)
 
-	PostApiSecureAdminWithResponse(ctx context.Context, body PostApiSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSecureAdminResponse, error)
+	PostSecureAdminWithResponse(ctx context.Context, body PostSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*PostSecureAdminResponse, error)
 
-	// GetApiSecureAdminUsersWithResponse request
-	GetApiSecureAdminUsersWithResponse(ctx context.Context, params *GetApiSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*GetApiSecureAdminUsersResponse, error)
+	// GetSecureAdminUsersWithResponse request
+	GetSecureAdminUsersWithResponse(ctx context.Context, params *GetSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*GetSecureAdminUsersResponse, error)
 
-	// GetApiUsersWithResponse request
-	GetApiUsersWithResponse(ctx context.Context, params *GetApiUsersParams, reqEditors ...RequestEditorFn) (*GetApiUsersResponse, error)
+	// GetUsersWithResponse request
+	GetUsersWithResponse(ctx context.Context, params *GetUsersParams, reqEditors ...RequestEditorFn) (*GetUsersResponse, error)
 
-	// PostApiUsersWithBodyWithResponse request with any body
-	PostApiUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiUsersResponse, error)
+	// PostUsersWithBodyWithResponse request with any body
+	PostUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostUsersResponse, error)
 
-	PostApiUsersWithResponse(ctx context.Context, body PostApiUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiUsersResponse, error)
+	PostUsersWithResponse(ctx context.Context, body PostUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostUsersResponse, error)
 
-	// GetApiUsersByUseridWithResponse request
-	GetApiUsersByUseridWithResponse(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*GetApiUsersByUseridResponse, error)
+	// GetUsersByUseridWithResponse request
+	GetUsersByUseridWithResponse(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*GetUsersByUseridResponse, error)
 
-	// GetApiUsersByUseridPostsByPostidWithResponse request
-	GetApiUsersByUseridPostsByPostidWithResponse(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*GetApiUsersByUseridPostsByPostidResponse, error)
+	// GetUsersByUseridPostsByPostidWithResponse request
+	GetUsersByUseridPostsByPostidWithResponse(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*GetUsersByUseridPostsByPostidResponse, error)
 }
 
-type GetApiResponse struct {
+type GetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiResponse) Status() string {
+func (r GetResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1587,7 +1587,7 @@ func (r GetApiResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiResponse) StatusCode() int {
+func (r GetResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1595,21 +1595,21 @@ func (r GetApiResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiResponse) ContentType() string {
+func (r GetResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiAuthResponse struct {
+type GetAuthResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiAuthResponse) Status() string {
+func (r GetAuthResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1617,7 +1617,7 @@ func (r GetApiAuthResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiAuthResponse) StatusCode() int {
+func (r GetAuthResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1625,21 +1625,21 @@ func (r GetApiAuthResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiAuthResponse) ContentType() string {
+func (r GetAuthResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiBlogBySlugResponse struct {
+type GetBlogBySlugResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiBlogBySlugResponse) Status() string {
+func (r GetBlogBySlugResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1647,7 +1647,7 @@ func (r GetApiBlogBySlugResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiBlogBySlugResponse) StatusCode() int {
+func (r GetBlogBySlugResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1655,21 +1655,21 @@ func (r GetApiBlogBySlugResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiBlogBySlugResponse) ContentType() string {
+func (r GetBlogBySlugResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiFilesResponse struct {
+type GetFilesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiFilesResponse) Status() string {
+func (r GetFilesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1677,7 +1677,7 @@ func (r GetApiFilesResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiFilesResponse) StatusCode() int {
+func (r GetFilesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1685,21 +1685,21 @@ func (r GetApiFilesResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiFilesResponse) ContentType() string {
+func (r GetFilesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiFilesByPathResponse struct {
+type GetFilesByPathResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiFilesByPathResponse) Status() string {
+func (r GetFilesByPathResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1707,7 +1707,7 @@ func (r GetApiFilesByPathResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiFilesByPathResponse) StatusCode() int {
+func (r GetFilesByPathResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1715,21 +1715,21 @@ func (r GetApiFilesByPathResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiFilesByPathResponse) ContentType() string {
+func (r GetFilesByPathResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type DeleteApiFormsResponse struct {
+type DeleteFormsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r DeleteApiFormsResponse) Status() string {
+func (r DeleteFormsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1737,7 +1737,7 @@ func (r DeleteApiFormsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r DeleteApiFormsResponse) StatusCode() int {
+func (r DeleteFormsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1745,21 +1745,21 @@ func (r DeleteApiFormsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r DeleteApiFormsResponse) ContentType() string {
+func (r DeleteFormsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiFormsResponse struct {
+type GetFormsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiFormsResponse) Status() string {
+func (r GetFormsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1767,7 +1767,7 @@ func (r GetApiFormsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiFormsResponse) StatusCode() int {
+func (r GetFormsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1775,21 +1775,21 @@ func (r GetApiFormsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiFormsResponse) ContentType() string {
+func (r GetFormsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PatchApiFormsResponse struct {
+type PatchFormsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r PatchApiFormsResponse) Status() string {
+func (r PatchFormsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1797,7 +1797,7 @@ func (r PatchApiFormsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PatchApiFormsResponse) StatusCode() int {
+func (r PatchFormsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1805,21 +1805,21 @@ func (r PatchApiFormsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PatchApiFormsResponse) ContentType() string {
+func (r PatchFormsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostApiFormsResponse struct {
+type PostFormsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r PostApiFormsResponse) Status() string {
+func (r PostFormsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1827,7 +1827,7 @@ func (r PostApiFormsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostApiFormsResponse) StatusCode() int {
+func (r PostFormsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1835,21 +1835,21 @@ func (r PostApiFormsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostApiFormsResponse) ContentType() string {
+func (r PostFormsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PutApiFormsResponse struct {
+type PutFormsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r PutApiFormsResponse) Status() string {
+func (r PutFormsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1857,7 +1857,7 @@ func (r PutApiFormsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PutApiFormsResponse) StatusCode() int {
+func (r PutFormsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1865,21 +1865,21 @@ func (r PutApiFormsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PutApiFormsResponse) ContentType() string {
+func (r PutFormsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiMwResponse struct {
+type GetMwResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiMwResponse) Status() string {
+func (r GetMwResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1887,7 +1887,7 @@ func (r GetApiMwResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiMwResponse) StatusCode() int {
+func (r GetMwResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1895,21 +1895,21 @@ func (r GetApiMwResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiMwResponse) ContentType() string {
+func (r GetMwResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiNestChildResponse struct {
+type GetNestChildResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiNestChildResponse) Status() string {
+func (r GetNestChildResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1917,7 +1917,7 @@ func (r GetApiNestChildResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiNestChildResponse) StatusCode() int {
+func (r GetNestChildResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1925,21 +1925,21 @@ func (r GetApiNestChildResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiNestChildResponse) ContentType() string {
+func (r GetNestChildResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiProductsResponse struct {
+type GetProductsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiProductsResponse) Status() string {
+func (r GetProductsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1947,7 +1947,7 @@ func (r GetApiProductsResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiProductsResponse) StatusCode() int {
+func (r GetProductsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1955,21 +1955,21 @@ func (r GetApiProductsResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiProductsResponse) ContentType() string {
+func (r GetProductsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiPublicResponse struct {
+type GetPublicResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiPublicResponse) Status() string {
+func (r GetPublicResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -1977,7 +1977,7 @@ func (r GetApiPublicResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiPublicResponse) StatusCode() int {
+func (r GetPublicResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -1985,21 +1985,21 @@ func (r GetApiPublicResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiPublicResponse) ContentType() string {
+func (r GetPublicResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiRawResponse struct {
+type GetRawResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiRawResponse) Status() string {
+func (r GetRawResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2007,7 +2007,7 @@ func (r GetApiRawResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiRawResponse) StatusCode() int {
+func (r GetRawResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2015,21 +2015,21 @@ func (r GetApiRawResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiRawResponse) ContentType() string {
+func (r GetRawResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiSecureResponse struct {
+type GetSecureResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiSecureResponse) Status() string {
+func (r GetSecureResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2037,7 +2037,7 @@ func (r GetApiSecureResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiSecureResponse) StatusCode() int {
+func (r GetSecureResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2045,21 +2045,21 @@ func (r GetApiSecureResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiSecureResponse) ContentType() string {
+func (r GetSecureResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiSecureAdminResponse struct {
+type GetSecureAdminResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiSecureAdminResponse) Status() string {
+func (r GetSecureAdminResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2067,7 +2067,7 @@ func (r GetApiSecureAdminResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiSecureAdminResponse) StatusCode() int {
+func (r GetSecureAdminResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2075,21 +2075,21 @@ func (r GetApiSecureAdminResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiSecureAdminResponse) ContentType() string {
+func (r GetSecureAdminResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostApiSecureAdminResponse struct {
+type PostSecureAdminResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r PostApiSecureAdminResponse) Status() string {
+func (r PostSecureAdminResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2097,7 +2097,7 @@ func (r PostApiSecureAdminResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostApiSecureAdminResponse) StatusCode() int {
+func (r PostSecureAdminResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2105,21 +2105,21 @@ func (r PostApiSecureAdminResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostApiSecureAdminResponse) ContentType() string {
+func (r PostSecureAdminResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiSecureAdminUsersResponse struct {
+type GetSecureAdminUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiSecureAdminUsersResponse) Status() string {
+func (r GetSecureAdminUsersResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2127,7 +2127,7 @@ func (r GetApiSecureAdminUsersResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiSecureAdminUsersResponse) StatusCode() int {
+func (r GetSecureAdminUsersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2135,22 +2135,22 @@ func (r GetApiSecureAdminUsersResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiSecureAdminUsersResponse) ContentType() string {
+func (r GetSecureAdminUsersResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiUsersResponse struct {
+type GetUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ApiUsersGetStatus200Body
+	JSON200      *UsersGetStatus200Body
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiUsersResponse) Status() string {
+func (r GetUsersResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2158,7 +2158,7 @@ func (r GetApiUsersResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiUsersResponse) StatusCode() int {
+func (r GetUsersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2166,21 +2166,21 @@ func (r GetApiUsersResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiUsersResponse) ContentType() string {
+func (r GetUsersResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type PostApiUsersResponse struct {
+type PostUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r PostApiUsersResponse) Status() string {
+func (r PostUsersResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2188,7 +2188,7 @@ func (r PostApiUsersResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r PostApiUsersResponse) StatusCode() int {
+func (r PostUsersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2196,21 +2196,21 @@ func (r PostApiUsersResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostApiUsersResponse) ContentType() string {
+func (r PostUsersResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiUsersByUseridResponse struct {
+type GetUsersByUseridResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiUsersByUseridResponse) Status() string {
+func (r GetUsersByUseridResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2218,7 +2218,7 @@ func (r GetApiUsersByUseridResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiUsersByUseridResponse) StatusCode() int {
+func (r GetUsersByUseridResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2226,21 +2226,21 @@ func (r GetApiUsersByUseridResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiUsersByUseridResponse) ContentType() string {
+func (r GetUsersByUseridResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-type GetApiUsersByUseridPostsByPostidResponse struct {
+type GetUsersByUseridPostsByPostidResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON422      *FrourioError
 }
 
 // Status returns HTTPResponse.Status
-func (r GetApiUsersByUseridPostsByPostidResponse) Status() string {
+func (r GetUsersByUseridPostsByPostidResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -2248,7 +2248,7 @@ func (r GetApiUsersByUseridPostsByPostidResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r GetApiUsersByUseridPostsByPostidResponse) StatusCode() int {
+func (r GetUsersByUseridPostsByPostidResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2256,253 +2256,253 @@ func (r GetApiUsersByUseridPostsByPostidResponse) StatusCode() int {
 }
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetApiUsersByUseridPostsByPostidResponse) ContentType() string {
+func (r GetUsersByUseridPostsByPostidResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
 
-// GetApiWithResponse request returning *GetApiResponse
-func (c *ClientWithResponses) GetApiWithResponse(ctx context.Context, params *GetApiParams, reqEditors ...RequestEditorFn) (*GetApiResponse, error) {
-	rsp, err := c.GetApi(ctx, params, reqEditors...)
+// GetWithResponse request returning *GetResponse
+func (c *ClientWithResponses) GetWithResponse(ctx context.Context, params *GetParams, reqEditors ...RequestEditorFn) (*GetResponse, error) {
+	rsp, err := c.Get(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiResponse(rsp)
+	return ParseGetResponse(rsp)
 }
 
-// GetApiAuthWithResponse request returning *GetApiAuthResponse
-func (c *ClientWithResponses) GetApiAuthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiAuthResponse, error) {
-	rsp, err := c.GetApiAuth(ctx, reqEditors...)
+// GetAuthWithResponse request returning *GetAuthResponse
+func (c *ClientWithResponses) GetAuthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAuthResponse, error) {
+	rsp, err := c.GetAuth(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiAuthResponse(rsp)
+	return ParseGetAuthResponse(rsp)
 }
 
-// GetApiBlogBySlugWithResponse request returning *GetApiBlogBySlugResponse
-func (c *ClientWithResponses) GetApiBlogBySlugWithResponse(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*GetApiBlogBySlugResponse, error) {
-	rsp, err := c.GetApiBlogBySlug(ctx, slug, reqEditors...)
+// GetBlogBySlugWithResponse request returning *GetBlogBySlugResponse
+func (c *ClientWithResponses) GetBlogBySlugWithResponse(ctx context.Context, slug []string, reqEditors ...RequestEditorFn) (*GetBlogBySlugResponse, error) {
+	rsp, err := c.GetBlogBySlug(ctx, slug, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiBlogBySlugResponse(rsp)
+	return ParseGetBlogBySlugResponse(rsp)
 }
 
-// GetApiFilesWithResponse request returning *GetApiFilesResponse
-func (c *ClientWithResponses) GetApiFilesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiFilesResponse, error) {
-	rsp, err := c.GetApiFiles(ctx, reqEditors...)
+// GetFilesWithResponse request returning *GetFilesResponse
+func (c *ClientWithResponses) GetFilesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetFilesResponse, error) {
+	rsp, err := c.GetFiles(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiFilesResponse(rsp)
+	return ParseGetFilesResponse(rsp)
 }
 
-// GetApiFilesByPathWithResponse request returning *GetApiFilesByPathResponse
-func (c *ClientWithResponses) GetApiFilesByPathWithResponse(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*GetApiFilesByPathResponse, error) {
-	rsp, err := c.GetApiFilesByPath(ctx, path, reqEditors...)
+// GetFilesByPathWithResponse request returning *GetFilesByPathResponse
+func (c *ClientWithResponses) GetFilesByPathWithResponse(ctx context.Context, path []string, reqEditors ...RequestEditorFn) (*GetFilesByPathResponse, error) {
+	rsp, err := c.GetFilesByPath(ctx, path, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiFilesByPathResponse(rsp)
+	return ParseGetFilesByPathResponse(rsp)
 }
 
-// DeleteApiFormsWithResponse request returning *DeleteApiFormsResponse
-func (c *ClientWithResponses) DeleteApiFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteApiFormsResponse, error) {
-	rsp, err := c.DeleteApiForms(ctx, reqEditors...)
+// DeleteFormsWithResponse request returning *DeleteFormsResponse
+func (c *ClientWithResponses) DeleteFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*DeleteFormsResponse, error) {
+	rsp, err := c.DeleteForms(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseDeleteApiFormsResponse(rsp)
+	return ParseDeleteFormsResponse(rsp)
 }
 
-// GetApiFormsWithResponse request returning *GetApiFormsResponse
-func (c *ClientWithResponses) GetApiFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiFormsResponse, error) {
-	rsp, err := c.GetApiForms(ctx, reqEditors...)
+// GetFormsWithResponse request returning *GetFormsResponse
+func (c *ClientWithResponses) GetFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetFormsResponse, error) {
+	rsp, err := c.GetForms(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiFormsResponse(rsp)
+	return ParseGetFormsResponse(rsp)
 }
 
-// PatchApiFormsWithResponse request returning *PatchApiFormsResponse
-func (c *ClientWithResponses) PatchApiFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PatchApiFormsResponse, error) {
-	rsp, err := c.PatchApiForms(ctx, reqEditors...)
+// PatchFormsWithResponse request returning *PatchFormsResponse
+func (c *ClientWithResponses) PatchFormsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*PatchFormsResponse, error) {
+	rsp, err := c.PatchForms(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePatchApiFormsResponse(rsp)
+	return ParsePatchFormsResponse(rsp)
 }
 
-// PostApiFormsWithBodyWithResponse request with arbitrary body returning *PostApiFormsResponse
-func (c *ClientWithResponses) PostApiFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiFormsResponse, error) {
-	rsp, err := c.PostApiFormsWithBody(ctx, contentType, body, reqEditors...)
+// PostFormsWithBodyWithResponse request with arbitrary body returning *PostFormsResponse
+func (c *ClientWithResponses) PostFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostFormsResponse, error) {
+	rsp, err := c.PostFormsWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiFormsResponse(rsp)
+	return ParsePostFormsResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostApiFormsWithFormdataBodyWithResponse(ctx context.Context, body PostApiFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostApiFormsResponse, error) {
-	rsp, err := c.PostApiFormsWithFormdataBody(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostFormsWithFormdataBodyWithResponse(ctx context.Context, body PostFormsFormdataRequestBody, reqEditors ...RequestEditorFn) (*PostFormsResponse, error) {
+	rsp, err := c.PostFormsWithFormdataBody(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiFormsResponse(rsp)
+	return ParsePostFormsResponse(rsp)
 }
 
-// PutApiFormsWithBodyWithResponse request with arbitrary body returning *PutApiFormsResponse
-func (c *ClientWithResponses) PutApiFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiFormsResponse, error) {
-	rsp, err := c.PutApiFormsWithBody(ctx, contentType, body, reqEditors...)
+// PutFormsWithBodyWithResponse request with arbitrary body returning *PutFormsResponse
+func (c *ClientWithResponses) PutFormsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutFormsResponse, error) {
+	rsp, err := c.PutFormsWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePutApiFormsResponse(rsp)
+	return ParsePutFormsResponse(rsp)
 }
 
-// GetApiMwWithResponse request returning *GetApiMwResponse
-func (c *ClientWithResponses) GetApiMwWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiMwResponse, error) {
-	rsp, err := c.GetApiMw(ctx, reqEditors...)
+// GetMwWithResponse request returning *GetMwResponse
+func (c *ClientWithResponses) GetMwWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetMwResponse, error) {
+	rsp, err := c.GetMw(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiMwResponse(rsp)
+	return ParseGetMwResponse(rsp)
 }
 
-// GetApiNestChildWithResponse request returning *GetApiNestChildResponse
-func (c *ClientWithResponses) GetApiNestChildWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiNestChildResponse, error) {
-	rsp, err := c.GetApiNestChild(ctx, reqEditors...)
+// GetNestChildWithResponse request returning *GetNestChildResponse
+func (c *ClientWithResponses) GetNestChildWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetNestChildResponse, error) {
+	rsp, err := c.GetNestChild(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiNestChildResponse(rsp)
+	return ParseGetNestChildResponse(rsp)
 }
 
-// GetApiProductsWithResponse request returning *GetApiProductsResponse
-func (c *ClientWithResponses) GetApiProductsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiProductsResponse, error) {
-	rsp, err := c.GetApiProducts(ctx, reqEditors...)
+// GetProductsWithResponse request returning *GetProductsResponse
+func (c *ClientWithResponses) GetProductsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetProductsResponse, error) {
+	rsp, err := c.GetProducts(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiProductsResponse(rsp)
+	return ParseGetProductsResponse(rsp)
 }
 
-// GetApiPublicWithResponse request returning *GetApiPublicResponse
-func (c *ClientWithResponses) GetApiPublicWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiPublicResponse, error) {
-	rsp, err := c.GetApiPublic(ctx, reqEditors...)
+// GetPublicWithResponse request returning *GetPublicResponse
+func (c *ClientWithResponses) GetPublicWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetPublicResponse, error) {
+	rsp, err := c.GetPublic(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiPublicResponse(rsp)
+	return ParseGetPublicResponse(rsp)
 }
 
-// GetApiRawWithResponse request returning *GetApiRawResponse
-func (c *ClientWithResponses) GetApiRawWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiRawResponse, error) {
-	rsp, err := c.GetApiRaw(ctx, reqEditors...)
+// GetRawWithResponse request returning *GetRawResponse
+func (c *ClientWithResponses) GetRawWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetRawResponse, error) {
+	rsp, err := c.GetRaw(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiRawResponse(rsp)
+	return ParseGetRawResponse(rsp)
 }
 
-// GetApiSecureWithResponse request returning *GetApiSecureResponse
-func (c *ClientWithResponses) GetApiSecureWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSecureResponse, error) {
-	rsp, err := c.GetApiSecure(ctx, reqEditors...)
+// GetSecureWithResponse request returning *GetSecureResponse
+func (c *ClientWithResponses) GetSecureWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSecureResponse, error) {
+	rsp, err := c.GetSecure(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiSecureResponse(rsp)
+	return ParseGetSecureResponse(rsp)
 }
 
-// GetApiSecureAdminWithResponse request returning *GetApiSecureAdminResponse
-func (c *ClientWithResponses) GetApiSecureAdminWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApiSecureAdminResponse, error) {
-	rsp, err := c.GetApiSecureAdmin(ctx, reqEditors...)
+// GetSecureAdminWithResponse request returning *GetSecureAdminResponse
+func (c *ClientWithResponses) GetSecureAdminWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetSecureAdminResponse, error) {
+	rsp, err := c.GetSecureAdmin(ctx, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiSecureAdminResponse(rsp)
+	return ParseGetSecureAdminResponse(rsp)
 }
 
-// PostApiSecureAdminWithBodyWithResponse request with arbitrary body returning *PostApiSecureAdminResponse
-func (c *ClientWithResponses) PostApiSecureAdminWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiSecureAdminResponse, error) {
-	rsp, err := c.PostApiSecureAdminWithBody(ctx, contentType, body, reqEditors...)
+// PostSecureAdminWithBodyWithResponse request with arbitrary body returning *PostSecureAdminResponse
+func (c *ClientWithResponses) PostSecureAdminWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostSecureAdminResponse, error) {
+	rsp, err := c.PostSecureAdminWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiSecureAdminResponse(rsp)
+	return ParsePostSecureAdminResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostApiSecureAdminWithResponse(ctx context.Context, body PostApiSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiSecureAdminResponse, error) {
-	rsp, err := c.PostApiSecureAdmin(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostSecureAdminWithResponse(ctx context.Context, body PostSecureAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*PostSecureAdminResponse, error) {
+	rsp, err := c.PostSecureAdmin(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiSecureAdminResponse(rsp)
+	return ParsePostSecureAdminResponse(rsp)
 }
 
-// GetApiSecureAdminUsersWithResponse request returning *GetApiSecureAdminUsersResponse
-func (c *ClientWithResponses) GetApiSecureAdminUsersWithResponse(ctx context.Context, params *GetApiSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*GetApiSecureAdminUsersResponse, error) {
-	rsp, err := c.GetApiSecureAdminUsers(ctx, params, reqEditors...)
+// GetSecureAdminUsersWithResponse request returning *GetSecureAdminUsersResponse
+func (c *ClientWithResponses) GetSecureAdminUsersWithResponse(ctx context.Context, params *GetSecureAdminUsersParams, reqEditors ...RequestEditorFn) (*GetSecureAdminUsersResponse, error) {
+	rsp, err := c.GetSecureAdminUsers(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiSecureAdminUsersResponse(rsp)
+	return ParseGetSecureAdminUsersResponse(rsp)
 }
 
-// GetApiUsersWithResponse request returning *GetApiUsersResponse
-func (c *ClientWithResponses) GetApiUsersWithResponse(ctx context.Context, params *GetApiUsersParams, reqEditors ...RequestEditorFn) (*GetApiUsersResponse, error) {
-	rsp, err := c.GetApiUsers(ctx, params, reqEditors...)
+// GetUsersWithResponse request returning *GetUsersResponse
+func (c *ClientWithResponses) GetUsersWithResponse(ctx context.Context, params *GetUsersParams, reqEditors ...RequestEditorFn) (*GetUsersResponse, error) {
+	rsp, err := c.GetUsers(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiUsersResponse(rsp)
+	return ParseGetUsersResponse(rsp)
 }
 
-// PostApiUsersWithBodyWithResponse request with arbitrary body returning *PostApiUsersResponse
-func (c *ClientWithResponses) PostApiUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiUsersResponse, error) {
-	rsp, err := c.PostApiUsersWithBody(ctx, contentType, body, reqEditors...)
+// PostUsersWithBodyWithResponse request with arbitrary body returning *PostUsersResponse
+func (c *ClientWithResponses) PostUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostUsersResponse, error) {
+	rsp, err := c.PostUsersWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiUsersResponse(rsp)
+	return ParsePostUsersResponse(rsp)
 }
 
-func (c *ClientWithResponses) PostApiUsersWithResponse(ctx context.Context, body PostApiUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiUsersResponse, error) {
-	rsp, err := c.PostApiUsers(ctx, body, reqEditors...)
+func (c *ClientWithResponses) PostUsersWithResponse(ctx context.Context, body PostUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*PostUsersResponse, error) {
+	rsp, err := c.PostUsers(ctx, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParsePostApiUsersResponse(rsp)
+	return ParsePostUsersResponse(rsp)
 }
 
-// GetApiUsersByUseridWithResponse request returning *GetApiUsersByUseridResponse
-func (c *ClientWithResponses) GetApiUsersByUseridWithResponse(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*GetApiUsersByUseridResponse, error) {
-	rsp, err := c.GetApiUsersByUserid(ctx, userid, reqEditors...)
+// GetUsersByUseridWithResponse request returning *GetUsersByUseridResponse
+func (c *ClientWithResponses) GetUsersByUseridWithResponse(ctx context.Context, userid int, reqEditors ...RequestEditorFn) (*GetUsersByUseridResponse, error) {
+	rsp, err := c.GetUsersByUserid(ctx, userid, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiUsersByUseridResponse(rsp)
+	return ParseGetUsersByUseridResponse(rsp)
 }
 
-// GetApiUsersByUseridPostsByPostidWithResponse request returning *GetApiUsersByUseridPostsByPostidResponse
-func (c *ClientWithResponses) GetApiUsersByUseridPostsByPostidWithResponse(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*GetApiUsersByUseridPostsByPostidResponse, error) {
-	rsp, err := c.GetApiUsersByUseridPostsByPostid(ctx, userid, postid, reqEditors...)
+// GetUsersByUseridPostsByPostidWithResponse request returning *GetUsersByUseridPostsByPostidResponse
+func (c *ClientWithResponses) GetUsersByUseridPostsByPostidWithResponse(ctx context.Context, userid int, postid string, reqEditors ...RequestEditorFn) (*GetUsersByUseridPostsByPostidResponse, error) {
+	rsp, err := c.GetUsersByUseridPostsByPostid(ctx, userid, postid, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGetApiUsersByUseridPostsByPostidResponse(rsp)
+	return ParseGetUsersByUseridPostsByPostidResponse(rsp)
 }
 
-// ParseGetApiResponse parses an HTTP response from a GetApiWithResponse call
-func ParseGetApiResponse(rsp *http.Response) (*GetApiResponse, error) {
+// ParseGetResponse parses an HTTP response from a GetWithResponse call
+func ParseGetResponse(rsp *http.Response) (*GetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiResponse{
+	response := &GetResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2520,15 +2520,15 @@ func ParseGetApiResponse(rsp *http.Response) (*GetApiResponse, error) {
 	return response, nil
 }
 
-// ParseGetApiAuthResponse parses an HTTP response from a GetApiAuthWithResponse call
-func ParseGetApiAuthResponse(rsp *http.Response) (*GetApiAuthResponse, error) {
+// ParseGetAuthResponse parses an HTTP response from a GetAuthWithResponse call
+func ParseGetAuthResponse(rsp *http.Response) (*GetAuthResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiAuthResponse{
+	response := &GetAuthResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2546,15 +2546,15 @@ func ParseGetApiAuthResponse(rsp *http.Response) (*GetApiAuthResponse, error) {
 	return response, nil
 }
 
-// ParseGetApiBlogBySlugResponse parses an HTTP response from a GetApiBlogBySlugWithResponse call
-func ParseGetApiBlogBySlugResponse(rsp *http.Response) (*GetApiBlogBySlugResponse, error) {
+// ParseGetBlogBySlugResponse parses an HTTP response from a GetBlogBySlugWithResponse call
+func ParseGetBlogBySlugResponse(rsp *http.Response) (*GetBlogBySlugResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiBlogBySlugResponse{
+	response := &GetBlogBySlugResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2572,15 +2572,15 @@ func ParseGetApiBlogBySlugResponse(rsp *http.Response) (*GetApiBlogBySlugRespons
 	return response, nil
 }
 
-// ParseGetApiFilesResponse parses an HTTP response from a GetApiFilesWithResponse call
-func ParseGetApiFilesResponse(rsp *http.Response) (*GetApiFilesResponse, error) {
+// ParseGetFilesResponse parses an HTTP response from a GetFilesWithResponse call
+func ParseGetFilesResponse(rsp *http.Response) (*GetFilesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiFilesResponse{
+	response := &GetFilesResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2598,15 +2598,15 @@ func ParseGetApiFilesResponse(rsp *http.Response) (*GetApiFilesResponse, error) 
 	return response, nil
 }
 
-// ParseGetApiFilesByPathResponse parses an HTTP response from a GetApiFilesByPathWithResponse call
-func ParseGetApiFilesByPathResponse(rsp *http.Response) (*GetApiFilesByPathResponse, error) {
+// ParseGetFilesByPathResponse parses an HTTP response from a GetFilesByPathWithResponse call
+func ParseGetFilesByPathResponse(rsp *http.Response) (*GetFilesByPathResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiFilesByPathResponse{
+	response := &GetFilesByPathResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2624,15 +2624,15 @@ func ParseGetApiFilesByPathResponse(rsp *http.Response) (*GetApiFilesByPathRespo
 	return response, nil
 }
 
-// ParseDeleteApiFormsResponse parses an HTTP response from a DeleteApiFormsWithResponse call
-func ParseDeleteApiFormsResponse(rsp *http.Response) (*DeleteApiFormsResponse, error) {
+// ParseDeleteFormsResponse parses an HTTP response from a DeleteFormsWithResponse call
+func ParseDeleteFormsResponse(rsp *http.Response) (*DeleteFormsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &DeleteApiFormsResponse{
+	response := &DeleteFormsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2650,15 +2650,15 @@ func ParseDeleteApiFormsResponse(rsp *http.Response) (*DeleteApiFormsResponse, e
 	return response, nil
 }
 
-// ParseGetApiFormsResponse parses an HTTP response from a GetApiFormsWithResponse call
-func ParseGetApiFormsResponse(rsp *http.Response) (*GetApiFormsResponse, error) {
+// ParseGetFormsResponse parses an HTTP response from a GetFormsWithResponse call
+func ParseGetFormsResponse(rsp *http.Response) (*GetFormsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiFormsResponse{
+	response := &GetFormsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2676,15 +2676,15 @@ func ParseGetApiFormsResponse(rsp *http.Response) (*GetApiFormsResponse, error) 
 	return response, nil
 }
 
-// ParsePatchApiFormsResponse parses an HTTP response from a PatchApiFormsWithResponse call
-func ParsePatchApiFormsResponse(rsp *http.Response) (*PatchApiFormsResponse, error) {
+// ParsePatchFormsResponse parses an HTTP response from a PatchFormsWithResponse call
+func ParsePatchFormsResponse(rsp *http.Response) (*PatchFormsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PatchApiFormsResponse{
+	response := &PatchFormsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2702,15 +2702,15 @@ func ParsePatchApiFormsResponse(rsp *http.Response) (*PatchApiFormsResponse, err
 	return response, nil
 }
 
-// ParsePostApiFormsResponse parses an HTTP response from a PostApiFormsWithResponse call
-func ParsePostApiFormsResponse(rsp *http.Response) (*PostApiFormsResponse, error) {
+// ParsePostFormsResponse parses an HTTP response from a PostFormsWithResponse call
+func ParsePostFormsResponse(rsp *http.Response) (*PostFormsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostApiFormsResponse{
+	response := &PostFormsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2728,15 +2728,15 @@ func ParsePostApiFormsResponse(rsp *http.Response) (*PostApiFormsResponse, error
 	return response, nil
 }
 
-// ParsePutApiFormsResponse parses an HTTP response from a PutApiFormsWithResponse call
-func ParsePutApiFormsResponse(rsp *http.Response) (*PutApiFormsResponse, error) {
+// ParsePutFormsResponse parses an HTTP response from a PutFormsWithResponse call
+func ParsePutFormsResponse(rsp *http.Response) (*PutFormsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PutApiFormsResponse{
+	response := &PutFormsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2754,15 +2754,15 @@ func ParsePutApiFormsResponse(rsp *http.Response) (*PutApiFormsResponse, error) 
 	return response, nil
 }
 
-// ParseGetApiMwResponse parses an HTTP response from a GetApiMwWithResponse call
-func ParseGetApiMwResponse(rsp *http.Response) (*GetApiMwResponse, error) {
+// ParseGetMwResponse parses an HTTP response from a GetMwWithResponse call
+func ParseGetMwResponse(rsp *http.Response) (*GetMwResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiMwResponse{
+	response := &GetMwResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2780,15 +2780,15 @@ func ParseGetApiMwResponse(rsp *http.Response) (*GetApiMwResponse, error) {
 	return response, nil
 }
 
-// ParseGetApiNestChildResponse parses an HTTP response from a GetApiNestChildWithResponse call
-func ParseGetApiNestChildResponse(rsp *http.Response) (*GetApiNestChildResponse, error) {
+// ParseGetNestChildResponse parses an HTTP response from a GetNestChildWithResponse call
+func ParseGetNestChildResponse(rsp *http.Response) (*GetNestChildResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiNestChildResponse{
+	response := &GetNestChildResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2806,15 +2806,15 @@ func ParseGetApiNestChildResponse(rsp *http.Response) (*GetApiNestChildResponse,
 	return response, nil
 }
 
-// ParseGetApiProductsResponse parses an HTTP response from a GetApiProductsWithResponse call
-func ParseGetApiProductsResponse(rsp *http.Response) (*GetApiProductsResponse, error) {
+// ParseGetProductsResponse parses an HTTP response from a GetProductsWithResponse call
+func ParseGetProductsResponse(rsp *http.Response) (*GetProductsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiProductsResponse{
+	response := &GetProductsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2832,15 +2832,15 @@ func ParseGetApiProductsResponse(rsp *http.Response) (*GetApiProductsResponse, e
 	return response, nil
 }
 
-// ParseGetApiPublicResponse parses an HTTP response from a GetApiPublicWithResponse call
-func ParseGetApiPublicResponse(rsp *http.Response) (*GetApiPublicResponse, error) {
+// ParseGetPublicResponse parses an HTTP response from a GetPublicWithResponse call
+func ParseGetPublicResponse(rsp *http.Response) (*GetPublicResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiPublicResponse{
+	response := &GetPublicResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2858,15 +2858,15 @@ func ParseGetApiPublicResponse(rsp *http.Response) (*GetApiPublicResponse, error
 	return response, nil
 }
 
-// ParseGetApiRawResponse parses an HTTP response from a GetApiRawWithResponse call
-func ParseGetApiRawResponse(rsp *http.Response) (*GetApiRawResponse, error) {
+// ParseGetRawResponse parses an HTTP response from a GetRawWithResponse call
+func ParseGetRawResponse(rsp *http.Response) (*GetRawResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiRawResponse{
+	response := &GetRawResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2884,15 +2884,15 @@ func ParseGetApiRawResponse(rsp *http.Response) (*GetApiRawResponse, error) {
 	return response, nil
 }
 
-// ParseGetApiSecureResponse parses an HTTP response from a GetApiSecureWithResponse call
-func ParseGetApiSecureResponse(rsp *http.Response) (*GetApiSecureResponse, error) {
+// ParseGetSecureResponse parses an HTTP response from a GetSecureWithResponse call
+func ParseGetSecureResponse(rsp *http.Response) (*GetSecureResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiSecureResponse{
+	response := &GetSecureResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2910,15 +2910,15 @@ func ParseGetApiSecureResponse(rsp *http.Response) (*GetApiSecureResponse, error
 	return response, nil
 }
 
-// ParseGetApiSecureAdminResponse parses an HTTP response from a GetApiSecureAdminWithResponse call
-func ParseGetApiSecureAdminResponse(rsp *http.Response) (*GetApiSecureAdminResponse, error) {
+// ParseGetSecureAdminResponse parses an HTTP response from a GetSecureAdminWithResponse call
+func ParseGetSecureAdminResponse(rsp *http.Response) (*GetSecureAdminResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiSecureAdminResponse{
+	response := &GetSecureAdminResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2936,15 +2936,15 @@ func ParseGetApiSecureAdminResponse(rsp *http.Response) (*GetApiSecureAdminRespo
 	return response, nil
 }
 
-// ParsePostApiSecureAdminResponse parses an HTTP response from a PostApiSecureAdminWithResponse call
-func ParsePostApiSecureAdminResponse(rsp *http.Response) (*PostApiSecureAdminResponse, error) {
+// ParsePostSecureAdminResponse parses an HTTP response from a PostSecureAdminWithResponse call
+func ParsePostSecureAdminResponse(rsp *http.Response) (*PostSecureAdminResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostApiSecureAdminResponse{
+	response := &PostSecureAdminResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2962,15 +2962,15 @@ func ParsePostApiSecureAdminResponse(rsp *http.Response) (*PostApiSecureAdminRes
 	return response, nil
 }
 
-// ParseGetApiSecureAdminUsersResponse parses an HTTP response from a GetApiSecureAdminUsersWithResponse call
-func ParseGetApiSecureAdminUsersResponse(rsp *http.Response) (*GetApiSecureAdminUsersResponse, error) {
+// ParseGetSecureAdminUsersResponse parses an HTTP response from a GetSecureAdminUsersWithResponse call
+func ParseGetSecureAdminUsersResponse(rsp *http.Response) (*GetSecureAdminUsersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiSecureAdminUsersResponse{
+	response := &GetSecureAdminUsersResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -2988,22 +2988,22 @@ func ParseGetApiSecureAdminUsersResponse(rsp *http.Response) (*GetApiSecureAdmin
 	return response, nil
 }
 
-// ParseGetApiUsersResponse parses an HTTP response from a GetApiUsersWithResponse call
-func ParseGetApiUsersResponse(rsp *http.Response) (*GetApiUsersResponse, error) {
+// ParseGetUsersResponse parses an HTTP response from a GetUsersWithResponse call
+func ParseGetUsersResponse(rsp *http.Response) (*GetUsersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiUsersResponse{
+	response := &GetUsersResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ApiUsersGetStatus200Body
+		var dest UsersGetStatus200Body
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3021,15 +3021,15 @@ func ParseGetApiUsersResponse(rsp *http.Response) (*GetApiUsersResponse, error) 
 	return response, nil
 }
 
-// ParsePostApiUsersResponse parses an HTTP response from a PostApiUsersWithResponse call
-func ParsePostApiUsersResponse(rsp *http.Response) (*PostApiUsersResponse, error) {
+// ParsePostUsersResponse parses an HTTP response from a PostUsersWithResponse call
+func ParsePostUsersResponse(rsp *http.Response) (*PostUsersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &PostApiUsersResponse{
+	response := &PostUsersResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -3047,15 +3047,15 @@ func ParsePostApiUsersResponse(rsp *http.Response) (*PostApiUsersResponse, error
 	return response, nil
 }
 
-// ParseGetApiUsersByUseridResponse parses an HTTP response from a GetApiUsersByUseridWithResponse call
-func ParseGetApiUsersByUseridResponse(rsp *http.Response) (*GetApiUsersByUseridResponse, error) {
+// ParseGetUsersByUseridResponse parses an HTTP response from a GetUsersByUseridWithResponse call
+func ParseGetUsersByUseridResponse(rsp *http.Response) (*GetUsersByUseridResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiUsersByUseridResponse{
+	response := &GetUsersByUseridResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
@@ -3073,15 +3073,15 @@ func ParseGetApiUsersByUseridResponse(rsp *http.Response) (*GetApiUsersByUseridR
 	return response, nil
 }
 
-// ParseGetApiUsersByUseridPostsByPostidResponse parses an HTTP response from a GetApiUsersByUseridPostsByPostidWithResponse call
-func ParseGetApiUsersByUseridPostsByPostidResponse(rsp *http.Response) (*GetApiUsersByUseridPostsByPostidResponse, error) {
+// ParseGetUsersByUseridPostsByPostidResponse parses an HTTP response from a GetUsersByUseridPostsByPostidWithResponse call
+func ParseGetUsersByUseridPostsByPostidResponse(rsp *http.Response) (*GetUsersByUseridPostsByPostidResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &GetApiUsersByUseridPostsByPostidResponse{
+	response := &GetUsersByUseridPostsByPostidResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

@@ -11,9 +11,12 @@ import (
 )
 
 func main() {
+	mux := http.NewServeMux()
+	mux.Handle("/api/", http.StripPrefix("/api", api.Handler()))
+
 	server := &http.Server{
 		Addr:              ":8080",
-		Handler:           api.Handler(),
+		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 	log.Fatal(server.ListenAndServe())

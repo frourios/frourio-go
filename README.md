@@ -146,15 +146,25 @@ func main() {
 }
 ```
 
+`api.Handler()` returns a prefix-agnostic `http.Handler`. If you want to mount
+it under a URL prefix like `/api`, compose it with `http.StripPrefix` in your
+`main.go` — frourio-go does not bake any prefix into the generated routes.
+
+```go
+mux := http.NewServeMux()
+mux.Handle("/api/", http.StripPrefix("/api", api.Handler()))
+log.Fatal(http.ListenAndServe(":8080", mux))
+```
+
 ## Routing Model
 
 Routes are derived from directories. A directory is a static URL segment unless
 its `FrourioSpec` defines `Param`.
 
 ```text
-api/frourio.go                         -> /api
-api/users/userid/frourio.go            -> /api/users/userid
-api/products/sale/frourio.go           -> /api/products/sale
+api/frourio.go                         -> /
+api/users/userid/frourio.go            -> /users/userid
+api/products/sale/frourio.go           -> /products/sale
 ```
 
 With `Param`, the final directory segment becomes a path parameter:
@@ -174,13 +184,13 @@ type FrourioSpec struct {
 }
 ```
 
-This produces `/api/users/{userid}` and passes `Param int` to the handler.
+This produces `/users/{userid}` and passes `Param int` to the handler.
 
 Catch-all parameters are inferred from the `Param` type:
 
 ```go
-Param []string  // /api/blog/{slug...}
-Param *[]string // /api/blog and /api/blog/{slug...}
+Param []string  // /blog/{slug...}
+Param *[]string // /blog and /blog/{slug...}
 ```
 
 If the URL segment needs characters that are awkward or invalid in Go import

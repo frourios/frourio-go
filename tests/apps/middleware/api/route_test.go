@@ -19,7 +19,7 @@ func decodeJSON(t *testing.T, body string, dst any) {
 }
 
 func TestRoot(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
 	if res.Code != http.StatusOK {
@@ -31,7 +31,7 @@ func TestRoot(t *testing.T) {
 }
 
 func TestMwGet_NoHeaders(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw", nil)
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
 
@@ -52,7 +52,7 @@ func TestMwGet_NoHeaders(t *testing.T) {
 }
 
 func TestMwGet_UserAuthorization(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw", nil)
 	req.Header.Set("Authorization", "Bearer user-123")
 	req.Header.Set("X-Trace-Id", traceID)
 	res := httptest.NewRecorder()
@@ -75,7 +75,7 @@ func TestMwGet_UserAuthorization(t *testing.T) {
 }
 
 func TestMwGet_AdminAuthorization(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw", nil)
 	req.Header.Set("Authorization", "Bearer user-admin")
 	req.Header.Set("X-Trace-Id", traceID)
 	res := httptest.NewRecorder()
@@ -105,7 +105,7 @@ type adminContextResp struct {
 }
 
 func TestAdminGet_AdminUser(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw/admin", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw/admin", nil)
 	req.Header.Set("Authorization", "Bearer user-admin")
 	req.Header.Set("X-Trace-Id", traceID)
 	res := httptest.NewRecorder()
@@ -131,7 +131,7 @@ func TestAdminGet_AdminUser(t *testing.T) {
 }
 
 func TestAdminGet_NormalUser(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw/admin", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw/admin", nil)
 	req.Header.Set("Authorization", "Bearer user-regular")
 	req.Header.Set("X-Trace-Id", traceID)
 	res := httptest.NewRecorder()
@@ -154,7 +154,7 @@ func TestAdminGet_NormalUser(t *testing.T) {
 }
 
 func TestAdminPost_AdminUser(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/mw/admin", strings.NewReader(`{"data":"admin data"}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/mw/admin", strings.NewReader(`{"data":"admin data"}`))
 	req.Header.Set("Authorization", "Bearer user-admin")
 	req.Header.Set("X-Trace-Id", traceID)
 	req.Header.Set("Content-Type", "application/json")
@@ -181,7 +181,7 @@ func TestAdminPost_AdminUser(t *testing.T) {
 }
 
 func TestAdminPost_NormalUser_Forbidden(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/mw/admin", strings.NewReader(`{"data":"user data"}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/mw/admin", strings.NewReader(`{"data":"user data"}`))
 	req.Header.Set("Authorization", "Bearer user-regular")
 	req.Header.Set("X-Trace-Id", traceID)
 	req.Header.Set("Content-Type", "application/json")
@@ -201,7 +201,7 @@ func TestAdminPost_NormalUser_Forbidden(t *testing.T) {
 }
 
 func TestAdminPost_NoAuth_Forbidden(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/mw/admin", strings.NewReader(`{"data":"no auth data"}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/mw/admin", strings.NewReader(`{"data":"no auth data"}`))
 	req.Header.Set("X-Trace-Id", traceID)
 	req.Header.Set("Content-Type", "application/json")
 	res := httptest.NewRecorder()
@@ -220,7 +220,7 @@ func TestAdminPost_NoAuth_Forbidden(t *testing.T) {
 }
 
 func TestAdminPost_InvalidBody(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/api/mw/admin", strings.NewReader(`{}`))
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodPost, "/mw/admin", strings.NewReader(`{}`))
 	req.Header.Set("Authorization", "Bearer user-admin")
 	req.Header.Set("X-Trace-Id", traceID)
 	req.Header.Set("Content-Type", "application/json")
@@ -233,7 +233,7 @@ func TestAdminPost_InvalidBody(t *testing.T) {
 }
 
 func TestAdminUsersGet_AdminUser(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw/admin/users?role=admin", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw/admin/users?role=admin", nil)
 	req.Header.Set("Authorization", "Bearer user-admin")
 	req.Header.Set("X-Trace-Id", traceID)
 	res := httptest.NewRecorder()
@@ -256,7 +256,7 @@ func TestAdminUsersGet_AdminUser(t *testing.T) {
 }
 
 func TestAdminUsersGet_NormalUser(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/mw/admin/users", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/mw/admin/users", nil)
 	req.Header.Set("Authorization", "Bearer user-regular")
 	req.Header.Set("X-Trace-Id", traceID)
 	res := httptest.NewRecorder()
@@ -279,7 +279,7 @@ func TestAdminUsersGet_NormalUser(t *testing.T) {
 }
 
 func TestPublicGet_NoHeaders(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/public", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/public", nil)
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
 
@@ -296,7 +296,7 @@ func TestPublicGet_NoHeaders(t *testing.T) {
 }
 
 func TestPublicGet_WithAuthorizationIgnored(t *testing.T) {
-	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/api/public", nil)
+	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/public", nil)
 	req.Header.Set("Authorization", "Bearer some-token")
 	res := httptest.NewRecorder()
 	Handler().ServeHTTP(res, req)
