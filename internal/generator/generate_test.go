@@ -3,6 +3,8 @@ package generator
 import (
 	"encoding/json"
 	"go/ast"
+	"go/parser"
+	"go/token"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,19 +18,35 @@ func TestGenerateBasicApp(t *testing.T) {
 
 	writeFile(t, api, "frourio.go", `package api
 
+type CreateBody struct {
+	Name string `+"`json:\"name\" validate:\"required\"`"+`
+	Alias string
+}
+
 type FrourioSpec struct {
+	// List root
+	/*
+		List root endpoint.
+			Indented detail is preserved.
+	*/
 	Get struct {
 		Header struct {
 			RequestID string `+"`json:\"x-request-id\"`"+`
 		}
 		Query struct {
+			// Search term
 			Search *string `+"`json:\"search\"`"+`
+			/*
+				Maximum number of items.
+					Indented limit detail.
+			*/
 			Limit  *int    `+"`json:\"limit\"`"+`
 			RawName *string
 			Tags   []string `+"`json:\"tag\"`"+`
 			Ids    []int    `+"`json:\"id\"`"+`
 		}
 		Res struct {
+			// Successful root response
 			Status200 struct {
 				Body string `+"`json:\"body\" validate:\"required\"`"+`
 				Header struct {
@@ -39,10 +57,7 @@ type FrourioSpec struct {
 	}
 	Post struct {
 		URLEncoded bool
-		Body struct {
-			Name string `+"`json:\"name\" validate:\"required\"`"+`
-			Alias string
-		}
+		Body CreateBody
 		Res struct {
 			Status201 struct {
 				Body string `+"`json:\"body\" validate:\"required\"`"+`
@@ -231,7 +246,8 @@ type FrourioSpec struct {
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values := r.MultipartForm.Value")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "values[\"RawName\"]")
 	assertFileContains(t, filepath.Join(api, "frourio_relay.go"), "RawName *string")
-	assertFileContains(t, filepath.Join(api, "frourio_relay.go"), "Alias string")
+	assertFileContains(t, filepath.Join(api, "frourio_relay.go"), "Body CreateBody")
+	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "var body CreateBody")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "writeBytes(w")
 	assertFileContains(t, filepath.Join(api, "frourio_server.go"), "writeMultipart(w")
 	assertFileContains(t, filepath.Join(api, "raw/frourio_relay.go"), "type RawResponse interface")
@@ -258,6 +274,10 @@ type FrourioSpec struct {
 	if _, ok := content["application/x-www-form-urlencoded"]; !ok {
 		t.Fatalf("urlencoded content type not found in %#v", content)
 	}
+	schemas := doc["components"].(map[string]any)["schemas"].(map[string]any)
+	if _, ok := schemas["ApiCreateBody"]; !ok {
+		t.Fatalf("named type schema ApiCreateBody not found in %#v", schemas)
+	}
 	parameters := paths["/api"].(map[string]any)["get"].(map[string]any)["parameters"].([]any)
 	foundRawName := false
 	for _, param := range parameters {
@@ -267,6 +287,22 @@ type FrourioSpec struct {
 	}
 	if !foundRawName {
 		t.Fatalf("RawName query parameter not found in %#v", parameters)
+	}
+	apiGet := paths["/api"].(map[string]any)["get"].(map[string]any)
+	if apiGet["summary"] != "List root" {
+		t.Fatalf("operation summary = %#v", apiGet["summary"])
+	}
+	if apiGet["description"] != "List root endpoint.\n\tIndented detail is preserved." {
+		t.Fatalf("operation description = %#v", apiGet["description"])
+	}
+	if parameters[0].(map[string]any)["description"] != "Search term" {
+		t.Fatalf("query summary description = %#v", parameters[0])
+	}
+	if parameters[1].(map[string]any)["description"] != "Maximum number of items.\n\tIndented limit detail." {
+		t.Fatalf("query block description = %#v", parameters[1])
+	}
+	if apiGet["responses"].(map[string]any)["200"].(map[string]any)["description"] != "Successful root response" {
+		t.Fatalf("response description = %#v", apiGet["responses"].(map[string]any)["200"])
 	}
 	apiPut := paths["/api"].(map[string]any)["put"].(map[string]any)
 	putRequestBody := apiPut["requestBody"].(map[string]any)
@@ -583,7 +619,7 @@ func TestSchemaAndDecodeHelpers(t *testing.T) {
 	if got := routePath("admin//users", map[string]string{"admin/users": "members"}, nil); got != "/api/admin/users" {
 		t.Fatalf("routePath empty part = %s", got)
 	}
-	if _, err := parseStruct("Bad", &ast.Ident{Name: "string"}); err == nil {
+	if _, err := parseStruct("Bad", &ast.Ident{Name: "string"}, nil, nil); err == nil {
 		t.Fatal("expected parseStruct error")
 	}
 	if got := exprString(&ast.SelectorExpr{X: &ast.Ident{Name: "time"}, Sel: &ast.Ident{Name: "Time"}}); got != "time.Time" {
@@ -682,6 +718,139 @@ func TestResponseHelpers(t *testing.T) {
 	}}, map[string]any{})
 	if _, ok := responses["200"].(map[string]any)["content"].(map[string]any)["application/octet-stream"]; !ok {
 		t.Fatalf("binary response content missing: %#v", responses)
+	}
+}
+
+func TestDocHelpers(t *testing.T) {
+	if got := parseDoc(nil); got != (DocSpec{}) {
+		t.Fatalf("nil doc = %#v", got)
+	}
+	if got := parseDoc(&ast.CommentGroup{List: []*ast.Comment{
+		{Text: "//"},
+		{Text: "/**/"},
+	}}); got != (DocSpec{}) {
+		t.Fatalf("empty doc = %#v", got)
+	}
+
+	doc := parseDoc(&ast.CommentGroup{List: []*ast.Comment{
+		{Text: "// Short summary"},
+		{Text: "/*\n\t\tLong description.\n\t\t\tIndented item.\n\t*/"},
+	}})
+	if doc.Summary != "Short summary" {
+		t.Fatalf("summary = %q", doc.Summary)
+	}
+	if doc.Description != "Long description.\n\tIndented item." {
+		t.Fatalf("description = %q", doc.Description)
+	}
+	if got := docText(doc); got != "Short summary\n\nLong description.\n\tIndented item." {
+		t.Fatalf("docText = %q", got)
+	}
+	combined := docFromGroups(
+		&ast.CommentGroup{List: []*ast.Comment{{Text: "// First"}}},
+		&ast.CommentGroup{List: []*ast.Comment{{Text: "// Second"}}},
+	)
+	if combined.Summary != "First Second" {
+		t.Fatalf("combined summary = %q", combined.Summary)
+	}
+	if got := trimIndentWidth("\t\tvalue", 8); got != "\tvalue" {
+		t.Fatalf("trimIndentWidth = %q", got)
+	}
+	if got := trimBlockCommentIndent("\r\n\t\tA\r\n\t\t\r\n\t\t\tB\r\n\t"); got != "A\n\n\tB" {
+		t.Fatalf("trimBlockCommentIndent CRLF = %q", got)
+	}
+	if got := leadingIndentWidth("\t  value"); got != 10 {
+		t.Fatalf("leadingIndentWidth tab+spaces = %d", got)
+	}
+	if got := leadingIndentWidth("   "); got != 3 {
+		t.Fatalf("leadingIndentWidth spaces = %d", got)
+	}
+	if got := trimIndentWidth("\tvalue", 4); got != "\tvalue" {
+		t.Fatalf("partial tab trim = %q", got)
+	}
+	if got := trimIndentWidth("  value", 3); got != "value" {
+		t.Fatalf("over trim spaces = %q", got)
+	}
+	if got := trimIndentWidth("  ", 2); got != "" {
+		t.Fatalf("trim all spaces = %q", got)
+	}
+	if got := docFromGroups(
+		&ast.CommentGroup{List: []*ast.Comment{{Text: "/*First*/"}}},
+		&ast.CommentGroup{List: []*ast.Comment{{Text: "/*Second*/"}}},
+	); got.Description != "First\n\nSecond" {
+		t.Fatalf("combined description = %q", got.Description)
+	}
+	if got := docGroup(nil, nil); got != nil {
+		t.Fatalf("nil docGroup = %#v", got)
+	}
+	if got := docForNode(nil, nil, &ast.CommentGroup{List: []*ast.Comment{{Text: "// Fallback"}}}); got.Summary != "Fallback" {
+		t.Fatalf("docForNode fallback = %#v", got)
+	}
+
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, "doc.go", `package api
+type FrourioSpec struct {
+	// Method summary
+	/*
+		Method description.
+			Indented detail.
+	*/
+	Get struct {
+		Query struct {
+			// Search summary
+			Search string
+
+			Empty string
+		}
+	}
+}
+`, parser.ParseComments)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resolver := newDocResolver(fset, file.Comments)
+	var getField, searchField, emptyField *ast.Field
+	ast.Inspect(file, func(node ast.Node) bool {
+		field, ok := node.(*ast.Field)
+		if !ok || len(field.Names) == 0 {
+			return true
+		}
+		switch field.Names[0].Name {
+		case "Get":
+			getField = field
+		case "Search":
+			searchField = field
+		case "Empty":
+			emptyField = field
+		}
+		return true
+	})
+	if getField == nil || searchField == nil || emptyField == nil {
+		t.Fatal("fields not found")
+	}
+	getDoc := resolver.docFor(getField, getField.Doc)
+	if getDoc.Summary != "Method summary" || getDoc.Description != "Method description.\n\tIndented detail." {
+		t.Fatalf("method doc = %#v", getDoc)
+	}
+	if got := resolver.commentGroupsFor(emptyField, nil); got != nil {
+		t.Fatalf("empty field comments = %#v", got)
+	}
+	if got := resolver.docFor(emptyField, nil); got != (DocSpec{}) {
+		t.Fatalf("empty field doc = %#v", got)
+	}
+	if got := resolver.docFor(searchField, nil).Summary; got != "Search summary" {
+		t.Fatalf("direct group doc = %q", got)
+	}
+	if got := resolver.docFor(emptyField, &ast.CommentGroup{List: []*ast.Comment{{Text: "// Detached"}}}); got.Summary != "Detached" {
+		t.Fatalf("detached doc = %#v", got)
+	}
+	if got := newDocResolver(fset, nil).commentGroupsFor(emptyField, nil); got != nil {
+		t.Fatalf("nil comment list = %#v", got)
+	}
+	if got := responsePartType("GetStatus200", "Body", &StructSpec{Inline: true, TypeName: "Named"}); got != "GetStatus200Body" {
+		t.Fatalf("inline response part type = %q", got)
+	}
+	if got := goTag(&FieldSpec{JSONTagged: true}, "fallback"); got != "`json:\"fallback\"`" {
+		t.Fatalf("goTag fallback json = %s", got)
 	}
 }
 

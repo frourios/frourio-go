@@ -33,6 +33,7 @@ type MethodSpec struct {
 	Name      string
 	HTTPName  string
 	URLPath   string
+	Doc       DocSpec
 	Format    string
 	Param     *FieldSpec
 	Query     *StructSpec
@@ -44,6 +45,7 @@ type MethodSpec struct {
 
 type ResponseSpec struct {
 	Status     int
+	Doc        DocSpec
 	Body       *FieldSpec
 	BodyType   string
 	BodyStruct *StructSpec
@@ -52,8 +54,11 @@ type ResponseSpec struct {
 }
 
 type StructSpec struct {
-	Name   string
-	Fields []FieldSpec
+	Name     string
+	TypeName string
+	Inline   bool
+	Doc      DocSpec
+	Fields   []FieldSpec
 }
 
 type FieldSpec struct {
@@ -62,8 +67,14 @@ type FieldSpec struct {
 	Type        string
 	JSONName    string
 	JSONTagged  bool
+	Doc         DocSpec
 	ValidateTag string
 	Tag         string
 	Pointer     bool
 	Slice       bool
+}
+
+type DocSpec struct {
+	Summary     string
+	Description string
 }

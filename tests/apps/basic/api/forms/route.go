@@ -8,7 +8,7 @@ import (
 var Route = DefineRoute(RouteHandlers{
 	Get: func(ctx context.Context, req GetRequest) (GetResponse, error) {
 		return GetStatus200{
-			Header: GetStatus200Header{ContentType: "text/custom"},
+			Header: TextHeader{ContentType: "text/custom"},
 			Body:   "plain",
 		}, nil
 	},
@@ -22,6 +22,6 @@ var Route = DefineRoute(RouteHandlers{
 		return PatchStatus200{Body: []byte{1, 2, 3}}, nil
 	},
 	Delete: func(ctx context.Context, req DeleteRequest) (DeleteResponse, error) {
-		return DeleteStatus200{Body: DeleteStatus200Body{Name: "alice", Count: 2}}, nil
+		return DeleteStatus200{Body: MultipartResponseBody{Name: "alice", Count: 2}}, nil
 	},
 })

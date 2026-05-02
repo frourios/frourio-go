@@ -190,8 +190,9 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 		b.WriteString("}\n\n")
 	}
 	if method.Query != nil {
-		fmt.Fprintf(b, "func %s(r *http.Request) (%s%sQuery, error) {\n", decodeName(route, method, "Query"), q, method.Name)
-		fmt.Fprintf(b, "\tvar query %s%sQuery\n", q, method.Name)
+		queryType := requestDecodeType(q, method, "Query", method.Query)
+		fmt.Fprintf(b, "func %s(r *http.Request) (%s, error) {\n", decodeName(route, method, "Query"), queryType)
+		fmt.Fprintf(b, "\tvar query %s\n", queryType)
 		b.WriteString("\tvalues := r.URL.Query()\n")
 		for _, field := range method.Query.Fields {
 			writeQueryDecode(b, field)
@@ -200,8 +201,9 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 		b.WriteString("}\n\n")
 	}
 	if method.Body != nil {
-		fmt.Fprintf(b, "func %s(r *http.Request) (%s%sBody, error) {\n", decodeName(route, method, "Body"), q, method.Name)
-		fmt.Fprintf(b, "\tvar body %s%sBody\n", q, method.Name)
+		bodyType := requestDecodeType(q, method, "Body", method.Body)
+		fmt.Fprintf(b, "func %s(r *http.Request) (%s, error) {\n", decodeName(route, method, "Body"), bodyType)
+		fmt.Fprintf(b, "\tvar body %s\n", bodyType)
 		switch method.Format {
 		case "urlencoded":
 			b.WriteString("\tif err := r.ParseForm(); err != nil {\n")
@@ -227,6 +229,13 @@ func writeWrapper(b *strings.Builder, route RouteSpec, method MethodSpec) {
 		b.WriteString("\treturn body, nil\n")
 		b.WriteString("}\n\n")
 	}
+}
+
+func requestDecodeType(q string, method MethodSpec, part string, st *StructSpec) string {
+	if st != nil && !st.Inline && st.TypeName != "" {
+		return q + st.TypeName
+	}
+	return q + method.Name + part
 }
 
 func writeResponse(b *strings.Builder, response ResponseSpec) {

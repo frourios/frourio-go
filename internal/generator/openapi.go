@@ -60,6 +60,7 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 		"operationId": operationID(method.HTTPName, path),
 		"responses":   responsesObject(route, method, schemas),
 	}
+	addSummaryDescription(op, method.Doc)
 	params := []any{}
 	if method.Param != nil && includePathParam {
 		param := map[string]any{
@@ -68,6 +69,7 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 			"required": true,
 			"schema":   schemaForField(*method.Param),
 		}
+		addDescription(param, method.Param.Doc)
 		if method.Param.Slice {
 			param["style"] = "simple"
 			param["explode"] = false
@@ -77,19 +79,21 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 	}
 	if method.Query != nil {
 		for _, field := range method.Query.Fields {
-			params = append(params, map[string]any{
+			param := map[string]any{
 				"name":     field.JSONName,
 				"in":       "query",
 				"required": !field.Pointer,
 				"schema":   schemaForField(field),
-			})
+			}
+			addDescription(param, field.Doc)
+			params = append(params, param)
 		}
 	}
 	if len(params) > 0 {
 		op["parameters"] = params
 	}
 	if method.Body != nil {
-		schemaName := schemaName(route, method, "Body")
+		schemaName := schemaNameForStruct(route, method, "Body", method.Body)
 		schemas[schemaName] = schemaForStruct(method.Body)
 		contentType := "application/json"
 		switch method.Format {
@@ -98,7 +102,7 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 		case "formData":
 			contentType = "multipart/form-data"
 		}
-		op["requestBody"] = map[string]any{
+		requestBody := map[string]any{
 			"required": true,
 			"content": map[string]any{
 				contentType: map[string]any{
@@ -106,6 +110,8 @@ func operationObject(route RouteSpec, method MethodSpec, schemas map[string]any,
 				},
 			},
 		}
+		addDescription(requestBody, method.Body.Doc)
+		op["requestBody"] = requestBody
 	}
 	return op
 }
@@ -123,8 +129,11 @@ func responsesObject(route RouteSpec, method MethodSpec, schemas map[string]any)
 	}
 	for _, res := range method.Responses {
 		response := map[string]any{"description": httpStatusDescription(res.Status)}
+		if desc := docText(res.Doc); desc != "" {
+			response["description"] = desc
+		}
 		if res.Body != nil {
-			schemaName := schemaName(route, method, fmt.Sprintf("Status%dBody", res.Status))
+			schemaName := schemaNameForStruct(route, method, fmt.Sprintf("Status%dBody", res.Status), res.BodyStruct)
 			if res.BodyStruct != nil {
 				schemas[schemaName] = schemaForStruct(res.BodyStruct)
 			} else {
@@ -139,6 +148,13 @@ func responsesObject(route RouteSpec, method MethodSpec, schemas map[string]any)
 		responses[fmt.Sprint(res.Status)] = response
 	}
 	return responses
+}
+
+func schemaNameForStruct(route RouteSpec, method MethodSpec, part string, st *StructSpec) string {
+	if st != nil && !st.Inline && st.TypeName != "" {
+		return exportName(route.PackageName) + exportName(st.TypeName)
+	}
+	return schemaName(route, method, part)
 }
 
 func responseContentType(res ResponseSpec) string {
@@ -186,6 +202,7 @@ func schemaForField(field FieldSpec) map[string]any {
 	if field.ValidateTag != "" {
 		schema["x-go-validate"] = field.ValidateTag
 	}
+	addDescription(schema, field.Doc)
 	return schema
 }
 
@@ -209,7 +226,34 @@ func schemaForStruct(st *StructSpec) map[string]any {
 	if len(required) > 0 {
 		schema["required"] = required
 	}
+	addDescription(schema, st.Doc)
 	return schema
+}
+
+func addSummaryDescription(obj map[string]any, doc DocSpec) {
+	if doc.Summary != "" {
+		obj["summary"] = doc.Summary
+	}
+	if doc.Description != "" {
+		obj["description"] = doc.Description
+	}
+}
+
+func addDescription(obj map[string]any, doc DocSpec) {
+	if text := docText(doc); text != "" {
+		obj["description"] = text
+	}
+}
+
+func docText(doc DocSpec) string {
+	switch {
+	case doc.Summary != "" && doc.Description != "":
+		return doc.Summary + "\n\n" + doc.Description
+	case doc.Description != "":
+		return doc.Description
+	default:
+		return doc.Summary
+	}
 }
 
 func operationID(method, path string) string {

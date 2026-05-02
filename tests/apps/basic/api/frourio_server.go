@@ -398,8 +398,8 @@ func wrapFormsPost(route forms.RouteDefinition) http.Handler {
 	})
 }
 
-func decodeFormsPostBody(r *http.Request) (forms.PostBody, error) {
-	var body forms.PostBody
+func decodeFormsPostBody(r *http.Request) (forms.FormPostBody, error) {
+	var body forms.FormPostBody
 	if err := r.ParseForm(); err != nil {
 		return body, err
 	}

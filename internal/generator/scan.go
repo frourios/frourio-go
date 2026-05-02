@@ -39,6 +39,7 @@ func parseFrourioFile(apiDir, filePath string) (RouteSpec, error) {
 	if err != nil {
 		return RouteSpec{}, err
 	}
+	docs := newDocResolver(fset, file.Comments)
 
 	dir := filepath.Dir(filePath)
 	rel, err := filepath.Rel(apiDir, dir)
@@ -68,11 +69,12 @@ func parseFrourioFile(apiDir, filePath string) (RouteSpec, error) {
 	if err != nil {
 		return RouteSpec{}, err
 	}
+	namedStructs := collectNamedStructs(file, docs)
 
 	for _, field := range spec.Fields.List {
 		for _, name := range field.Names {
 			if name.Name == "Middleware" {
-				middleware, err := parseMiddleware(field.Type)
+				middleware, err := parseMiddleware(field.Type, namedStructs, docs)
 				if err != nil {
 					return RouteSpec{}, fmt.Errorf("%s: %w", filePath, err)
 				}
@@ -89,10 +91,11 @@ func parseFrourioFile(apiDir, filePath string) (RouteSpec, error) {
 				return RouteSpec{}, fmt.Errorf("%s: FrourioSpec.%s must be a struct", filePath, name.Name)
 			}
 
-			method, err := parseMethod(name.Name, httpName, methodStruct)
+			method, err := parseMethod(name.Name, httpName, methodStruct, namedStructs, docs)
 			if err != nil {
 				return RouteSpec{}, fmt.Errorf("%s: %w", filePath, err)
 			}
+			method.Doc = docForNode(docs, field, field.Doc)
 			route.Methods = append(route.Methods, method)
 		}
 	}
@@ -127,7 +130,32 @@ func parseFrourioFile(apiDir, filePath string) (RouteSpec, error) {
 	return route, nil
 }
 
-func parseMiddleware(expr ast.Expr) (MiddlewareSpec, error) {
+type namedStructDef struct {
+	Struct *ast.StructType
+	Doc    DocSpec
+}
+
+func collectNamedStructs(file *ast.File, docs *docResolver) map[string]namedStructDef {
+	named := map[string]namedStructDef{}
+	for _, decl := range file.Decls {
+		gen, ok := decl.(*ast.GenDecl)
+		if !ok || gen.Tok != token.TYPE {
+			continue
+		}
+		for _, spec := range gen.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok || typeSpec.Name.Name == "FrourioSpec" {
+				continue
+			}
+			if st, ok := typeSpec.Type.(*ast.StructType); ok {
+				named[typeSpec.Name.Name] = namedStructDef{Struct: st, Doc: docForNode(docs, typeSpec, docGroup(gen.Doc, typeSpec.Doc))}
+			}
+		}
+	}
+	return named
+}
+
+func parseMiddleware(expr ast.Expr, namedStructs map[string]namedStructDef, docs *docResolver) (MiddlewareSpec, error) {
 	st, ok := expr.(*ast.StructType)
 	if !ok {
 		return MiddlewareSpec{}, fmt.Errorf("middleware must be a struct")
@@ -135,7 +163,7 @@ func parseMiddleware(expr ast.Expr) (MiddlewareSpec, error) {
 	mw := MiddlewareSpec{Methods: map[string]*MiddlewareItem{}}
 	for _, field := range st.Fields.List {
 		for _, name := range field.Names {
-			item, err := parseMiddlewareItem(name.Name, field.Type)
+			item, err := parseMiddlewareItem(name.Name, field.Type, namedStructs, docs)
 			if err != nil {
 				return MiddlewareSpec{}, err
 			}
@@ -151,7 +179,7 @@ func parseMiddleware(expr ast.Expr) (MiddlewareSpec, error) {
 	return mw, nil
 }
 
-func parseMiddlewareItem(name string, expr ast.Expr) (*MiddlewareItem, error) {
+func parseMiddlewareItem(name string, expr ast.Expr, namedStructs map[string]namedStructDef, docs *docResolver) (*MiddlewareItem, error) {
 	if ident, ok := expr.(*ast.Ident); ok && ident.Name == "bool" {
 		return &MiddlewareItem{Name: name}, nil
 	}
@@ -165,7 +193,7 @@ func parseMiddlewareItem(name string, expr ast.Expr) (*MiddlewareItem, error) {
 			if fieldName.Name != "Context" {
 				continue
 			}
-			ctx, err := parseStruct(name+"MiddlewareContext", field.Type)
+			ctx, err := parseStruct(name+"MiddlewareContext", field.Type, namedStructs, docs)
 			if err != nil {
 				return nil, err
 			}
@@ -210,7 +238,7 @@ func findFrourioSpec(file *ast.File) (*ast.StructType, error) {
 	return nil, fmt.Errorf("FrourioSpec not found")
 }
 
-func parseMethod(name, httpName string, st *ast.StructType) (MethodSpec, error) {
+func parseMethod(name, httpName string, st *ast.StructType, namedStructs map[string]namedStructDef, docs *docResolver) (MethodSpec, error) {
 	method := MethodSpec{Name: name, HTTPName: httpName}
 	for _, field := range st.Fields.List {
 		for _, fieldName := range field.Names {
@@ -233,31 +261,35 @@ func parseMethod(name, httpName string, st *ast.StructType) (MethodSpec, error) 
 				method.Format = "formData"
 			case "Param":
 				param := parseField("Param", field.Type, field.Tag)
+				param.Doc = docForNode(docs, field, field.Doc)
 				method.Param = &param
 			case "Query":
-				query, err := parseStruct("Query", field.Type)
+				query, err := parseStruct("Query", field.Type, namedStructs, docs)
 				if err != nil {
 					return MethodSpec{}, err
 				}
+				query.Doc = docForNode(docs, field, field.Doc)
 				method.Query = query
 			case "Body":
-				body, err := parseStruct("Body", field.Type)
+				body, err := parseStruct("Body", field.Type, namedStructs, docs)
 				if err != nil {
 					return MethodSpec{}, err
 				}
+				body.Doc = docForNode(docs, field, field.Doc)
 				method.Body = body
 			case "Header", "Headers":
-				header, err := parseStruct("Header", field.Type)
+				header, err := parseStruct("Header", field.Type, namedStructs, docs)
 				if err != nil {
 					return MethodSpec{}, err
 				}
+				header.Doc = docForNode(docs, field, field.Doc)
 				method.Header = header
 			case "Res":
 				resStruct, ok := field.Type.(*ast.StructType)
 				if !ok {
 					return MethodSpec{}, fmt.Errorf("res must be a struct")
 				}
-				responses, err := parseResponses(resStruct)
+				responses, err := parseResponses(resStruct, namedStructs, docs)
 				if err != nil {
 					return MethodSpec{}, err
 				}
@@ -303,7 +335,7 @@ func findFrourioPath(file *ast.File) string {
 	return ""
 }
 
-func parseResponses(st *ast.StructType) ([]ResponseSpec, error) {
+func parseResponses(st *ast.StructType, namedStructs map[string]namedStructDef, docs *docResolver) ([]ResponseSpec, error) {
 	var responses []ResponseSpec
 	for _, field := range st.Fields.List {
 		for _, name := range field.Names {
@@ -315,7 +347,7 @@ func parseResponses(st *ast.StructType) ([]ResponseSpec, error) {
 			if !ok {
 				return nil, fmt.Errorf("res.%s must be a struct", name.Name)
 			}
-			res := ResponseSpec{Status: status}
+			res := ResponseSpec{Status: status, Doc: docForNode(docs, field, field.Doc)}
 			for _, resField := range resStruct.Fields.List {
 				for _, resFieldName := range resField.Names {
 					switch strings.ToLower(resFieldName.Name) {
@@ -325,8 +357,8 @@ func parseResponses(st *ast.StructType) ([]ResponseSpec, error) {
 						}
 						res.FormData = true
 					case "body":
-						if _, ok := resField.Type.(*ast.StructType); ok {
-							body, err := parseStruct("Body", resField.Type)
+						if isStructLike(resField.Type, namedStructs) {
+							body, err := parseStruct("Body", resField.Type, namedStructs, docs)
 							if err != nil {
 								return nil, err
 							}
@@ -334,15 +366,17 @@ func parseResponses(st *ast.StructType) ([]ResponseSpec, error) {
 						}
 						fs := parseField(resFieldName.Name, resField.Type, resField.Tag)
 						fs.Name = "Body"
+						fs.Doc = docForNode(docs, resField, resField.Doc)
 						if fs.JSONName == "" || fs.JSONName == "-" {
 							fs.JSONName = "body"
 						}
 						res.Body = &fs
 					case "header", "headers":
-						header, err := parseStruct("Header", resField.Type)
+						header, err := parseStruct("Header", resField.Type, namedStructs, docs)
 						if err != nil {
 							return nil, err
 						}
+						header.Doc = docForNode(docs, resField, resField.Doc)
 						res.Header = header
 					}
 				}
@@ -353,18 +387,46 @@ func parseResponses(st *ast.StructType) ([]ResponseSpec, error) {
 	return responses, nil
 }
 
-func parseStruct(name string, expr ast.Expr) (*StructSpec, error) {
+func parseStruct(name string, expr ast.Expr, namedStructs map[string]namedStructDef, docs *docResolver) (*StructSpec, error) {
 	st, ok := expr.(*ast.StructType)
+	typeName := name
+	inline := true
+	doc := DocSpec{}
 	if !ok {
-		return nil, fmt.Errorf("%s must be an inline struct in the initial implementation", name)
+		ident, identOK := expr.(*ast.Ident)
+		if !identOK {
+			return nil, fmt.Errorf("%s must be a struct", name)
+		}
+		def, ok := namedStructs[ident.Name]
+		if !ok {
+			return nil, fmt.Errorf("%s named struct %s not found", name, ident.Name)
+		}
+		st = def.Struct
+		doc = def.Doc
+		typeName = ident.Name
+		inline = false
 	}
-	spec := &StructSpec{Name: name}
+	spec := &StructSpec{Name: name, TypeName: typeName, Inline: inline, Doc: doc}
 	for _, field := range st.Fields.List {
 		for _, fieldName := range field.Names {
-			spec.Fields = append(spec.Fields, parseField(fieldName.Name, field.Type, field.Tag))
+			fs := parseField(fieldName.Name, field.Type, field.Tag)
+			fs.Doc = docForNode(docs, field, field.Doc)
+			spec.Fields = append(spec.Fields, fs)
 		}
 	}
 	return spec, nil
+}
+
+func isStructLike(expr ast.Expr, namedStructs map[string]namedStructDef) bool {
+	if _, ok := expr.(*ast.StructType); ok {
+		return true
+	}
+	ident, ok := expr.(*ast.Ident)
+	if !ok {
+		return false
+	}
+	_, ok = namedStructs[ident.Name]
+	return ok
 }
 
 func parseField(name string, expr ast.Expr, tag *ast.BasicLit) FieldSpec {
@@ -402,6 +464,196 @@ func tagName(tag string) string {
 		return ""
 	}
 	return strings.Split(tag, ",")[0]
+}
+
+type docResolver struct {
+	fset     *token.FileSet
+	comments []*ast.CommentGroup
+}
+
+func newDocResolver(fset *token.FileSet, comments []*ast.CommentGroup) *docResolver {
+	return &docResolver{fset: fset, comments: comments}
+}
+
+func (r *docResolver) docFor(node ast.Node, group *ast.CommentGroup) DocSpec {
+	if r == nil {
+		return parseDoc(group)
+	}
+	groups := r.commentGroupsFor(node, group)
+	return docFromGroups(groups...)
+}
+
+func docForNode(resolver *docResolver, node ast.Node, group *ast.CommentGroup) DocSpec {
+	if resolver == nil {
+		return parseDoc(group)
+	}
+	return resolver.docFor(node, group)
+}
+
+func (r *docResolver) commentGroupsFor(node ast.Node, group *ast.CommentGroup) []*ast.CommentGroup {
+	nodeLine := r.fset.Position(node.Pos()).Line
+	index := -1
+	for i, candidate := range r.comments {
+		if r.fset.Position(candidate.End()).Line == nodeLine-1 {
+			index = i
+		}
+	}
+	if index < 0 {
+		if group == nil {
+			group = r.directCommentGroup(node.Pos())
+		}
+		if group == nil {
+			return nil
+		}
+		for i, candidate := range r.comments {
+			if candidate == group || (candidate.Pos() == group.Pos() && candidate.End() == group.End()) {
+				index = i
+				break
+			}
+		}
+		if index < 0 {
+			return []*ast.CommentGroup{group}
+		}
+	}
+	start := index
+	for start > 0 && r.adjacent(r.comments[start-1], r.comments[start]) {
+		start--
+	}
+	return r.comments[start : index+1]
+}
+
+func (r *docResolver) directCommentGroup(pos token.Pos) *ast.CommentGroup {
+	nodeLine := r.fset.Position(pos).Line
+	for _, group := range r.comments {
+		if r.fset.Position(group.End()).Line == nodeLine-1 {
+			return group
+		}
+	}
+	return nil
+}
+
+func (r *docResolver) adjacent(prev, next *ast.CommentGroup) bool {
+	return r.fset.Position(prev.End()).Line+1 == r.fset.Position(next.Pos()).Line
+}
+
+func docGroup(groups ...*ast.CommentGroup) *ast.CommentGroup {
+	for i := len(groups) - 1; i >= 0; i-- {
+		if groups[i] != nil {
+			return groups[i]
+		}
+	}
+	return nil
+}
+
+func docFromGroups(groups ...*ast.CommentGroup) DocSpec {
+	doc := DocSpec{}
+	for _, group := range groups {
+		next := parseDoc(group)
+		if doc.Summary == "" {
+			doc.Summary = next.Summary
+		} else if next.Summary != "" {
+			doc.Summary += " " + next.Summary
+		}
+		if doc.Description == "" {
+			doc.Description = next.Description
+		} else if next.Description != "" {
+			doc.Description += "\n\n" + next.Description
+		}
+	}
+	return doc
+}
+
+func parseDoc(group *ast.CommentGroup) DocSpec {
+	if group == nil {
+		return DocSpec{}
+	}
+	summary := []string{}
+	description := []string{}
+	for _, comment := range group.List {
+		text := comment.Text
+		if strings.HasPrefix(text, "//") {
+			line := strings.TrimSpace(strings.TrimPrefix(text, "//"))
+			if line != "" {
+				summary = append(summary, line)
+			}
+			continue
+		}
+		if strings.HasPrefix(text, "/*") {
+			block := strings.TrimSuffix(strings.TrimPrefix(text, "/*"), "*/")
+			block = trimBlockCommentIndent(block)
+			if block != "" {
+				description = append(description, block)
+			}
+		}
+	}
+	return DocSpec{
+		Summary:     strings.Join(summary, " "),
+		Description: strings.Join(description, "\n\n"),
+	}
+}
+
+func trimBlockCommentIndent(text string) string {
+	lines := strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n")
+	for len(lines) > 0 && strings.TrimSpace(lines[0]) == "" {
+		lines = lines[1:]
+	}
+	for len(lines) > 0 && strings.TrimSpace(lines[len(lines)-1]) == "" {
+		lines = lines[:len(lines)-1]
+	}
+	minIndent := -1
+	for _, line := range lines {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+		indent := leadingIndentWidth(line)
+		if minIndent == -1 || indent < minIndent {
+			minIndent = indent
+		}
+	}
+	if minIndent > 0 {
+		for i, line := range lines {
+			lines[i] = trimIndentWidth(line, minIndent)
+		}
+	}
+	return strings.TrimSpace(strings.Join(lines, "\n"))
+}
+
+func leadingIndentWidth(line string) int {
+	width := 0
+	for _, r := range line {
+		switch r {
+		case '\t':
+			width += 8
+		case ' ':
+			width++
+		default:
+			return width
+		}
+	}
+	return width
+}
+
+func trimIndentWidth(line string, width int) string {
+	removed := 0
+	for i, r := range line {
+		next := removed
+		switch r {
+		case '\t':
+			next += 8
+		case ' ':
+			next++
+		default:
+			return line[i:]
+		}
+		if next > width {
+			return line[i:]
+		}
+		removed = next
+		if removed == width {
+			return line[i+len(string(r)):]
+		}
+	}
+	return ""
 }
 
 func exprString(expr ast.Expr) string {

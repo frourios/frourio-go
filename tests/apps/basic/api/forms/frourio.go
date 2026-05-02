@@ -1,26 +1,40 @@
 package forms
 
+type TextHeader struct {
+	ContentType string
+}
+
+// Form post body
+/*
+	Named request body schema.
+		Keeps nested indentation.
+*/
+type FormPostBody struct {
+	Name   string `json:"name" validate:"required"`
+	Alias  string
+	Age    int       `json:"age" validate:"gte=1"`
+	Active bool      `json:"active"`
+	Scores []float64 `json:"score" validate:"required"`
+}
+
+type MultipartResponseBody struct {
+	Name  string `json:"name"`
+	Count int
+}
+
 type FrourioSpec struct {
 	Get struct {
 		Res struct {
 			Status200 struct {
-				Header struct {
-					ContentType string
-				}
-				Body string `validate:"required"`
+				Header TextHeader
+				Body   string `validate:"required"`
 			}
 		}
 	}
 	Post struct {
 		URLEncoded bool
-		Body       struct {
-			Name   string `json:"name" validate:"required"`
-			Alias  string
-			Age    int       `json:"age" validate:"gte=1"`
-			Active bool      `json:"active"`
-			Scores []float64 `json:"score" validate:"required"`
-		}
-		Res struct {
+		Body       FormPostBody
+		Res        struct {
 			Status201 struct {
 				Body string `json:"body" validate:"required"`
 			}
@@ -49,10 +63,7 @@ type FrourioSpec struct {
 		Res struct {
 			Status200 struct {
 				FormData bool
-				Body     struct {
-					Name  string `json:"name"`
-					Count int
-				}
+				Body     MultipartResponseBody
 			}
 		}
 	}

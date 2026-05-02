@@ -142,23 +142,23 @@ func writeMethodTypes(b *strings.Builder, method MethodSpec) {
 		fmt.Fprintf(b, "\tParam %s %s\n", method.Param.Type, goTag(method.Param, ""))
 	}
 	if method.Query != nil {
-		fmt.Fprintf(b, "\tQuery %sQuery\n", method.Name)
+		fmt.Fprintf(b, "\tQuery %s\n", requestPartType(method, "Query", method.Query))
 	}
 	if method.Header != nil {
-		fmt.Fprintf(b, "\tHeader %sHeader\n", method.Name)
+		fmt.Fprintf(b, "\tHeader %s\n", requestPartType(method, "Header", method.Header))
 	}
 	if method.Body != nil {
-		fmt.Fprintf(b, "\tBody %sBody\n", method.Name)
+		fmt.Fprintf(b, "\tBody %s\n", requestPartType(method, "Body", method.Body))
 	}
 	b.WriteString("}\n\n")
 
-	if method.Query != nil {
+	if method.Query != nil && method.Query.Inline {
 		writeStruct(b, method.Name+"Query", method.Query.Fields)
 	}
-	if method.Header != nil {
+	if method.Header != nil && method.Header.Inline {
 		writeStruct(b, method.Name+"Header", method.Header.Fields)
 	}
-	if method.Body != nil {
+	if method.Body != nil && method.Body.Inline {
 		writeStruct(b, method.Name+"Body", method.Body.Fields)
 	}
 
@@ -179,20 +179,20 @@ func writeMethodTypes(b *strings.Builder, method MethodSpec) {
 
 	for _, res := range method.Responses {
 		typeName := fmt.Sprintf("%sStatus%d", method.Name, res.Status)
-		if res.Header != nil {
+		if res.Header != nil && res.Header.Inline {
 			writeStruct(b, typeName+"Header", res.Header.Fields)
 		}
-		if res.BodyStruct != nil {
+		if res.BodyStruct != nil && res.BodyStruct.Inline {
 			writeStruct(b, typeName+"Body", res.BodyStruct.Fields)
 		}
 		fmt.Fprintf(b, "type %s struct {\n", typeName)
 		if res.Header != nil {
-			fmt.Fprintf(b, "\tHeader %sHeader\n", typeName)
+			fmt.Fprintf(b, "\tHeader %s\n", responsePartType(typeName, "Header", res.Header))
 		}
 		if res.Body != nil {
 			bodyType := res.Body.Type
 			if res.BodyStruct != nil {
-				bodyType = typeName + "Body"
+				bodyType = responsePartType(typeName, "Body", res.BodyStruct)
 			}
 			fmt.Fprintf(b, "\tBody %s %s\n", bodyType, goTag(res.Body, "body"))
 		}
@@ -200,6 +200,20 @@ func writeMethodTypes(b *strings.Builder, method MethodSpec) {
 		fmt.Fprintf(b, "func (%s) is%sResponse() {}\n", typeName, method.Name)
 		fmt.Fprintf(b, "func (%s) StatusCode() int { return %d }\n\n", typeName, res.Status)
 	}
+}
+
+func requestPartType(method MethodSpec, part string, st *StructSpec) string {
+	if st != nil && !st.Inline && st.TypeName != "" {
+		return st.TypeName
+	}
+	return method.Name + part
+}
+
+func responsePartType(responseType, part string, st *StructSpec) string {
+	if st != nil && !st.Inline && st.TypeName != "" {
+		return st.TypeName
+	}
+	return responseType + part
 }
 
 func writeStruct(b *strings.Builder, name string, fields []FieldSpec) {

@@ -21,12 +21,8 @@ type GetResponse interface {
 	StatusCode() int
 }
 
-type GetStatus200Header struct {
-	ContentType string
-}
-
 type GetStatus200 struct {
-	Header GetStatus200Header
+	Header TextHeader
 	Body   string `validate:"required"`
 }
 
@@ -34,15 +30,7 @@ func (GetStatus200) isGetResponse()  {}
 func (GetStatus200) StatusCode() int { return 200 }
 
 type PostRequest struct {
-	Body PostBody
-}
-
-type PostBody struct {
-	Name   string `json:"name" validate:"required"`
-	Alias  string
-	Age    int       `json:"age" validate:"gte=1"`
-	Active bool      `json:"active"`
-	Scores []float64 `json:"score" validate:"required"`
+	Body FormPostBody
 }
 
 type PostResponse interface {
@@ -101,13 +89,8 @@ type DeleteResponse interface {
 	StatusCode() int
 }
 
-type DeleteStatus200Body struct {
-	Name  string `json:"name"`
-	Count int
-}
-
 type DeleteStatus200 struct {
-	Body DeleteStatus200Body
+	Body MultipartResponseBody
 }
 
 func (DeleteStatus200) isDeleteResponse() {}

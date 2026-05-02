@@ -13,17 +13,6 @@
         "type": "string",
         "x-go-validate": "required"
       },
-      "ApiFormsDeleteStatus200Body": {
-        "properties": {
-          "Count": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "ApiFormsGetStatus200Body": {
         "type": "string",
         "x-go-validate": "required"
@@ -31,36 +20,6 @@
       "ApiFormsPatchStatus200Body": {
         "format": "binary",
         "type": "string"
-      },
-      "ApiFormsPostBody": {
-        "properties": {
-          "Alias": {
-            "type": "string"
-          },
-          "active": {
-            "type": "boolean"
-          },
-          "age": {
-            "type": "integer",
-            "x-go-validate": "gte=1"
-          },
-          "name": {
-            "type": "string",
-            "x-go-validate": "required"
-          },
-          "score": {
-            "items": {
-              "type": "number",
-              "x-go-validate": "required"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "name",
-          "score"
-        ],
-        "type": "object"
       },
       "ApiFormsPostStatus201Body": {
         "type": "string",
@@ -179,6 +138,47 @@
         "type": "string",
         "x-go-validate": "required"
       },
+      "FormsFormPostBody": {
+        "properties": {
+          "Alias": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "age": {
+            "type": "integer",
+            "x-go-validate": "gte=1"
+          },
+          "name": {
+            "type": "string",
+            "x-go-validate": "required"
+          },
+          "score": {
+            "items": {
+              "type": "number",
+              "x-go-validate": "required"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "score"
+        ],
+        "type": "object"
+      },
+      "FormsMultipartResponseBody": {
+        "properties": {
+          "Count": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "FrourioError": {
         "properties": {
           "error": {
@@ -216,21 +216,26 @@
     "": {},
     "/api": {
       "get": {
+        "description": "List root endpoint.\n\tIndented detail is preserved.",
         "operationId": "getApi",
         "parameters": [
           {
+            "description": "Search term",
             "in": "query",
             "name": "search",
             "required": false,
             "schema": {
+              "description": "Search term",
               "type": "string"
             }
           },
           {
+            "description": "Maximum number of items.\n\tIndented limit detail.",
             "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
+              "description": "Maximum number of items.\n\tIndented limit detail.",
               "type": "integer"
             }
           },
@@ -271,7 +276,7 @@
                 }
               }
             },
-            "description": "OK"
+            "description": "Successful root response"
           },
           "422": {
             "content": {
@@ -283,7 +288,8 @@
             },
             "description": "Unprocessable Entity"
           }
-        }
+        },
+        "summary": "List root"
       }
     },
     "/api/auth": {
@@ -435,7 +441,7 @@
             "content": {
               "multipart/form-data": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiFormsDeleteStatus200Body"
+                  "$ref": "#/components/schemas/FormsMultipartResponseBody"
                 }
               }
             },
@@ -509,7 +515,7 @@
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
-                "$ref": "#/components/schemas/ApiFormsPostBody"
+                "$ref": "#/components/schemas/FormsFormPostBody"
               }
             }
           },
